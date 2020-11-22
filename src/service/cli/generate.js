@@ -5,9 +5,9 @@ const {getRandomInt, getRandomDate, shuffle} = require(`../../utils`);
 const {ExitCode} = require(`../../constants`);
 
 const FILE_OUTPUT = `${__dirname}/../../../mock.json`;
-const FILE_TITLE = `${__dirname}/../../../data/title.txt`;
-const FILE_CONTENT = `${__dirname}/../../../data/content.txt`;
-const FILE_CATEGORY = `${__dirname}/../../../data/category.txt`;
+const FILE_TITLES = `${__dirname}/../../../data/titles.txt`;
+const FILE_SENTENCES = `${__dirname}/../../../data/sentences.txt`;
+const FILE_CATEGORIES = `${__dirname}/../../../data/categories.txt`;
 
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
@@ -43,9 +43,9 @@ module.exports = {
       console.error(chalk.red(`Не больше 1000 объявлений`));
       process.exit(ExitCode.ERROR);
     }
-    const titles = await readFile(FILE_TITLE);
-    const content = await readFile(FILE_CONTENT);
-    const categories = await readFile(FILE_CATEGORY);
+    const titles = await readFile(FILE_TITLES);
+    const content = await readFile(FILE_SENTENCES);
+    const categories = await readFile(FILE_CATEGORIES);
     const data = JSON.stringify(generateOffers(count, titles, content, categories));
     try {
       await fs.writeFile(FILE_OUTPUT, data);
