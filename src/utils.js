@@ -17,8 +17,9 @@ const shuffle = (someArray) => {
 
 const getRandomDate = (startTime) => {
   const currentTime = Date.now();
-  const time = (startTime > currentTime) ? getRandomInt(currentTime, startTime) :
-    getRandomInt(startTime, currentTime);
+  const time = (startTime > currentTime)
+    ? getRandomInt(currentTime, startTime)
+    : getRandomInt(startTime, currentTime);
   return new Date(time);
 };
 

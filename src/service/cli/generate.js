@@ -15,9 +15,9 @@ const DATE_DIFF_MONTH = -3;
 const MAX_ANNOUNCE_COUNT = 5;
 
 const getCreatedDate = (diffMonth) => {
-  const date = new Date();
-  date.setMonth(date.getMonth() + diffMonth);
-  return getRandomDate(date.getTime());
+  const diffDate = new Date();
+  diffDate.setMonth(diffDate.getMonth() + diffMonth);
+  return getRandomDate(diffDate.getTime());
 };
 
 const readFile = async (filePath) => {
@@ -41,7 +41,7 @@ module.exports = {
     const count = Number.parseInt(arg, 10) || DEFAULT_COUNT;
     if (count > MAX_COUNT) {
       console.error(chalk.red(`Не больше 1000 объявлений`));
-      process.exit(ExitCode.error);
+      process.exit(ExitCode.ERROR);
     }
     const titles = await readFile(FILE_TITLE);
     const content = await readFile(FILE_CONTENT);
@@ -52,7 +52,7 @@ module.exports = {
       console.log(chalk.green(`Данные успешно записаны.`));
     } catch (err) {
       console.error(chalk.red(err));
-      process.exit(ExitCode.error);
+      process.exit(ExitCode.ERROR);
     }
   }
 };
