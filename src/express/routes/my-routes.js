@@ -4,7 +4,7 @@ const express = require(`express`);
 
 const router = new express.Router();
 
-router.get(`/`, (req, res) => res.send(`${req.originalUrl}`));
-router.get(`/comments`, (req, res) => res.send(`${req.originalUrl}`));
+router.get(`/`, (req, res) => res.render(`my`));
+router.get(`/comments`, (req, res) => res.render(`comments`));
 
 module.exports = router;
