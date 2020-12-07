@@ -7,7 +7,7 @@ const {HttpCode, DEFAULT_PORT} = require(`../../constants`);
 const FILE_DATA = `${__dirname}/../../../mock.json`;
 
 const router = new express.Router();
-const postsRoute = router.get(`/posts`, (req, res) => {
+const postsRoute = router.get(`/posts`, async (req, res) => {
   fs.readFile(FILE_DATA, `utf8`)
     .then((data) => {
       res.send(JSON.parse(data));
