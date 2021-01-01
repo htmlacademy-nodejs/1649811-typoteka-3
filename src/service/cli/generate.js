@@ -1,18 +1,21 @@
 'use strict';
 const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
+const {nanoid} = require(`nanoid`);
 const {getRandomInt, getRandomDate, shuffle} = require(`../../utils`);
-const {ExitCode} = require(`../../constants`);
+const {ExitCode, MAX_ID_LENGTH} = require(`../../constants`);
 
-const FILE_OUTPUT = `${__dirname}/../../../mock.json`;
+const FILE_OUTPUT = `${__dirname}/../../../mocks.json`;
 const FILE_TITLES = `${__dirname}/../../../data/titles.txt`;
 const FILE_SENTENCES = `${__dirname}/../../../data/sentences.txt`;
 const FILE_CATEGORIES = `${__dirname}/../../../data/categories.txt`;
+const FILE_COMMENTS = `${__dirname}/../../../data/comments.txt`;
 
 const DEFAULT_COUNT = 1;
 const MAX_COUNT = 1000;
 const DATE_DIFF_MONTH = -3;
 const MAX_ANNOUNCE_COUNT = 5;
+const MAX_COMMENTS = 4;
 
 const getCreatedDate = (diffMonth) => {
   const diffDate = new Date();
@@ -25,13 +28,24 @@ const readFile = async (filePath) => {
   return content.trim().split(`\n`);
 };
 
-const generateOffers = (count, titles, content, categories) => (
+const generateComments = (count, comments) => {
+  return Array(count).fill({}).map(() => ({
+    id: nanoid(MAX_ID_LENGTH),
+    text: shuffle(comments)
+        .slice(0, getRandomInt(1, 3))
+        .join(` `),
+  }));
+};
+
+const generateOffers = (count, titles, content, categories, comments) => (
   Array(count).fill({}).map(() => ({
+    id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
     createdDate: getCreatedDate(DATE_DIFF_MONTH),
     announce: shuffle(content).slice(0, getRandomInt(1, MAX_ANNOUNCE_COUNT)).join(` `),
     fullText: shuffle(content).slice(0, getRandomInt(1, content.length - 1)).join(` `),
-    category: shuffle(categories).slice(0, getRandomInt(1, categories.length - 1))
+    category: shuffle(categories).slice(0, getRandomInt(1, categories.length - 1)),
+    comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
   }))
 );
 
@@ -46,7 +60,8 @@ module.exports = {
     const titles = await readFile(FILE_TITLES);
     const content = await readFile(FILE_SENTENCES);
     const categories = await readFile(FILE_CATEGORIES);
-    const data = JSON.stringify(generateOffers(count, titles, content, categories));
+    const comments = await readFile(FILE_COMMENTS);
+    const data = JSON.stringify(generateOffers(count, titles, content, categories, comments));
     try {
       await fs.writeFile(FILE_OUTPUT, data);
       console.log(chalk.green(`Данные успешно записаны.`));
