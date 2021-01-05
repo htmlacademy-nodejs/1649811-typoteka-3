@@ -3,9 +3,9 @@
 const express = require(`express`);
 const {HttpCode} = require(`../../constants`);
 
-const router = new express.Router();
-
 module.exports = (app, service) => {
+  const router = new express.Router();
+
   router.get(`/`, (req, res) => {
     const {query = ``} = req.query;
 

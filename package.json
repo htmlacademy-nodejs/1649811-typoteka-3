@@ -4,11 +4,12 @@
   "description": "\"Типотека\"",
   "main": "./src/service/service.js",
   "scripts": {
-    "test": "npm run eslint",
+    "test": "npm run eslint && npm run test::rest",
     "eslint": "eslint --ext .js src/",
     "start": "node ./src/service/service.js",
     "server": "nodemon ./src/service/service.js --server 3000",
-    "start-front-server": "nodemon ./src/express/index.js"
+    "start-front-server": "nodemon ./src/express/index.js",
+    "test::rest": "jest ./src/service/api/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -23,7 +24,9 @@
   "devDependencies": {
     "eslint": "7.13.0",
     "eslint-config-htmlacademy": "0.6.0",
-    "nodemon": "2.0.6"
+    "jest": "26.6.3",
+    "nodemon": "2.0.6",
+    "supertest": "6.0.1"
   },
   "dependencies": {
     "chalk": "4.1.0",

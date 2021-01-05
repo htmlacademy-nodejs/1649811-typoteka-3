@@ -6,9 +6,9 @@ const articleValidator = require(`../middleware/article-validator`);
 const articleExists = require(`../middleware/article-exists`);
 const commentValidator = require(`../middleware/comment-validator`);
 
-const router = new express.Router();
-
 module.exports = (app, articleService, commentService) => {
+  const router = new express.Router();
+
   router.get(`/`, (req, res) => {
     const articles = articleService.findAll();
 
@@ -72,6 +72,13 @@ module.exports = (app, articleService, commentService) => {
         return res.status(HttpCode.OK).json(comments);
       });
 
+  router.post(`/:articleId/comments`, [articleExists(articleService), commentValidator], (req, res) => {
+    const {article} = res.locals;
+    const comment = commentService.create(article, req.body);
+
+    return res.status(HttpCode.CREATED).json(comment);
+  });
+
   router.delete(`/:articleId/comments/:commentId`, articleExists(articleService), (req, res) => {
     const {article} = res.locals;
     const {commentId} = req.params;
@@ -84,12 +91,6 @@ module.exports = (app, articleService, commentService) => {
     return res.status(HttpCode.OK).json(deletedComment);
   });
 
-  router.post(`/:articleId/comments`, [articleExists(articleService), commentValidator], (req, res) => {
-    const {article} = res.locals;
-    const comment = commentService.create(article, req.body);
-
-    return res.status(HttpCode.CREATED).json(comment);
-  });
 
   app.use(`/articles`, router);
 };
