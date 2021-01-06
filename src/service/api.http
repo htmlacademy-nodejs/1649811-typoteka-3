@@ -2,7 +2,7 @@ GET http://localhost:3000/api/articles
 Accept: application/json
 
 ###
-GET http://localhost:3000/api/articles/6vmzaH
+GET http://localhost:3000/api/articles/xOu02l
 Accept: application/json
 
 ###
@@ -22,7 +22,7 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:3000/api/articles/6vmzaH
+PUT http://localhost:3000/api/articles/xOu02l
 Content-Type: application/json
 
 {
@@ -33,19 +33,19 @@ Content-Type: application/json
 }
 
 ###
-DELETE http://localhost:3000/api/articles/kMF_UH
+DELETE http://localhost:3000/api/articles/xOu02l
 Accept: application/json
 
 ###
-GET http://localhost:3000/api/articles/6vmzaH/comments
+GET http://localhost:3000/api/articles/A5uMiw/comments
 Accept: application/json
 
 ###
-DELETE http://localhost:3000/api/articles/6vmzaH/comments/yUg25J
+DELETE http://localhost:3000/api/articles/A5uMiw/comments/w08MIx
 Accept: application/json
 
 ###
-POST http://localhost:3000/api/articles/6vmzaH/comments/
+POST http://localhost:3000/api/articles/A5uMiw/comments/
 Content-Type: application/json
 
 {
@@ -53,5 +53,5 @@ Content-Type: application/json
 }
 
 ###
-GET http://localhost:3000/api/search?query=альбом
+GET http://localhost:3000/api/search?query=Рок
 Accept: application/json
