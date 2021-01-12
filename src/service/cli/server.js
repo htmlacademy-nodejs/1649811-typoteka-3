@@ -37,10 +37,10 @@ module.exports = {
 
     try {
       app.listen(port, () => {
-        logger.info(`Server listen ${port} port`);
+        console.info(`Server listen ${port} port`);
       });
     } catch (err) {
-      logger.error(`An error occurred while start server: ${err.message}`);
+      console.error(`An error occurred while start server: ${err.message}`);
       process.exit(ExitCode.ERROR);
     }
   }

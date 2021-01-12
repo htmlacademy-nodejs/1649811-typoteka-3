@@ -2,6 +2,7 @@
 
 const express = require(`express`);
 const path = require(`path`);
+const dayjs = require(`dayjs`);
 
 const mainRouter = require(`./routes/main-routes`);
 const myRouter = require(`./routes/my-routes`);
@@ -14,6 +15,7 @@ const PUBLIC_DIR = `public`;
 const VIEWS_DIR = `templates`;
 
 const app = express();
+app.locals.dayjs = dayjs;
 
 app.use(`/`, mainRouter);
 app.use(`/my`, myRouter);

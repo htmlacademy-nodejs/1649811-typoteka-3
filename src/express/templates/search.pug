@@ -9,10 +9,16 @@ block content
       .search-page__wrapper
         h1 Поиск
         .search.search-page__form
-          form(action='#' method='get')
+          form(action='/search' method='get')
             label
-              input(type='text' placeholder='Что ищем?')
+              input(type='text' name=`q` placeholder='Что ищем?')
             button.search__button.button.button--transparent(type='submit') Найти
+
+        .search__result
+          each article in results
+            time.search__date(datetime=article.createdDate) #{dayjs(article.createdDate).format('DD.MM.YYYY, HH:mm')}
+            a.search__link(href=`/articles/${article.id}`)
+              | #{article.title}
 
 block scripts
   script(src='/js/search.js')

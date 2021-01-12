@@ -23,8 +23,19 @@ const getRandomDate = (startTime) => {
   return new Date(time);
 };
 
+const checkObjProp = (obj, prop) => {
+  return typeof obj === `object` && prop in obj;
+};
+
+const strDateToISO = (strDate) => {
+  const [d, m, y] = strDate.split(`.`);
+  return new Date(`${y}-${m}-${d}`).toISOString();
+};
+
 module.exports = {
   getRandomInt,
   getRandomDate,
   shuffle,
+  checkObjProp,
+  strDateToISO
 };

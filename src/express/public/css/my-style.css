@@ -1,0 +1,4 @@
+.preview__breadcrumbs{display: flex; flex-wrap: wrap}
+.new-publication__checkbox{display: flex;flex-wrap: wrap}
+.preview__background-image{border-style: none; display: block; max-width: 100%; height: inherit}
+.search-page__form{margin-bottom: 20px}

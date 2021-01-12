@@ -7,7 +7,7 @@ class SearchService {
 
   findAll(searchText) {
     return this._articles.filter((offer) =>
-      offer.title.includes(searchText)
+      offer.title.toLowerCase().includes(searchText.toLowerCase())
     );
   }
 }

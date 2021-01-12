@@ -37,6 +37,11 @@ const generateComments = (count, comments) => {
   }));
 };
 
+const generatePicture = () => {
+  const pictures = [`sea@1x.jpg`, `forest@1x.jpg`, `skyscraper@1x.jpg`];
+  return shuffle(pictures).pop();
+};
+
 const generateOffers = (count, titles, content, categories, comments) => (
   Array(count).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
@@ -46,6 +51,7 @@ const generateOffers = (count, titles, content, categories, comments) => (
     fullText: shuffle(content).slice(0, getRandomInt(1, content.length - 1)).join(` `),
     category: shuffle(categories).slice(0, getRandomInt(1, categories.length - 1)),
     comments: generateComments(getRandomInt(1, MAX_COMMENTS), comments),
+    picture: generatePicture(),
   }))
 );
 
