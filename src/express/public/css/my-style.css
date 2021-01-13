@@ -2,3 +2,31 @@
 .new-publication__checkbox{display: flex;flex-wrap: wrap}
 .preview__background-image{border-style: none; display: block; max-width: 100%; height: inherit}
 .search-page__form{margin-bottom: 20px}
+
+.button--edit-item{
+  width:30px;
+  height:30px;
+  border:0;
+  background: url(../img/icons/edit-btn.svg) no-repeat center;
+}
+.button--close-item:focus,.button--close-item:hover{background-color:green}
+
+.button--close-item:focus,.button--close-item:hover{background-color:darkred}
+
+.notes__button-edit{
+  position:absolute;
+  top:10px;
+  right:0;
+}
+.notes__button-delete{
+  position:absolute;
+  top:45px;
+  right:0;
+}
+.notes__item-text{
+  display: inline-block;
+  max-width: 95%;
+}
+.new-publication__date-block input {
+  width: 120px;
+}

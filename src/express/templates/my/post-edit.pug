@@ -1,34 +1,34 @@
-extends layout
+extends ../layout
 
 block header
-  include partials/admin-header
+  include header
 
 block content
   main
     section.modal.modal--flex
       .popup.popup--new-publication.popup--flex
         .new-publication
-          form(action=`/articles/add` method='POST' enctype='multipart/form-data')
+          form(action=`/articles/edit/${article.id}` method='POST' enctype='multipart/form-data')
             .new-publication__header
-              h1 Новая публикация
+              h1 Редактирование публикации
               .new-publication__date-form
                 h3 Дата публикации
                 .new-publication__date-form-division
                   .new-publication__date-block
                     label(for='new-publication-date' aria-label='Календарь')
-                    input#new-publication-date(type='text' name='login' placeholder=dayjs(article.createdDate).format('DD.MM.YYYY') value=article.createdDate)
+                    input#new-publication-date.publication-date(type='text' name='login' value=article.createdDate)
               button.new-publication__button.button.button--colored(type='submit') Опубликовать
-            button.popup__button.button.button--popup-close(type='button' aria-label='Закрыть окно')
+            a.popup__button.button.button--popup-close(href='/my' aria-label='Закрыть окно')
               | Закрыть
               | окно
             .new-publication__form.form
               .form__wrapper.form__wrapper--intro
                 .form__field
                   label
-                    input(type='text' placeholder='Заголовок' required='' value=article.title name='title')
+                    input(type='text' placeholder='Заголовок' required='' value=article.title name=`title`)
                 .form__field.form__field--post-image
                   label
-                    input#image-name-field(type='text' name='old-picture' value=`${article.picture}` placeholder='Фотография' readonly='')
+                    input#image-name-field(type='text' name=`old-picture` value=`${article.picture}` placeholder='Фотография' readonly='')
                   .form__image-loader.form__image-loader--publication
                     label
                       input.visually-hidden(type='file' name=`picture`)
@@ -44,16 +44,16 @@ block content
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
                   label
-                    textarea(rows='2' placeholder='Анонс публикации' name=`announce` required='')
+                    textarea(rows='2' placeholder='Анонс публикации' name=`announce`)
                       | #{article.announce}
                 .form__field.form__field--publication-text
                   label
-                    textarea(rows='5' placeholder='Полный текст публикации' name='full-text')
+                    textarea(rows='5' placeholder='Полный текст публикации' name=`full-text`)
                       | #{article.fullText}
       .modal__overlay
 
-block scripts
-  script(src='/js/vendor.js')
-  script(src='/js/main.js')
-  script(src='/js/temp.js')
 
+
+block scripts
+  script(src='/js/vendor-flatpickr.js')
+  script(src='/js/main.js')

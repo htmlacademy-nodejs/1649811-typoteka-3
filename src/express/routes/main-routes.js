@@ -14,13 +14,19 @@ router.get(`/register`, (req, res) => res.render(`sign-up`));
 router.get(`/login`, (req, res) => res.render(`login`));
 
 router.get(`/search`, async (req, res) => {
+  const {q} = req.query;
+
+  if (!q) {
+    res.render(`main/search`, {results: []});
+    return;
+  }
+
   try {
-    const {q} = req.query;
     const results = await api.search(q);
-    res.render(`search`, {results});
+    res.render(`main/search`, {results});
   } catch (error) {
     console.error(error.message);
-    res.render(`search`, {results: []});
+    res.render(`main/search`, {results: []});
   }
 
 });

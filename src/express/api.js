@@ -11,7 +11,7 @@ class API {
   constructor(baseURL, timeout) {
     this._http = axios.create({
       baseURL,
-      timeout
+      timeout,
     });
   }
 
@@ -34,14 +34,20 @@ class API {
   async createArticle(data) {
     return this._load(`/articles`, {
       method: `POST`,
-      data
+      data,
     });
   }
 
   async editArticle(id, data) {
     return this._load(`/articles/${id}`, {
       method: `PUT`,
-      data
+      data,
+    });
+  }
+
+  async deleteArticle(id) {
+    return this._load(`/articles/${id}`, {
+      method: `DELETE`,
     });
   }
 
