@@ -14,15 +14,15 @@ router.get(`/register`, (req, res) => res.render(`sign-up`));
 router.get(`/login`, (req, res) => res.render(`login`));
 
 router.get(`/search`, async (req, res) => {
-  const {q} = req.query;
+  const {query} = req.query;
 
-  if (!q) {
+  if (!query) {
     res.render(`main/search`, {results: []});
     return;
   }
 
   try {
-    const results = await api.search(q);
+    const results = await api.search(query);
     res.render(`main/search`, {results});
   } catch (error) {
     console.error(error.message);
