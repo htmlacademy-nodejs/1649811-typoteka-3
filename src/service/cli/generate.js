@@ -32,8 +32,8 @@ const generateComments = (count, comments) => {
   return Array(count).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
     text: shuffle(comments)
-        .slice(0, getRandomInt(1, 3))
-        .join(` `),
+      .slice(0, getRandomInt(1, 3))
+      .join(` `),
   }));
 };
 
@@ -42,7 +42,7 @@ const generatePicture = () => {
   return shuffle(pictures).pop();
 };
 
-const generateOffers = (count, titles, content, categories, comments) => (
+const generateArticles = (count, titles, content, categories, comments) => (
   Array(count).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
@@ -67,7 +67,8 @@ module.exports = {
     const content = await readFile(FILE_SENTENCES);
     const categories = await readFile(FILE_CATEGORIES);
     const comments = await readFile(FILE_COMMENTS);
-    const data = JSON.stringify(generateOffers(count, titles, content, categories, comments));
+
+    const data = JSON.stringify(generateArticles(count, titles, content, categories, comments));
     try {
       await fs.writeFile(FILE_OUTPUT, data);
       console.log(chalk.green(`Данные успешно записаны.`));
@@ -75,5 +76,5 @@ module.exports = {
       console.error(chalk.red(err));
       process.exit(ExitCode.ERROR);
     }
-  }
+  },
 };
