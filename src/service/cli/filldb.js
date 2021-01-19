@@ -17,6 +17,7 @@ const MAX_COMMENTS = 6;
 const DATE_DIFF_MONTH = -3;
 const ARTICLES_COUNT = 3;
 const MIN_USERS_COUNT = 2;
+const PICTURES = [`sea@1x.jpg`, `forest@1x.jpg`, `skyscraper@1x.jpg`];
 
 const readFile = async (filePath) => {
   try {
@@ -35,8 +36,7 @@ const getCreatedDate = (diffMonth) => {
 };
 
 const generatePicture = () => {
-  const pictures = [`sea@1x.jpg`, `forest@1x.jpg`, `skyscraper@1x.jpg`];
-  return shuffle(pictures).pop();
+  return shuffle(PICTURES).pop();
 };
 
 const generateArticles = (count, titles, content, maxUserId) => {
@@ -73,8 +73,8 @@ const generateComments = (comments, articlesCount, usersCount) => {
   const users = shuffle(Array.from({length: usersCount}, (_, i) => i + 1))
     .slice(0, getRandomInt(2, usersCount));
 
-  users.forEach((userId) => {
-    for (let i = 1; i <= articlesCount; i++) {
+  for (let i = 1; i <= articlesCount; i++) {
+    users.forEach((userId) => {
       const countComments = getRandomInt(1, MAX_COMMENTS);
 
       for (let j = 0; j < countComments; j++) {
@@ -84,8 +84,8 @@ const generateComments = (comments, articlesCount, usersCount) => {
         const entry = `\t(DEFAULT, '${text}', '${createdAt}', ${userId}, ${i})`;
         values.push(entry);
       }
-    }
-  });
+    });
+  }
 
   return values.join(`,\n`);
 };
@@ -122,7 +122,7 @@ module.exports = {
     const comments = await readFile(FILE_COMMENT);
     const users = await readFile(FILE_USER);
 
-    const countArticles = Number.parseInt(arg, 10) || ARTICLES_COUNT;
+    const countArticles = Math.min(Number.parseInt(arg, 10) || ARTICLES_COUNT, titles.length);
     const countUsers = getRandomInt(MIN_USERS_COUNT, users.length);
 
     const categoriesValues = generateCategories(categories);
