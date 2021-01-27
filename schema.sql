@@ -25,9 +25,9 @@ CREATE TABLE articles
 (
     id         SERIAL PRIMARY KEY,
     title      VARCHAR(250) NOT NULL UNIQUE,
+    picture    VARCHAR(50) DEFAULT NULL,
     announce   VARCHAR(250) NOT NULL,
     full_text  TEXT        DEFAULT NULL,
-    picture    VARCHAR(50) DEFAULT NULL,
     created_at TIMESTAMP    NOT NULL,
     user_id    INTEGER      NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users (id)
