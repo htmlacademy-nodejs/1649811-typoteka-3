@@ -1,43 +1,70 @@
 'use strict';
 
-const {nanoid} = require(`nanoid`);
-const {MAX_ID_LENGTH} = require(`../../constants`);
+const Alias = require(`../model/alias`);
 
 class ArticleService {
-  constructor(articles) {
-    this._articles = articles;
+  constructor(sequelize) {
+    this._Article = sequelize.models.Article;
+    this._Comment = sequelize.models.Comment;
   }
 
-  create(article) {
-    const newArticle = Object
-      .assign({id: nanoid(MAX_ID_LENGTH), comments: []}, article);
+  async create(articleData) {
+    const article = await this._Article.create(articleData);
+    await article.addCategories(articleData.categories);
 
-    this._articles.push(newArticle);
-    return newArticle;
-  }
-
-  drop(id) {
-    const article = this._articles.find((item) => item.id === id);
-    if (article === null) {
-      return null;
-    }
-
-    this._articles = this._articles.filter((item) => item.id !== id);
     return article;
   }
 
-  findAll() {
-    return this._articles;
+  async drop(id) {
+    const deletedRows = await this._Article.destroy({
+      where: {id}
+    });
+
+    return !!deletedRows;
   }
 
-  findOne(id) {
-    return this._articles.find((item) => item.id === id);
+  async findAll(needComments = false) {
+    const include = [Alias.CATEGORIES];
+
+    if (needComments) {
+      include.push(Alias.COMMENTS);
+    }
+
+    return await this._Article.findAll({include});
   }
 
-  update(id, article) {
-    const oldArticle = this._articles.find((item) => item.id === id);
+  async findOne(id, needComments = false) {
+    const include = [Alias.CATEGORIES];
 
-    return Object.assign(oldArticle, article);
+    if (needComments) {
+
+      const comments = {
+        model: this._Comment,
+        as: Alias.COMMENTS,
+        include: [Alias.USER],
+      };
+
+      include.push(comments);
+    }
+
+    return await this._Article.findByPk(id, {include});
+  }
+
+  async update(id, article) {
+
+    try {
+      const articleModel = await this._Article.findByPk(id);
+
+      await articleModel.update(article);
+
+      await articleModel.setCategories(article.categories);
+
+      return true;
+
+    } catch (err) {
+
+      return false;
+    }
   }
 }
 

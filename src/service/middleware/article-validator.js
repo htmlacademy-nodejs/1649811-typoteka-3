@@ -2,6 +2,6 @@
 
 const baseValidator = require(`./base-validator`);
 
-const articleKeys = [`title`, `createdDate`, `category`, `announce`];
+const articleKeys = [`title`, `categories`, `announce`, `userId`];
 
 module.exports = baseValidator(articleKeys);

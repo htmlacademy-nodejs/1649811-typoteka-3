@@ -1,5 +1,7 @@
 'use strict';
 
+const fs = require(`fs`).promises;
+
 const getRandomInt = (min, max) => {
   min = Math.ceil(min);
   max = Math.floor(max);
@@ -27,9 +29,15 @@ const checkObjProp = (obj, prop) => {
   return typeof obj === `object` && prop in obj;
 };
 
+const readFile = async (filePath) => {
+  const content = await fs.readFile(filePath, `utf8`);
+  return content.trim().split(`\n`);
+};
+
 module.exports = {
   getRandomInt,
   getRandomDate,
   shuffle,
-  checkObjProp
+  checkObjProp,
+  readFile
 };

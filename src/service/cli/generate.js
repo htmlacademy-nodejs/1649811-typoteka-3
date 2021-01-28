@@ -2,7 +2,7 @@
 const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
 const {nanoid} = require(`nanoid`);
-const {getRandomInt, getRandomDate, shuffle} = require(`../../utils`);
+const {getRandomInt, getRandomDate, shuffle, readFile} = require(`../../utils`);
 const {ExitCode, MAX_ID_LENGTH} = require(`../../constants`);
 
 const FILE_OUTPUT = `${__dirname}/../../../mocks.json`;
@@ -21,11 +21,6 @@ const getCreatedDate = (diffMonth) => {
   const diffDate = new Date();
   diffDate.setMonth(diffDate.getMonth() + diffMonth);
   return getRandomDate(diffDate.getTime());
-};
-
-const readFile = async (filePath) => {
-  const content = await fs.readFile(filePath, `utf8`);
-  return content.trim().split(`\n`);
 };
 
 const generateComments = (count, comments) => {

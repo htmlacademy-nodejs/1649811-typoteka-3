@@ -6,7 +6,7 @@ const {HttpCode} = require(`../../constants`);
 module.exports = (app, service) => {
   const router = new express.Router();
 
-  router.get(`/`, (req, res) => {
+  router.get(`/`, async (req, res) => {
     const {query = ``} = req.query;
 
     if (!query) {
@@ -14,7 +14,7 @@ module.exports = (app, service) => {
       return;
     }
 
-    const searchResults = service.findAll(query);
+    const searchResults = await service.findAll(query);
     const searchStatus = searchResults.length > 0
       ? HttpCode.OK
       : HttpCode.NOT_FOUND;

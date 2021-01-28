@@ -53,7 +53,6 @@ const define = (sequelize) => {
     through: ArticleCategory,
     foreignKey: `categoryId`,
   });
-  // Category.hasMany(OfferCategory, {as: Alias.OFFER_CATEGORIES});
 
   Article.hasMany(Comment, {
     as: Alias.COMMENTS,
@@ -61,7 +60,7 @@ const define = (sequelize) => {
     onDelete: `CASCADE`,
     onUpdate: `CASCADE`,
   });
-  Comment.belongsToMany(Article, {
+  Comment.belongsTo(Article, {
     foreignKey: `articleId`,
   });
 

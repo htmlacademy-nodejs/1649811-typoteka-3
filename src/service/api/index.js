@@ -4,7 +4,7 @@ const express = require(`express`);
 const category = require(`./category`);
 const article = require(`./article`);
 const search = require(`./search`);
-const getMockData = require(`../lib/get-mock-data`);
+
 const {
   CategoryService,
   ArticleService,
@@ -12,14 +12,17 @@ const {
   SearchService
 } = require(`../data-service`);
 
+const sequelize = require(`../lib/sequelize`);
+const defineModels = require(`../model`);
+
 const app = new express.Router();
 
-(async () => {
-  const articles = await getMockData();
+defineModels(sequelize);
 
-  category(app, new CategoryService(articles));
-  article(app, new ArticleService(articles), new CommentService());
-  search(app, new SearchService(articles));
+(() => {
+  category(app, new CategoryService(sequelize));
+  article(app, new ArticleService(sequelize), new CommentService(sequelize));
+  search(app, new SearchService(sequelize));
 
 })();
 
