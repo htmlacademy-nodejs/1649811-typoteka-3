@@ -45,6 +45,7 @@ router.get(`/category/:id`, async (req, res) => {
   res.render(`article/by-category`, {category});
 });
 
+
 router.get(`/add`, async (req, res) => {
   const newArticle = Object.assign({}, emptyArticle);
   newArticle.createdDate = new Date();
