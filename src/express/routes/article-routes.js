@@ -16,10 +16,10 @@ const PUBLIC_IMG_DIR = `../public/img`;
 
 const emptyArticle = {
   title: ``,
-  createdDate: ``,
+  createdAt: new Date().toISOString(),
   announce: ``,
   fullText: ``,
-  category: [],
+  categories: [],
   picture: ``,
 };
 
@@ -38,7 +38,12 @@ const upload = multer({storage});
 
 const router = new express.Router();
 
-router.get(`/category/:id`, (req, res) => res.render(`articles-by-category`));
+router.get(`/category/:id`, async (req, res) => {
+  const {id} = req.params;
+  const category = await api.getCategoryArticles(id);
+
+  res.render(`article/by-category`, {category});
+});
 
 router.get(`/add`, async (req, res) => {
   const newArticle = Object.assign({}, emptyArticle);
@@ -56,11 +61,13 @@ router.post(`/add`, upload.single(`picture`), async (req, res) => {
 
   const articleData = {
     title: body.title,
-    createdDate: dayjs(body.login, `DD.MM.YYYY HH:mm`),
+    createdAt: dayjs(body.login, `DD.MM.YYYY HH:mm`).format(),
     announce: body.announce,
     fullText: body[`full-text`],
-    category: checkObjProp(body, `categories`) ? body.categories : [],
-    picture: isPictureExist ? file.filename : body[`old-picture`]
+    categories: body.categories,
+    picture: isPictureExist ? file.filename : body[`old-picture`],
+    // temp
+    userId: 1
   };
 
   try {
@@ -101,11 +108,13 @@ router.post(`/edit/:id`, upload.single(`picture`), async (req, res) => {
 
   const articleData = {
     title: body.title,
-    createdDate: dayjs(body.login, `DD.MM.YYYY HH:mm`),
+    createdAt: dayjs(body.login, `DD.MM.YYYY HH:mm`).format(),
     announce: body.announce,
     fullText: body[`full-text`],
-    category: body.categories,
+    categories: body.categories,
     picture: isNewImage ? file.filename : body[`old-picture`],
+    // temp
+    userId: 1
   };
 
   try {
@@ -123,13 +132,14 @@ router.post(`/edit/:id`, upload.single(`picture`), async (req, res) => {
     console.error(error.message);
 
     const categories = await api.getCategories();
+    articleData.id = id;
     res.render(`my/post-edit`, {article: articleData, categories});
   }
 });
 
 router.get(`/:id`, async (req, res) => {
   const {id} = req.params;
-  const article = await api.getArticle(id);
+  const article = await api.getArticle(id, true);
 
   res.render(`article/post`, {article});
 });
@@ -138,13 +148,11 @@ router.get(`/delete/:id`, async (req, res) => {
   const {id} = req.params;
   try {
     await api.deleteArticle(id);
-    const articles = await api.getArticles();
-
-    res.render(`my`, {articles});
   } catch (error) {
     console.log(error.message);
-    res.redirect(`my`);
   }
+
+  res.redirect(`/my`);
 });
 
 module.exports = router;

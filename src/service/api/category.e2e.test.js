@@ -24,25 +24,30 @@ const mockComments = [
   `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Совсем немного...`,
 ];
 
-const mockDb = new Sequelize(`sqlite::memory:`, {logging: false});
-const app = express();
-app.use(express.json());
 
-beforeAll(async () => {
-  await initDb(mockDb, {
-    categories: mockCategories,
-    users: mockUsers,
-    articles: mockArticles,
-    comments: mockComments,
+const createAPI = async () => {
+  const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
+
+  await initDb(mockDB, {
+    categories: [...mockCategories],
+    users: [...mockUsers],
+    articles: mockArticles.map((item) => Object.assign({}, item)),
+    comments: [...mockComments],
   });
 
-  category(app, new DataService(mockDb));
-});
+  const app = express();
+  app.use(express.json());
+
+  category(app, new DataService(mockDB));
+
+  return app;
+};
 
 describe(`API returns category list`, () => {
   let response;
 
   beforeAll(async () => {
+    const app = await createAPI();
     response = await request(app).get(`/categories`);
   });
 
@@ -61,6 +66,7 @@ describe(`API returns category list with count articles`, () => {
   let response;
 
   beforeAll(async () => {
+    const app = await createAPI();
     response = await request(app).get(`/categories?count=true`);
   });
 
@@ -69,8 +75,58 @@ describe(`API returns category list with count articles`, () => {
   test(`Return list of 5`, () => expect(response.body.length).toBe(5));
 
   test(`Each category has 1 article`, () =>
-    response.body.forEach((item) => expect(item.count).toBe(1))
+    response.body.forEach((item) => expect(item.count).toBe(1)),
   );
 
+});
+
+describe(`API created an category if data is valid`, () => {
+  let response;
+
+  const newCategory = {
+    title: `Test new category`,
+  };
+
+  beforeAll(async () => {
+    const app = await createAPI();
+    response = await request(app).post(`/categories`).send(newCategory);
+  });
+
+  test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
+
+  test(`Returns category created with title "Test category"`, () =>
+    expect(response.body.title).toBe(`Test new category`));
+});
+
+describe(`API update an category if data is valid`, () => {
+  let response;
+
+  const categoryData = {
+    title: `Test update category`,
+  };
+
+  beforeAll(async () => {
+    const app = await createAPI();
+    response = await request(app).put(`/categories/1`).send(categoryData);
+  });
+
+  test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+  test(`Returns response with data eq "true"`, () =>
+    expect(response.body).toBe(true));
+});
+
+describe(`API correctly delete an category`, () => {
+  let response;
+
+  beforeAll(async () => {
+    const app = await createAPI();
+    response = await request(app).delete(`/categories/1`);
+  });
+
+  test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+  test(`Returns response with data eq "true"`, () =>
+    expect(response.body).toBe(true));
 });
 

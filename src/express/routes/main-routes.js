@@ -6,8 +6,16 @@ const api = require(`../api`).getApi();
 const router = new express.Router();
 
 router.get(`/`, async (req, res) => {
-  const articles = await api.getArticles();
-  res.render(`main`, {articles});
+
+  const [
+    articles,
+    categories,
+  ] = await Promise.all([
+    api.getArticles(),
+    api.getCategories(true),
+  ]);
+
+  res.render(`main`, {articles, categories});
 });
 
 router.get(`/register`, (req, res) => res.render(`sign-up`));

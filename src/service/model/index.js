@@ -41,6 +41,7 @@ const define = (sequelize) => {
   ArticleCategory.init({}, {
     sequelize,
     tableName: `articles_categories`,
+    timestamps: false,
   });
 
   Article.belongsToMany(Category, {

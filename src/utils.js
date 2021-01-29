@@ -34,10 +34,17 @@ const readFile = async (filePath) => {
   return content.trim().split(`\n`);
 };
 
+const generateCreatedDate = (diffMonth) => {
+  const diffDate = new Date();
+  diffDate.setMonth(diffDate.getMonth() + diffMonth);
+  return getRandomDate(diffDate.getTime());
+};
+
 module.exports = {
   getRandomInt,
   getRandomDate,
   shuffle,
   checkObjProp,
-  readFile
+  readFile,
+  generateCreatedDate,
 };

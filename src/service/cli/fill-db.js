@@ -2,7 +2,7 @@
 
 const path = require(`path`);
 const {ExitCode} = require(`../../constants`);
-const {getRandomInt, shuffle, readFile} = require(`../../utils`);
+const {getRandomInt, shuffle, readFile, generateCreatedDate} = require(`../../utils`);
 const sequelize = require(`../lib/sequelize`);
 const initDb = require(`../lib/init-db`);
 
@@ -14,23 +14,22 @@ const FILE_USERS = path.resolve(__dirname, `../../../data/users.txt`);
 
 const ARTICLES_COUNT = 5;
 const MAX_ANNOUNCE_COUNT = 5;
+const DIFF_MONTH = -3;
 
-const pictures = [`sea@1x.jpg`, `forest@1x.jpg`, `skyscraper@1x.jpg`];
+const pictures = [`sea@2x.jpg`, `forest@2x.jpg`, `skyscraper@2x.jpg`];
 
-const generatePicture = () => {
-  return shuffle(pictures).pop();
+const generateArticles = (count, titles, content) => {
+
+  return Array.from({length: count}, (_, i) => ({
+    title: titles[i],
+    createdAt: generateCreatedDate(DIFF_MONTH),
+    announce: shuffle(content).slice(0, getRandomInt(2, MAX_ANNOUNCE_COUNT)).join(` `).slice(0, 250),
+    fullText: shuffle(content).slice(0, getRandomInt(1, content.length)).join(` `),
+    picture: pictures[getRandomInt(0, pictures.length - 1)],
+  }),
+  );
 };
 
-const generateArticles = (count, titles, content) => (
-  Array.from({length: count}, (_, i) => (
-    {
-      title: titles[i],
-      announce: shuffle(content).slice(0, getRandomInt(2, MAX_ANNOUNCE_COUNT)).join(` `).slice(0, 250),
-      fullText: shuffle(content).slice(0, getRandomInt(1, content.length)).join(` `),
-      picture: generatePicture(),
-    }
-  ))
-);
 
 module.exports = {
   name: `--filldb`,
@@ -59,5 +58,5 @@ module.exports = {
       console.error(err.message);
       process.exit(ExitCode.ERROR);
     }
-  }
+  },
 };

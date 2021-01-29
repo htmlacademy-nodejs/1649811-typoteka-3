@@ -10,7 +10,7 @@ block content
       ul.notes__list
         each article in articles
           li.notes__list-item
-            time.notes__item-time(datetime=article.createdDate) #{dayjs(article.createdDate).format('DD.MM.YYYY, HH:mm')}
+            time.notes__item-time(datetime=article.createdAt) #{dayjs(article.createdAt).format('DD.MM.YYYY, HH:mm')}
             a.notes__item-text(href=`/articles/${article.id}`) #{article.announce}
             a.notes__button-edit.button.button--edit-item(href=`/articles/edit/${article.id}` title=`Редактировать`)
             a.notes__button-delete.button.button--close-item(href=`/articles/delete/${article.id}` title=`Удалить`)

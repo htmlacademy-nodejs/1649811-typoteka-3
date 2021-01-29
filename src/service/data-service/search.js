@@ -13,7 +13,7 @@ class SearchService {
     return await this._Article.findAll({
       where: {
         title: {
-          [Op.substring]: searchText,
+          [Op.like]: `%${searchText}%`,
         },
       },
       include: Alias.CATEGORIES,

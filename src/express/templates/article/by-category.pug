@@ -1,0 +1,32 @@
+extends ../layout
+
+block content
+
+  include header
+
+  main.articles-category
+    h1 #{category.title}
+
+    section.articles-category__list.preview
+      h2.visually-hidden Список превью статей
+      ul.preview__list
+        each article in category.articles
+          li.preview__item
+            ul.preview__breadcrumbs
+              +categoriesList(article.categories)
+            .preview__background
+              img.preview__background-image(src=`/img/${article.picture}` width='460' height='240'  alt=`${article.title}`)
+            time.preview__time(datetime=`${article.createdAt}`) #{formatDate(article.createdAt)}
+            h3.preview__name
+              a.preview__name-link(href=`/articles/${article.id}`) #{article.title}
+            p.preview__text
+              | #{article.announce}
+            a.preview__comment(href=`/articles/${article.id}/comments`)
+              | Комментарии
+              span.preview__cloud
+              b.preview__comment-count #{article.comments.length}
+
+
+block scripts
+  //script(src='/js/vendor.js')
+  //script(src='/js/main.js')

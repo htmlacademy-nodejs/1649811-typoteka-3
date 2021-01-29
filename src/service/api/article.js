@@ -10,8 +10,8 @@ module.exports = (app, articleService, commentService) => {
   const router = new express.Router();
 
   router.get(`/`, async (req, res) => {
-    const {comments} = req.query;
-    const articles = await articleService.findAll(comments);
+    const {comments, userId} = req.query;
+    const articles = await articleService.findAll(comments, userId);
 
     if (!articles) {
       return res.status(HttpCode.NOT_FOUND)
@@ -36,6 +36,10 @@ module.exports = (app, articleService, commentService) => {
 
   router.post(`/`, articleValidator, async (req, res) => {
     const article = await articleService.create(req.body);
+
+    if (!article) {
+      return res.status(HttpCode.BAD_REQUEST).send(`Wrong data`);
+    }
 
     return res.status(HttpCode.CREATED).json(article);
   });
@@ -91,6 +95,16 @@ module.exports = (app, articleService, commentService) => {
     return res.status(HttpCode.OK).json(isDeleted);
   });
 
+  router.get(`/category/:id`, async (req, res) => {
+    const {id} = req.params;
+    const articles = await articleService.findAllByCategory(id);
+
+    if (!articles) {
+      return res.status(HttpCode.NOT_FOUND).send(`Not found articles`);
+    }
+
+    return res.status(HttpCode.OK).json(articles);
+  });
 
   app.use(`/articles`, router);
 };

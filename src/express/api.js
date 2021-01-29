@@ -15,16 +15,21 @@ class API {
     });
   }
 
-  async getArticles() {
-    return this._load(`/articles`);
+  async getArticles(userId = null) {
+    const url = userId ? `/articles?comments=true&userId=${userId}` : `/articles?comments=true`;
+    return this._load(url);
   }
 
-  async getArticle(id) {
-    return this._load(`/articles/${id}`);
+  async getArticle(id, comments) {
+    return this._load(`/articles/${id}`, {params: {comments}});
   }
 
-  async getCategories() {
-    return this._load(`/categories`);
+  async getCategoryArticles(id) {
+    return this._load(`/articles/category/${id}`);
+  }
+
+  async getCategories(count) {
+    return this._load(`/categories`, {params: {count}});
   }
 
   async search(query) {
@@ -47,6 +52,32 @@ class API {
 
   async deleteArticle(id) {
     return this._load(`/articles/${id}`, {
+      method: `DELETE`,
+    });
+  }
+
+  async deleteComment(id, articleId) {
+    return this._load(`/articles/${articleId}/comments/${id}`, {
+      method: `DELETE`,
+    });
+  }
+
+  async createCategory(data) {
+    return this._load(`/categories`, {
+      method: `POST`,
+      data,
+    });
+  }
+
+  async updateCategory(id, data) {
+    return this._load(`/categories/${id}`, {
+      method: `PUT`,
+      data,
+    });
+  }
+
+  async deleteCategory(id) {
+    return this._load(`/categories/${id}`, {
       method: `DELETE`,
     });
   }

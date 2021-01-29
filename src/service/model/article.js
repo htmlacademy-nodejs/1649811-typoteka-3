@@ -12,7 +12,7 @@ const define = (sequelize) => {
     title: {
       type: DataTypes.STRING,
       allowNull: false,
-      unique: true
+      unique: true,
     },
     picture: {
       type: DataTypes.STRING,
@@ -23,15 +23,15 @@ const define = (sequelize) => {
       allowNull: false,
       validate: {
         len: [30, 250],
-      }
+      },
     },
     fullText: {
       type: DataTypes.TEXT,
       defaultValue: null,
       validate: {
         max: 1000,
-      }
-    }
+      },
+    },
   }, {
     sequelize,
     modelName: `Article`,

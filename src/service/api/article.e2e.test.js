@@ -89,9 +89,6 @@ describe(`API return a list of all articles`, () => {
   test(`Returns a list of 5 articles`, () =>
     expect(response.body.length).toBe(5));
 
-  test(`Last article title equals "Собака Баскервилей"`, () =>
-    expect(response.body[4].title).toEqual(`Собака Баскервилей`));
-
 });
 
 describe(`API return a list of all articles with comments`, () => {

@@ -14,12 +14,15 @@ block content
               .publication__header
                 img.publication__list-image(src='/img/avatar-small-2.png' width='20' height='20' alt='Аватар пользователя')
                 b.publication__list-name Александр Петров
-                time.publication__item-time(datetime=article.createdDate) #{dayjs(article.createdDate).format('DD.MM.YYYY, HH:mm')}
-              a.publication__item-text(href=`/articles/${article.id}`)
-                | #{article.title}
-              p.publication__text-strong
+                time.publication__item-time(datetime=comment.createdAt) #{dayjs(comment.createdAt).format('DD.MM.YYYY, HH:mm')}
+
+              p.publication__item-text
                 | #{comment.text}
-              button.publication__button.button.button--close-item(type='button')
+              p
+                a.publication__text-strong(href=`/articles/${article.id}`)
+                  | #{article.title}
+
+              a.publication__button.button.button--close-item(href=`/my/comments/delete/${comment.id}?articleId=${article.id}`)
                 span.visually-hidden Закрыть строку списка
 
 block scripts

@@ -1,9 +1,10 @@
 'use strict';
 
 const defineModels = require(`../model`);
-const {shuffle, getRandomInt} = require(`../../utils`);
+const {shuffle, getRandomInt, generateCreatedDate} = require(`../../utils`);
 
 const MAX_COMMENTS = 5;
+const DIFF_MONTH = 2;
 
 module.exports = async (sequelize, {categories, users, articles, comments}, isRandom = false) => {
 
@@ -12,7 +13,7 @@ module.exports = async (sequelize, {categories, users, articles, comments}, isRa
   await sequelize.sync({force: true});
 
   const categoryModels = await Category.bulkCreate(
-      categories.map((title) => ({title}))
+      categories.map((title) => ({title})),
   );
 
   const userModels = await User.bulkCreate(
@@ -23,7 +24,7 @@ module.exports = async (sequelize, {categories, users, articles, comments}, isRa
           lastname,
           email,
           password,
-          avatar: `avatar-${index + 1}.jpg`,
+          avatar: `avatar-${index + 1}.png`,
         };
       }),
   );
@@ -50,7 +51,10 @@ module.exports = async (sequelize, {categories, users, articles, comments}, isRa
     const articleCommentsPromises = articleComments.map(async (text) => {
       const commentUser = userModels[getRandomInt(0, userModels.length - 1)];
 
-      const commentModel = await Comment.create({text});
+      const commentModel = await Comment.create({
+        text,
+        createdAt: generateCreatedDate(DIFF_MONTH),
+      });
       await commentModel.setUser(commentUser);
       await commentModel.setArticle(articleModel);
     });

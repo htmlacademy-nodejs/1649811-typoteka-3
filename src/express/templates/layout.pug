@@ -12,16 +12,20 @@ html(lang='ru')
     link(rel='stylesheet' href='/css/my-style.css')
   body
     .wrapper
+      -
+        const formatDate = (dateString) => {
+          return dayjs(dateString).format('DD.MM.YYYY, HH:mm')
+        }
 
       mixin categoriesList(categories)
         each category in categories
           li.preview__breadcrumbs-item
-            a.preview__breadcrumbs-link(href='#') #{category}
+            a.preview__breadcrumbs-link(href=`/articles/category/${category.id}`) #{category.title}
 
       block header
 
       block content
 
-      include footer
+      include partials/footer
 
     block scripts
