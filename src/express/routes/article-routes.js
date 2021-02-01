@@ -7,6 +7,7 @@ const {nanoid} = require(`nanoid`);
 const multer = require(`multer`);
 const customParseFormat = require(`dayjs/plugin/customParseFormat`);
 const {checkObjProp} = require(`../../utils`);
+const {calculatePagination, getTotalPages} = require(`../../utils`);
 
 const dayjs = require(`dayjs`).extend(customParseFormat);
 const api = require(`../api`).getApi();
@@ -21,6 +22,25 @@ const emptyArticle = {
   fullText: ``,
   categories: [],
   picture: ``,
+};
+
+const getRequestData = (request) => {
+  const {body, file} = request;
+
+  const isPictureExist = checkObjProp(file, `filename`);
+
+  const articleData = {
+    title: body.title,
+    createdAt: dayjs(body.login, `DD.MM.YYYY HH:mm`).format(),
+    announce: body.announce,
+    fullText: body[`full-text`],
+    categories: body.categories,
+    picture: isPictureExist ? file.filename : body[`old-picture`],
+    // temp
+    userId: 1,
+  };
+
+  return [isPictureExist, articleData];
 };
 
 const absoluteUploadDir = path.resolve(__dirname, UPLOAD_DIR);
@@ -40,9 +60,17 @@ const router = new express.Router();
 
 router.get(`/category/:id`, async (req, res) => {
   const {id} = req.params;
-  const category = await api.getCategoryArticles(id);
 
-  res.render(`article/by-category`, {category});
+  const [page, limit, offset] = calculatePagination(req.query);
+
+  const [{count, articles}, category] = await Promise.all([
+    await api.getCategoryArticles(id, {limit, offset}),
+    await api.getCategory(id),
+  ]);
+
+  const totalPages = getTotalPages(count);
+
+  res.render(`article/by-category`, {category, articles, page, totalPages});
 });
 
 
@@ -56,20 +84,8 @@ router.get(`/add`, async (req, res) => {
 });
 
 router.post(`/add`, upload.single(`picture`), async (req, res) => {
-  const {body, file} = req;
 
-  const isPictureExist = checkObjProp(file, `filename`);
-
-  const articleData = {
-    title: body.title,
-    createdAt: dayjs(body.login, `DD.MM.YYYY HH:mm`).format(),
-    announce: body.announce,
-    fullText: body[`full-text`],
-    categories: body.categories,
-    picture: isPictureExist ? file.filename : body[`old-picture`],
-    // temp
-    userId: 1
-  };
+  const [isPictureExist, articleData] = getRequestData(req);
 
   try {
     await api.createArticle(articleData);
@@ -103,20 +119,7 @@ router.get(`/edit/:id`, async (req, res) => {
 
 router.post(`/edit/:id`, upload.single(`picture`), async (req, res) => {
   const {id} = req.params;
-  const {body, file} = req;
-
-  const isNewImage = checkObjProp(file, `filename`);
-
-  const articleData = {
-    title: body.title,
-    createdAt: dayjs(body.login, `DD.MM.YYYY HH:mm`).format(),
-    announce: body.announce,
-    fullText: body[`full-text`],
-    categories: body.categories,
-    picture: isNewImage ? file.filename : body[`old-picture`],
-    // temp
-    userId: 1
-  };
+  const [isNewImage, articleData] = getRequestData(req);
 
   try {
     await api.editArticle(id, articleData);

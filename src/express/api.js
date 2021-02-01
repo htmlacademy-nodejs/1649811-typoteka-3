@@ -15,17 +15,20 @@ class API {
     });
   }
 
-  async getArticles(userId = null) {
-    const url = userId ? `/articles?comments=true&userId=${userId}` : `/articles?comments=true`;
-    return this._load(url);
+  async getArticles({limit, offset, userId, comments} = {}) {
+    return this._load(`/articles`, {params: {limit, offset, userId, comments}});
   }
 
   async getArticle(id, comments) {
     return this._load(`/articles/${id}`, {params: {comments}});
   }
 
-  async getCategoryArticles(id) {
-    return this._load(`/articles/category/${id}`);
+  async getCategoryArticles(id, {limit, offset} = {}) {
+    return this._load(`/articles/category/${id}`, {params: {limit, offset}});
+  }
+
+  async getCategory(id) {
+    return this._load(`/categories/${id}`);
   }
 
   async getCategories(count) {

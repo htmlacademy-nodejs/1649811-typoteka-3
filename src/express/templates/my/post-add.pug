@@ -16,7 +16,7 @@ block content
                 .new-publication__date-form-division
                   .new-publication__date-block
                     label(for='new-publication-date' aria-label='Календарь')
-                    input#new-publication-date.publication-date(type='text' name='login' value=article.createdDate)
+                    input#new-publication-date.publication-date(type='text' name='login' value=article.createdAt)
               button.new-publication__button.button.button--colored(type='submit') Опубликовать
             a.popup__button.button.button--popup-close(href='/my' aria-label='Закрыть окно')
               | Закрыть
@@ -37,7 +37,7 @@ block content
 
                 .new-publication__checkbox.new-publication__checkbox--auto
                   each category in categories
-                    input(type='checkbox' id=category.id name=`categories[]` value=category.id checked=article.categories.some(item => item.id === category.id))
+                    input(type='checkbox' id=category.id name=`categories[]` value=category.id checked=article.categories.some(item => +item === +category.id))
                     label(for=category.id) #{category.title}
 
                 a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию

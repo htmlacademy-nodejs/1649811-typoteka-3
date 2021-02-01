@@ -30,3 +30,6 @@
 .new-publication__date-block input {
   width: 120px;
 }
+.preview__toggle-wrapper {
+ width: auto;
+}

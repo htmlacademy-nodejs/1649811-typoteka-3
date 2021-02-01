@@ -62,6 +62,13 @@ describe(`API returns category list`, () => {
 
 });
 
+test(`API return category with given id`, async () => {
+  const app = await createAPI();
+
+  return request(app).get(`/categories/1`)
+    .expect(HttpCode.OK);
+});
+
 describe(`API returns category list with count articles`, () => {
   let response;
 

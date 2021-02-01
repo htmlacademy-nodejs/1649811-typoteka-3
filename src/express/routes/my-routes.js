@@ -6,10 +6,12 @@ const api = require(`../api`).getApi();
 const router = new express.Router();
 
 router.get(`/`, async (req, res) => {
-  const articles = await api.getArticles();
+
+  const articles = await api.getArticles({userId: 1});
 
   res.render(`my`, {articles});
 });
+
 router.get(`/comments`, async (req, res) => {
   const articles = await api.getArticles(1);
   res.render(`my/comments`, {articles});

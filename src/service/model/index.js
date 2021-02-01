@@ -40,7 +40,7 @@ const define = (sequelize) => {
 
   ArticleCategory.init({}, {
     sequelize,
-    tableName: `articles_categories`,
+    tableName: Alias.ARTICLES_CATEGORIES,
     timestamps: false,
   });
 
@@ -49,9 +49,18 @@ const define = (sequelize) => {
     through: ArticleCategory,
     foreignKey: `articleId`,
   });
+  Article.hasMany(ArticleCategory, {
+    as: Alias.ARTICLE_CATEGORIES,
+    foreignKey: `articleId`,
+  });
+
   Category.belongsToMany(Article, {
     as: Alias.ARTICLES,
     through: ArticleCategory,
+    foreignKey: `categoryId`,
+  });
+  Category.hasMany(ArticleCategory, {
+    as: Alias.CATEGORY_ARTICLES,
     foreignKey: `categoryId`,
   });
 

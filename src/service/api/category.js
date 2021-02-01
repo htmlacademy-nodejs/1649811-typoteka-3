@@ -20,6 +20,14 @@ module.exports = (app, service) => {
     return res.status(HttpCode.CREATED).json(article);
   });
 
+  router.get(`/:id`, async (req, res) => {
+    const {id} = req.params;
+
+    const category = await service.findOne(id);
+
+    return res.status(HttpCode.OK).json(category);
+  });
+
   router.put(`/:id`, async (req, res) => {
     const {id} = req.params;
 

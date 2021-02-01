@@ -6,6 +6,8 @@ const DEFAULT_PORT = 3000;
 
 const USER_ARGV_INDEX = 2;
 
+const ARTICLES_PER_PAGE = 2;
+
 const ExitCode = {
   ERROR: 1,
   SUCCESS: 0,
@@ -34,6 +36,7 @@ module.exports = {
   DEFAULT_COMMAND,
   DEFAULT_PORT,
   USER_ARGV_INDEX,
+  ARTICLES_PER_PAGE,
   ExitCode,
   HttpCode,
   MAX_ID_LENGTH,

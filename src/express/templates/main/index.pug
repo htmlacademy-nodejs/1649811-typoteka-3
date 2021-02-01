@@ -82,6 +82,7 @@ block content
               span.preview__cloud
               b.preview__comment-count #{article.comments.length}
 
+  +pagination(page, totalPages, 2, `?`)
 block scripts
   //script(src='/js/vendor.js')
   //script(src='/js/main.js')
