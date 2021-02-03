@@ -2,48 +2,31 @@
 
 const express = require(`express`);
 const api = require(`../api`).getApi();
-const {calculatePagination, getTotalPages} = require(`../../utils`);
+const {calculatePagination, getTotalPages, asyncWrapper} = require(`../../utils`);
 
 const router = new express.Router();
 
-router.get(`/`, (req, res) => {
+router.get(`/`, asyncWrapper(async (req, res) => {
 
   const [page, limit, offset] = calculatePagination(req.query);
 
-  // const {count, articles} = api.getArticles({limit, offset, comments: true});
-  // const categories = api.getCategories(true);
-
-  // const [
-  //   {count, articles},
-  //   categories,
-  // ] = await Promise.all([
-  //   api.getArticles({limit, offset, comments: true}),
-  //   api.getCategories(true),
-  // ]);
-
-  // const totalPages = getTotalPages(count);
-  //
-  // res.render(`main`, {articles, categories, page, totalPages});
-
-  Promise.all([
+  const [
+    {count, articles},
+    categories,
+  ] = await Promise.all([
     api.getArticles({limit, offset, comments: true}),
     api.getCategories(true),
-  ])
-    .then((result) => {
+  ]);
 
-      const {count, articles} = result[0];
-      const categories = result[1];
+  const totalPages = getTotalPages(count);
 
-      const totalPages = getTotalPages(count);
-      res.render(`main`, {articles, categories, page, totalPages});
-    })
-    .catch((err) => console.log(err));
-});
+  res.render(`main`, {articles, categories, page, totalPages});
+}));
 
 router.get(`/register`, (req, res) => res.render(`sign-up`));
 router.get(`/login`, (req, res) => res.render(`login`));
 
-router.get(`/search`, async (req, res) => {
+router.get(`/search`, asyncWrapper(async (req, res) => {
   const {query} = req.query;
 
   if (!query) {
@@ -59,6 +42,6 @@ router.get(`/search`, async (req, res) => {
     res.render(`main/search`, {results: []});
   }
 
-});
+}));
 
 module.exports = router;

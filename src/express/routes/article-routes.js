@@ -1,64 +1,20 @@
 'use strict';
 
 const express = require(`express`);
-const path = require(`path`);
-const fs = require(`fs`).promises;
-const {nanoid} = require(`nanoid`);
-const multer = require(`multer`);
-const customParseFormat = require(`dayjs/plugin/customParseFormat`);
-const {checkObjProp} = require(`../../utils`);
-const {calculatePagination, getTotalPages} = require(`../../utils`);
+const {calculatePagination, getTotalPages, asyncWrapper} = require(`../../utils`);
+const {
+  emptyArticle,
+  getRequestData,
+  upload,
+  movePicture,
+} = require(`./article-helper`);
 
-const dayjs = require(`dayjs`).extend(customParseFormat);
+
 const api = require(`../api`).getApi();
-
-const UPLOAD_DIR = `../upload/img/`;
-const PUBLIC_IMG_DIR = `../public/img`;
-
-const emptyArticle = {
-  title: ``,
-  createdAt: new Date().toISOString(),
-  announce: ``,
-  fullText: ``,
-  categories: [],
-  picture: ``,
-};
-
-const getRequestData = (request) => {
-  const {body, file} = request;
-
-  const isPictureExist = checkObjProp(file, `filename`);
-
-  const articleData = {
-    title: body.title,
-    createdAt: dayjs(body.login, `DD.MM.YYYY HH:mm`).format(),
-    announce: body.announce,
-    fullText: body[`full-text`],
-    categories: body.categories,
-    picture: isPictureExist ? file.filename : body[`old-picture`],
-    // temp
-    userId: 1,
-  };
-
-  return [isPictureExist, articleData];
-};
-
-const absoluteUploadDir = path.resolve(__dirname, UPLOAD_DIR);
-
-const storage = multer.diskStorage({
-  destination: absoluteUploadDir,
-  filename: (req, file, cb) => {
-    const uniqueName = nanoid(10);
-    const extension = file.originalname.split(`.`).pop();
-    cb(null, `${uniqueName}.${extension}`);
-  },
-});
-
-const upload = multer({storage});
 
 const router = new express.Router();
 
-router.get(`/category/:id`, async (req, res) => {
+router.get(`/category/:id`, asyncWrapper(async (req, res) => {
   const {id} = req.params;
 
   const [page, limit, offset] = calculatePagination(req.query);
@@ -71,19 +27,19 @@ router.get(`/category/:id`, async (req, res) => {
   const totalPages = getTotalPages(count);
 
   res.render(`article/by-category`, {category, articles, page, totalPages});
-});
+}));
 
 
-router.get(`/add`, async (req, res) => {
+router.get(`/add`, asyncWrapper(async (req, res) => {
   const newArticle = Object.assign({}, emptyArticle);
   newArticle.createdDate = new Date();
 
   const categories = await api.getCategories();
 
   res.render(`my/post-add`, {article: newArticle, categories});
-});
+}));
 
-router.post(`/add`, upload.single(`picture`), async (req, res) => {
+router.post(`/add`, upload.single(`picture`), asyncWrapper(async (req, res) => {
 
   const [isPictureExist, articleData] = getRequestData(req);
 
@@ -91,22 +47,19 @@ router.post(`/add`, upload.single(`picture`), async (req, res) => {
     await api.createArticle(articleData);
     res.redirect(`/my`);
 
-    // temp
     if (isPictureExist) {
-      await fs.copyFile(
-          path.resolve(absoluteUploadDir, articleData.picture),
-          path.resolve(__dirname, PUBLIC_IMG_DIR, articleData.picture),
-      );
+      await movePicture(articleData.picture);
     }
+
   } catch (error) {
     console.error(error.message);
 
     const categories = await api.getCategories();
     res.render(`my/post-add`, {article: articleData, categories});
   }
-});
+}));
 
-router.get(`/edit/:id`, async (req, res) => {
+router.get(`/edit/:id`, asyncWrapper(async (req, res) => {
   const {id} = req.params;
 
   const [article, categories] = await Promise.all([
@@ -115,22 +68,18 @@ router.get(`/edit/:id`, async (req, res) => {
   ]);
 
   res.render(`my/post-edit`, {article, categories});
-});
+}));
 
-router.post(`/edit/:id`, upload.single(`picture`), async (req, res) => {
+router.post(`/edit/:id`, upload.single(`picture`), asyncWrapper(async (req, res) => {
   const {id} = req.params;
-  const [isNewImage, articleData] = getRequestData(req);
+  const [isPictureExist, articleData] = getRequestData(req);
 
   try {
     await api.editArticle(id, articleData);
     res.redirect(`/my`);
 
-    // Временно
-    if (isNewImage) {
-      await fs.copyFile(
-          path.resolve(absoluteUploadDir, articleData.picture),
-          path.resolve(__dirname, PUBLIC_IMG_DIR, articleData.picture),
-      );
+    if (isPictureExist) {
+      await movePicture(articleData.picture);
     }
   } catch (error) {
     console.error(error.message);
@@ -139,16 +88,16 @@ router.post(`/edit/:id`, upload.single(`picture`), async (req, res) => {
     articleData.id = id;
     res.render(`my/post-edit`, {article: articleData, categories});
   }
-});
+}));
 
-router.get(`/:id`, async (req, res) => {
+router.get(`/:id`, asyncWrapper(async (req, res) => {
   const {id} = req.params;
   const article = await api.getArticle(id, true);
 
   res.render(`article/post`, {article});
-});
+}));
 
-router.get(`/delete/:id`, async (req, res) => {
+router.get(`/delete/:id`, asyncWrapper(async (req, res) => {
   const {id} = req.params;
   try {
     await api.deleteArticle(id);
@@ -157,6 +106,6 @@ router.get(`/delete/:id`, async (req, res) => {
   }
 
   res.redirect(`/my`);
-});
+}));
 
 module.exports = router;

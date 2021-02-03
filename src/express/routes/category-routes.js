@@ -2,19 +2,20 @@
 
 const express = require(`express`);
 const bodyParser = require(`body-parser`);
+const {asyncWrapper} = require(`../../utils`);
 
 const api = require(`../api`).getApi();
 const urlencodedParser = bodyParser.urlencoded({extended: false});
 
 const router = new express.Router();
 
-router.get(`/`, async (req, res) => {
+router.get(`/`, asyncWrapper(async (req, res) => {
   const categories = await api.getCategories(true);
 
   res.render(`my/categories`, {categories});
-});
+}));
 
-router.post(`/add`, urlencodedParser, async (req, res) => {
+router.post(`/add`, urlencodedParser, asyncWrapper(async (req, res) => {
   const {body: {category}} = req;
 
   try {
@@ -27,9 +28,9 @@ router.post(`/add`, urlencodedParser, async (req, res) => {
 
     res.redirect(`/categories`);
   }
-});
+}));
 
-router.post(`/edit/:id`, urlencodedParser, async (req, res) => {
+router.post(`/edit/:id`, urlencodedParser, asyncWrapper(async (req, res) => {
   const {id} = req.params;
   const {body: {category}} = req;
 
@@ -41,9 +42,9 @@ router.post(`/edit/:id`, urlencodedParser, async (req, res) => {
 
   res.redirect(`/categories`);
 
-});
+}));
 
-router.get(`/delete/:id`, async (req, res) => {
+router.get(`/delete/:id`, asyncWrapper(async (req, res) => {
   const {id} = req.params;
 
   try {
@@ -53,7 +54,7 @@ router.get(`/delete/:id`, async (req, res) => {
   }
 
   res.redirect(`/categories`);
-});
+}));
 
 module.exports = router;
 
