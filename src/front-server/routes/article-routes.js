@@ -34,7 +34,7 @@ router.get(`/add`, asyncWrapper(async (req, res) => {
   const newArticle = Object.assign({}, emptyArticle);
   newArticle.createdDate = new Date();
 
-  const categories = await api.getCategories();
+  const categories = await api.getAllCategories();
 
   res.render(`my/post-add`, {article: newArticle, categories});
 }));
@@ -54,7 +54,7 @@ router.post(`/add`, upload.single(`picture`), asyncWrapper(async (req, res) => {
   } catch (error) {
     console.error(error.message);
 
-    const categories = await api.getCategories();
+    const categories = await api.getAllCategories();
     res.render(`my/post-add`, {article: articleData, categories});
   }
 }));
@@ -64,7 +64,7 @@ router.get(`/edit/:id`, asyncWrapper(async (req, res) => {
 
   const [article, categories] = await Promise.all([
     await api.getArticle(id),
-    await api.getCategories(),
+    await api.getAllCategories(),
   ]);
 
   res.render(`my/post-edit`, {article, categories});
@@ -84,7 +84,7 @@ router.post(`/edit/:id`, upload.single(`picture`), asyncWrapper(async (req, res)
   } catch (error) {
     console.error(error.message);
 
-    const categories = await api.getCategories();
+    const categories = await api.getAllCategories();
     articleData.id = id;
     res.render(`my/post-edit`, {article: articleData, categories});
   }

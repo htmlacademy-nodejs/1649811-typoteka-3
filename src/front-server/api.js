@@ -31,8 +31,12 @@ class API {
     return this._load(`/categories/${id}`);
   }
 
-  async getCategories(count) {
-    return this._load(`/categories`, {params: {count}});
+  async getCategories() {
+    return this._load(`/categories`);
+  }
+
+  async getAllCategories() {
+    return this._load(`/categories`, {params: {all: true}});
   }
 
   async search(query) {

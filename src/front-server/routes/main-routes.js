@@ -15,7 +15,7 @@ router.get(`/`, asyncWrapper(async (req, res) => {
     categories,
   ] = await Promise.all([
     api.getArticles({limit, offset, comments: true}),
-    api.getCategories(true),
+    api.getCategories(),
   ]);
 
   const totalPages = getTotalPages(count);

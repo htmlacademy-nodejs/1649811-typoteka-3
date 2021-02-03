@@ -10,7 +10,7 @@ const urlencodedParser = bodyParser.urlencoded({extended: false});
 const router = new express.Router();
 
 router.get(`/`, asyncWrapper(async (req, res) => {
-  const categories = await api.getCategories(true);
+  const categories = await api.getAllCategories();
 
   res.render(`my/categories`, {categories});
 }));
