@@ -2,33 +2,36 @@
 
 const express = require(`express`);
 const {HttpCode} = require(`../../constants`);
+const {asyncWrapper} = require(`../../utils`);
 
 module.exports = (app, service) => {
   const router = new express.Router();
 
-  router.get(`/`, async (req, res) => {
-    const {count} = req.query;
+  router.get(`/`, asyncWrapper(async (req, res) => {
+    const {all} = req.query;
 
-    const categories = await service.findAll(count);
+    const categories = all
+      ? await service.findAll()
+      : await service.findAllOnlyHavingArticles();
 
     return res.status(HttpCode.OK).json(categories);
-  });
+  }));
 
-  router.post(`/`, async (req, res) => {
+  router.post(`/`, asyncWrapper(async (req, res) => {
     const article = await service.create(req.body);
 
     return res.status(HttpCode.CREATED).json(article);
-  });
+  }));
 
-  router.get(`/:id`, async (req, res) => {
+  router.get(`/:id`, asyncWrapper(async (req, res) => {
     const {id} = req.params;
 
     const category = await service.findOne(id);
 
     return res.status(HttpCode.OK).json(category);
-  });
+  }));
 
-  router.put(`/:id`, async (req, res) => {
+  router.put(`/:id`, asyncWrapper(async (req, res) => {
     const {id} = req.params;
 
     const updated = await service.update(id, req.body);
@@ -38,9 +41,9 @@ module.exports = (app, service) => {
     }
 
     return res.status(HttpCode.OK).json(updated);
-  });
+  }));
 
-  router.delete(`/:id`, async (req, res) => {
+  router.delete(`/:id`, asyncWrapper(async (req, res) => {
     const {id} = req.params;
 
     const deleted = await service.drop(id);
@@ -51,7 +54,7 @@ module.exports = (app, service) => {
     }
 
     return res.status(HttpCode.OK).json(deleted);
-  });
+  }));
 
 
   app.use(`/categories`, router);

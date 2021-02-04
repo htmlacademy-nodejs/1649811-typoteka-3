@@ -1,7 +1,6 @@
 'use strict';
 
 const Alias = require(`../model/alias`);
-const {Sequelize} = require(`sequelize`);
 
 class ArticleService {
   constructor(sequelize) {
@@ -9,6 +8,8 @@ class ArticleService {
     this._Comment = sequelize.models.Comment;
     this._Category = sequelize.models.Category;
     this._ArticleCategory = sequelize.models.ArticleCategory;
+
+    this._sequelize = sequelize;
   }
 
   async create(articleData) {
@@ -27,6 +28,7 @@ class ArticleService {
   }
 
   async findAll({userId, comments}) {
+
     const include = [Alias.CATEGORIES];
 
     if (comments) {
@@ -106,6 +108,7 @@ class ArticleService {
   }
 
   async findOne(id, needComments = false) {
+
     const include = [Alias.CATEGORIES];
 
     if (needComments) {

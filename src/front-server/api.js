@@ -23,7 +23,7 @@ class API {
     return this._load(`/articles/${id}`, {params: {comments}});
   }
 
-  async getCategoryArticles(id, {limit, offset} = {}) {
+  async getArticlesByCategory(id, {limit, offset} = {}) {
     return this._load(`/articles/category/${id}`, {params: {limit, offset}});
   }
 

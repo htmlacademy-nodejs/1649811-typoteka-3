@@ -19,5 +19,6 @@ module.exports = {
   logger,
   getLogger(options = {}) {
     return logger.child(options);
-  }
+  },
+  isDevMode,
 };

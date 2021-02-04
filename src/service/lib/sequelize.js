@@ -1,7 +1,7 @@
 'use strict';
 
 const {Sequelize} = require(`sequelize`);
-
+const {isDevMode} = require(`./logger`);
 const {DATABASE_URI} = process.env;
 
 if (!DATABASE_URI) {
@@ -15,4 +15,5 @@ module.exports = new Sequelize(DATABASE_URI, {
     acquire: 30000,
     idle: 10000,
   },
+  logging: isDevMode
 });

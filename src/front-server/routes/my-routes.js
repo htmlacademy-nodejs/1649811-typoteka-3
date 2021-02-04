@@ -14,7 +14,7 @@ router.get(`/`, asyncWrapper(async (req, res) => {
 }));
 
 router.get(`/comments`, asyncWrapper(async (req, res) => {
-  const articles = await api.getArticles(1);
+  const articles = await api.getArticles({userId: 1, comments: true});
   res.render(`my/comments`, {articles});
 }));
 

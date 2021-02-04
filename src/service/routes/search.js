@@ -2,11 +2,12 @@
 
 const express = require(`express`);
 const {HttpCode} = require(`../../constants`);
+const {asyncWrapper} = require(`../../utils`);
 
 module.exports = (app, service) => {
   const router = new express.Router();
 
-  router.get(`/`, async (req, res) => {
+  router.get(`/`, asyncWrapper(async (req, res) => {
     const {query = ``} = req.query;
 
     if (!query) {
@@ -20,7 +21,7 @@ module.exports = (app, service) => {
       : HttpCode.NOT_FOUND;
 
     res.status(searchStatus).json(searchResults);
-  });
+  }));
 
   app.use(`/search`, router);
 };

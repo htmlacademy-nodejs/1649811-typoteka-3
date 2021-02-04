@@ -6,7 +6,7 @@ const DEFAULT_PORT = 3000;
 
 const USER_ARGV_INDEX = 2;
 
-const ARTICLES_PER_PAGE = 2;
+const ARTICLES_PER_PAGE = 4;
 
 const ExitCode = {
   ERROR: 1,

@@ -20,9 +20,11 @@ router.get(`/category/:id`, asyncWrapper(async (req, res) => {
   const [page, limit, offset] = calculatePagination(req.query);
 
   const [{count, articles}, category] = await Promise.all([
-    await api.getCategoryArticles(id, {limit, offset}),
+    await api.getArticlesByCategory(id, {limit, offset}),
     await api.getCategory(id),
   ]);
+
+  console.log(articles);
 
   const totalPages = getTotalPages(count);
 
