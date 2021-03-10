@@ -1,7 +1,10 @@
 'use strict';
 
 const express = require(`express`);
-const {calculatePagination, getTotalPages, asyncWrapper} = require(`../../utils`);
+const bodyParser = require(`body-parser`);
+const {
+  calculatePagination, getTotalPages, asyncWrapper, escapeHtml
+} = require(`../../utils`);
 const {
   emptyArticle,
   getRequestData,
@@ -23,8 +26,6 @@ router.get(`/category/:id`, asyncWrapper(async (req, res) => {
     await api.getArticlesByCategory(id, {limit, offset}),
     await api.getCategory(id),
   ]);
-
-  console.log(articles);
 
   const totalPages = getTotalPages(count);
 
@@ -97,7 +98,11 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
   const {id} = req.params;
   const article = await api.getArticle(id, true);
 
-  res.render(`article/post`, {article, errorMessages: []});
+  if (article.comments) {
+    article.comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  }
+
+  res.render(`article/post`, {article, comment: null});
 }));
 
 router.get(`/delete/:id`, asyncWrapper(async (req, res) => {
@@ -109,6 +114,29 @@ router.get(`/delete/:id`, asyncWrapper(async (req, res) => {
   }
 
   res.redirect(`/my`);
+}));
+
+router.post(`/:id/comments`, bodyParser.urlencoded({extended: true}), asyncWrapper(async (req, res) => {
+  const {id} = req.params;
+  const {comment} = req.body;
+
+  const data = {
+    text: escapeHtml(comment),
+    userId: 1,
+  };
+
+  try {
+    await api.createComment(id, data);
+    res.redirect(`/articles/${id}`);
+
+  } catch (err) {
+    const {message: errorMessage} = err.response.data;
+
+    const article = await api.getArticle(id, true);
+
+    res.render(`article/post`, {article, comment: data.text, errorMessage});
+  }
+
 }));
 
 module.exports = router;

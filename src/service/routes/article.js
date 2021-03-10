@@ -55,21 +55,18 @@ module.exports = (app, articleService, commentService) => {
     return res.status(HttpCode.CREATED).json(article);
   }));
 
-  router.put(
-      `/:articleId`,
-      articleValidator,
-      asyncWrapper(async (req, res) => {
-        const {articleId} = req.params;
+  router.put(`/:articleId`, articleValidator, asyncWrapper(async (req, res) => {
+    const {articleId} = req.params;
 
-        const updated = await articleService.update(articleId, req.body);
+    const updated = await articleService.update(articleId, req.body);
 
-        if (!updated) {
-          return res.status(HttpCode.NOT_FOUND)
+    if (!updated) {
+      return res.status(HttpCode.NOT_FOUND)
         .send(`Not found article with ${articleId} id`);
-        }
+    }
 
-        return res.status(HttpCode.OK).json(updated);
-      }));
+    return res.status(HttpCode.OK).json(updated);
+  }));
 
   router.delete(`/:articleId`, asyncWrapper(async (req, res) => {
     const {articleId} = req.params;

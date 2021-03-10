@@ -53,6 +53,14 @@ const mockComments = [
   `Плюсую, но слишком много буквы! Согласен с автором! Хочу такую же футболку :-)`,
   `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Совсем немного...`,
 ];
+const mockNewArticle = {
+  "title": `Как по-научному оправдать свою лень?`,
+  "createdAt": `2021-01-01 21:28:24.514+00`,
+  "announce": `В этой статье приведем небольшую, с одной стороны шутливую, но с другой стороны полностью научную теорию с помощью которой можно оправдать себя в те моменты, когда над Вами взяла верх лень.`,
+  "categories": [1, 2],
+  "fullText": `Дело в том, что в физике существует такая термодинамическая величина как энтропия. Её научное значение определяет меру необратимого рассеивания энергии. В других случаях она же может определять вероятность осуществления какого-либо макроскопического состояния...`,
+  "userId": 1,
+};
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
@@ -70,14 +78,6 @@ const createAPI = async () => {
   article(app, new DataService(mockDB), new CommentService(mockDB));
 
   return app;
-};
-
-const mockNewArticle = {
-  "title": `Как по-научному оправдать свою лень?`,
-  "announce": `В этой статье приведем небольшую, с одной стороны шутливую, но с другой стороны полностью научную теорию с помощью которой можно оправдать себя в те моменты, когда над Вами взяла верх лень.`,
-  "categories": [1, 2],
-  "fullText": `Дело в том, что в физике существует такая термодинамическая величина как энтропия. Её научное значение определяет меру необратимого рассеивания энергии. В других случаях она же может определять вероятность осуществления какого-либо макроскопического состояния...`,
-  "userId": 1,
 };
 
 describe(`API return a list of all articles`, () => {
@@ -160,7 +160,7 @@ describe(`API created an article if data is valid`, () => {
     .expect((res) => expect(res.body).toHaveLength(6)));
 });
 
-describe(`API refuses to create an offer if data is invalid`, () => {
+describe(`API refuses to create an article if data is invalid`, () => {
   const newArticle = Object.assign({}, mockNewArticle);
   delete newArticle.fullText;
 
@@ -173,13 +173,17 @@ describe(`API refuses to create an offer if data is invalid`, () => {
       const badArticle = {...newArticle};
       delete badArticle[key];
 
-      await request(app).post(`/articles`).send(badArticle)
-        .expect(HttpCode.BAD_REQUEST);
+      const response = await request(app).post(`/articles`).send(badArticle);
+
+      expect(response.statusCode).toBe(400);
+      const {message} = JSON.parse(response.text);
+
+      expect(message.join(`. `)).toBe(`"${key}" is required`);
     }
   });
 });
 
-describe(`API changes existent article`, () => {
+describe(`API changes existent article if data is valid`, () => {
   const updatedArticle = {...mockNewArticle};
   let app;
 
@@ -200,6 +204,61 @@ describe(`API changes existent article`, () => {
 
 });
 
+describe(`API refuses to update article if title is empty`, () => {
+  const invalidArticle = {...mockNewArticle};
+  delete invalidArticle.title;
+
+  let app;
+  let response;
+
+  beforeAll(async () => {
+    app = await createAPI();
+    response = await request(app).put(`/articles/1`).send(invalidArticle);
+  });
+
+  test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+  test(`Error message "title" is required`, () =>
+    expect(response.body.message).toContain(`"title" is required`));
+});
+
+describe(`API refuses to update an article if data is invalid`, () => {
+  const updatedArticle = {...mockNewArticle};
+  delete updatedArticle.fullText;
+
+  test(`Without any required property response code is 400`, async () => {
+
+    const app = await createAPI();
+
+    for (const key of Object.keys(updatedArticle)) {
+      const badArticle = {...updatedArticle};
+      delete badArticle[key];
+
+      const response = await request(app).put(`/articles/1`).send(badArticle);
+
+      expect(response.statusCode).toBe(400);
+
+      const {message} = JSON.parse(response.text);
+
+      expect(message.join(`. `)).toBe(`"${key}" is required`);
+    }
+  });
+
+  test(`With announce < 30 response code is 400`, async () => {
+
+    const app = await createAPI();
+
+    const updArticle = {...updatedArticle};
+    updArticle.announce = `123`;
+
+    const response = await request(app).put(`/articles/1`).send(updArticle);
+
+    expect(response.statusCode).toBe(400);
+    const {message} = JSON.parse(response.text);
+    expect(message.join(`. `)).toBe(`"announce" length must be at least 30 characters long`);
+
+  });
+});
+
 test(`API return status code 404 when trying to change non-existent article`, async () => {
   const newArticle = Object.assign({}, mockNewArticle);
   const app = await createAPI();
@@ -208,17 +267,6 @@ test(`API return status code 404 when trying to change non-existent article`, as
     .put(`/articles/NO-EXIST`)
     .send(newArticle)
     .expect(HttpCode.NOT_FOUND);
-});
-
-test(`API returns status code 400 when trying to change an article with invalid data`, async () => {
-  const invalidArticle = Object.assign({}, mockNewArticle);
-  delete invalidArticle.title;
-  const app = await createAPI();
-
-  return request(app)
-    .put(`/articles/1`)
-    .send(invalidArticle)
-    .expect(HttpCode.BAD_REQUEST);
 });
 
 describe(`API correctly deletes an article`, () => {
@@ -264,7 +312,7 @@ describe(`API return a list of comments to given article`, () => {
 });
 
 describe(`API creates a comment if data is valid`, () => {
-  const newComment = {text: `Статья так себе`};
+  const newComment = {text: `Статья так себе. Это где ж такие красоты?`, userId: 1};
   let app;
   let response;
 
@@ -281,12 +329,21 @@ describe(`API creates a comment if data is valid`, () => {
     .expect((res) => expect(res.body.length).toBe(4)));
 });
 
-test(`API refuses to create a comment when data is invalid, and returns status code 400`, async () => {
+test(`API refuses to create a comment when data empty, and returns status code 400`, async () => {
   const app = await createAPI();
 
   return request(app)
     .post(`/articles/1/comments`)
     .send({})
+    .expect(HttpCode.BAD_REQUEST);
+});
+
+test(`API refuses to create a comment when comment length < 30, and returns status code 400`, async () => {
+  const app = await createAPI();
+
+  return request(app)
+    .post(`/articles/1/comments`)
+    .send({text: `123`, userId: 1})
     .expect(HttpCode.BAD_REQUEST);
 });
 

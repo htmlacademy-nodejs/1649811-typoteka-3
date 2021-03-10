@@ -60,9 +60,6 @@ class ArticleService {
       include.push({
         model: this._Comment,
         as: Alias.COMMENTS,
-        order: [
-          [`createdAt`, `DESC`],
-        ],
       });
     }
 
@@ -139,7 +136,7 @@ class ArticleService {
       return true;
 
     } catch (err) {
-      // console.log(err);
+      console.log(err);
 
       return false;
     }

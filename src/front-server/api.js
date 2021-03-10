@@ -63,7 +63,7 @@ class API {
     });
   }
 
-  async createComments(id, data) {
+  async createComment(id, data) {
     return this._load(`/articles/${id}/comments`, {
       method: `POST`,
       data,
