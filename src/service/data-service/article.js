@@ -76,6 +76,7 @@ class ArticleService {
       order: [
         [`createdAt`, `DESC`],
       ],
+      distinct: true,
 
     });
 
