@@ -26,6 +26,10 @@ block content
                 .form__field
                   label
                     input(type='text' placeholder='Заголовок' required='' value=article.title name=`title`)
+
+                  each error in errorMessages.filter((item) => item.includes(`title`))
+                    span(style={display: 'block', color: 'red'}) #{error}
+
                 .form__field.form__field--post-image
                   label
                     input#image-name-field(type='text' name=`old-picture` value=`${article.picture}` placeholder='Фотография' readonly='')
@@ -37,8 +41,11 @@ block content
 
                 .new-publication__checkbox.new-publication__checkbox--auto
                   each category in categories
-                      input(type='checkbox' id=category.id name=`categories[]` value=category.id checked=article.categories.some(item => item.id === category.id))
+                      input(type='checkbox' id=category.id name=`categories[]` value=category.id checked=article.categories.some(item => (item.id ? +item.id : +item) === +category.id))
                       label(for=category.id) #{category.title}
+
+                each error in errorMessages.filter((item) => item.includes(`categories`))
+                  span(style={display: 'block', color: 'red'}) #{error}
 
                 a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
               .form__wrapper.form__wrapper--text
@@ -46,10 +53,18 @@ block content
                   label
                     textarea(rows='2' placeholder='Анонс публикации' name=`announce`)
                       | #{article.announce}
+
+                each error in errorMessages.filter((item) => item.includes(`announce`))
+                  span(style={display: 'block', color: 'red'}) #{error}
+
                 .form__field.form__field--publication-text
                   label
                     textarea(rows='5' placeholder='Полный текст публикации' name=`full-text`)
                       | #{article.fullText}
+
+                each error in errorMessages.filter((item) => item.includes(`fullText`))
+                  span(style={display: 'block', color: 'red'}) #{error}
+
       .modal__overlay
 
 

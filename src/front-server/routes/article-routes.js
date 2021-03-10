@@ -38,7 +38,7 @@ router.get(`/add`, asyncWrapper(async (req, res) => {
 
   const categories = await api.getAllCategories();
 
-  res.render(`my/post-add`, {article: newArticle, categories});
+  res.render(`my/post-add`, {article: newArticle, categories, errorMessages: []});
 }));
 
 router.post(`/add`, upload.single(`picture`), asyncWrapper(async (req, res) => {
@@ -54,10 +54,10 @@ router.post(`/add`, upload.single(`picture`), asyncWrapper(async (req, res) => {
     }
 
   } catch (error) {
-    console.error(error.message);
+    const {message: errorMessages} = error.response.data;
 
     const categories = await api.getAllCategories();
-    res.render(`my/post-add`, {article: articleData, categories});
+    res.render(`my/post-add`, {article: articleData, categories, errorMessages});
   }
 }));
 
@@ -69,7 +69,7 @@ router.get(`/edit/:id`, asyncWrapper(async (req, res) => {
     await api.getAllCategories(),
   ]);
 
-  res.render(`my/post-edit`, {article, categories});
+  res.render(`my/post-edit`, {article, categories, errorMessages: []});
 }));
 
 router.post(`/edit/:id`, upload.single(`picture`), asyncWrapper(async (req, res) => {
@@ -84,11 +84,12 @@ router.post(`/edit/:id`, upload.single(`picture`), asyncWrapper(async (req, res)
       await movePicture(articleData.picture);
     }
   } catch (error) {
-    console.error(error.message);
+
+    const {message: errorMessages} = error.response.data;
 
     const categories = await api.getAllCategories();
     articleData.id = id;
-    res.render(`my/post-edit`, {article: articleData, categories});
+    res.render(`my/post-edit`, {article: articleData, categories, errorMessages});
   }
 }));
 
@@ -96,7 +97,7 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
   const {id} = req.params;
   const article = await api.getArticle(id, true);
 
-  res.render(`article/post`, {article});
+  res.render(`article/post`, {article, errorMessages: []});
 }));
 
 router.get(`/delete/:id`, asyncWrapper(async (req, res) => {

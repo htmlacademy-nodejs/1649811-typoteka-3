@@ -18,6 +18,10 @@ router.get(`/comments`, asyncWrapper(async (req, res) => {
   res.render(`my/comments`, {articles});
 }));
 
+router.post(`/:id/comments`, asyncWrapper(async (req, res) => {
+  const {id} = req.params;
+}));
+
 router.get(`/comments/delete/:id`, asyncWrapper(async (req, res) => {
   const {id} = req.params;
   const {articleId} = req.query;

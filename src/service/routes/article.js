@@ -1,11 +1,17 @@
 'use strict';
 
 const express = require(`express`);
-const {HttpCode} = require(`../../constants`);
-const articleValidator = require(`../middleware/article-validator`);
+
 const articleExists = require(`../middleware/article-exists`);
-const commentValidator = require(`../middleware/comment-validator`);
+const articleSchema = require(`../middleware/article-schema`);
+const commentSchema = require(`../middleware/comment-schema`);
+const validator = require(`../middleware/schema-validator`);
+
+const articleValidator = validator(articleSchema);
+const commentValidator = validator(commentSchema);
+
 const {asyncWrapper} = require(`../../utils`);
+const {HttpCode} = require(`../../constants`);
 
 module.exports = (app, articleService, commentService) => {
   const router = new express.Router();

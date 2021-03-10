@@ -5,7 +5,7 @@ const fs = require(`fs`).promises;
 const {nanoid} = require(`nanoid`);
 const multer = require(`multer`);
 const customParseFormat = require(`dayjs/plugin/customParseFormat`);
-const {checkObjProp} = require(`../../utils`);
+const {checkObjProp, escapeHtml} = require(`../../utils`);
 
 const dayjs = require(`dayjs`).extend(customParseFormat);
 
@@ -29,11 +29,11 @@ const getRequestData = (request) => {
   const isPictureExist = checkObjProp(file, `filename`);
 
   const articleData = {
-    title: body.title,
+    title: escapeHtml(body.title),
     createdAt: dayjs(body.login, `DD.MM.YYYY HH:mm`).format(),
-    announce: body.announce,
-    fullText: body[`full-text`],
-    categories: body.categories,
+    announce: escapeHtml(body.announce),
+    fullText: escapeHtml(body[`full-text`]),
+    categories: Array.isArray(body.categories) ? body.categories : [],
     picture: isPictureExist ? file.filename : body[`old-picture`],
     // temp
     userId: 1,

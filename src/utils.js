@@ -63,6 +63,20 @@ const asyncWrapper = (callback) => {
   };
 };
 
+const escapeHtml = (text) => {
+  const map = {
+    '&': `&amp;`,
+    '<': `&lt;`,
+    '>': `&gt;`,
+    // '"': `&quot;`,
+    "'": `&#039;`,
+  };
+
+  return text.replace(/[&<>"']/g, (m) => {
+    return map[m];
+  });
+};
+
 module.exports = {
   getRandomInt,
   getRandomDate,
@@ -73,4 +87,5 @@ module.exports = {
   getTotalPages,
   calculatePagination,
   asyncWrapper,
+  escapeHtml,
 };

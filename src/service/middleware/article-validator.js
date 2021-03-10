@@ -1,6 +1,6 @@
 'use strict';
 
-const baseValidator = require(`./base-validator`);
+const baseValidator = require(`src/service/middleware/schema-validator`);
 
 const articleKeys = [`title`, `categories`, `announce`, `userId`];
 
