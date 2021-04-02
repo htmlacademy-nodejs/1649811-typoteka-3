@@ -3,8 +3,10 @@
 const express = require(`express`);
 const api = require(`../api`).getApi();
 const {calculatePagination, getTotalPages, asyncWrapper} = require(`../../utils`);
-
+const {emptyUser, getRequestData, absoluteUploadDir, upload} = require(`./user-helper`);
 const router = new express.Router();
+
+const PUBLIC_IMG_DIR = `../public/img`;
 
 router.get(`/`, asyncWrapper(async (req, res) => {
 
@@ -23,8 +25,18 @@ router.get(`/`, asyncWrapper(async (req, res) => {
   res.render(`main`, {articles, categories, page, totalPages});
 }));
 
-router.get(`/register`, (req, res) => res.render(`sign-up`));
-router.get(`/login`, (req, res) => res.render(`login`));
+router.get(`/register`, (req, res) => {
+  const user = {...emptyUser};
+  res.render(`main/sign-up`, {user, errorMessages: []});
+});
+
+router.post(`/register`, asyncWrapper(async (req, res) => {
+  res.render(`main/sign-up`);
+}));
+
+router.get(`/login`, (req, res) => {
+  res.render(`main/login`);
+});
 
 router.get(`/search`, asyncWrapper(async (req, res) => {
   const {query} = req.query;

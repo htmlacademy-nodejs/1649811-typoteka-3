@@ -32,6 +32,9 @@ const Env = {
   PRODUCTION: `production`
 };
 
+const MIN_PASSWORD_LENGTH = 6;
+const MAX_PASSWORD_LENGTH = 20;
+
 module.exports = {
   DEFAULT_COMMAND,
   DEFAULT_PORT,
@@ -42,4 +45,6 @@ module.exports = {
   MAX_ID_LENGTH,
   API_PREFIX,
   Env,
+  MIN_PASSWORD_LENGTH,
+  MAX_PASSWORD_LENGTH,
 };
