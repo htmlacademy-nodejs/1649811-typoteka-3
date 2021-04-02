@@ -26,3 +26,6 @@ src/front-server/public/img
 docker*
 .env
 
+# jest
+coverage
+
