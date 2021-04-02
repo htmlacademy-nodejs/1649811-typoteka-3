@@ -31,8 +31,7 @@ const define = (sequelize) => {
     },
     avatar: {
       type: DataTypes.STRING,
-      allowNull: false,
-      unique: true,
+      allowNull: true,
     },
 
   }, {

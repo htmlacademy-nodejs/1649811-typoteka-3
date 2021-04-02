@@ -5,25 +5,25 @@ block header
 
 block content
   main
-    h1.visually-hidden Регистрация пользователя
+    h1.visually-hidden Вход
     section.modal
       .popup.popup--registration
         a.popup__button.button.button--popup-close(href=`/` aria-label='Закрыть окно')
           | Закрыть
           | окно
-        h2.visually-hidden Форма регистрации
+        h2.visually-hidden Форма входа
         ul.popup__tabs
           li.popup__tab.popup__tab--active.popup__tab--log-in
             button.popup__tab-switcher.button(type='button') Войти
 
         .popup__form.popup__form--active.form.form--log-in
-          form(action='#' method='get')
+          form(action='/login' method='post')
             .form__field
               label
-                input(type='email' placeholder='Электронная почта' required='')
+                input(type='email' placeholder='Электронная почта' required='' name='email' value=user.email)
             .form__field
               label
-                input(type='password' placeholder='Пароль' required='')
+                input(type='password' placeholder='Пароль' required='' name='password' value=user.password)
             button.form__submit-btn.form__submit-btn--log-in.button.button--colored(type='submit') Войти
       .modal__overlay
 

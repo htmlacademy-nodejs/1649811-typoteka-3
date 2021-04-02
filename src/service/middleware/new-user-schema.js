@@ -11,6 +11,7 @@ module.exports = Joi.object({
     .regex(/^[a-zA-Zа-яА-Я]+$/i)
     .required()
     .messages({
+      'string.pattern.base': `Имя ${RegisterMessage.ALPHA_VALUE}`,
       'string.base': `Имя ${RegisterMessage.ALPHA_VALUE}`,
       'string.empty': `Имя ${RegisterMessage.EMPTY_VALUE}`,
       'any.required': `Имя ${RegisterMessage.REQUIRED_FIELD}`,
@@ -20,6 +21,7 @@ module.exports = Joi.object({
     .regex(/^[a-zA-Zа-яА-Я]+$/i)
     .required()
     .messages({
+      'string.pattern.base': `Фамилия ${RegisterMessage.ALPHA_VALUE}`,
       'string.base': `Фамилия ${RegisterMessage.ALPHA_VALUE}`,
       'string.empty': `Фамилия ${RegisterMessage.EMPTY_VALUE}`,
       'any.required': `Фамилия ${RegisterMessage.REQUIRED_FIELD}`,
@@ -54,5 +56,5 @@ module.exports = Joi.object({
       'any.required': `Повтор пароля ${RegisterMessage.REQUIRED_FIELD}`,
     }),
 
-  avatar: Joi.string(),
+  avatar: Joi.string().allow(null),
 });

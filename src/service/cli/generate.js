@@ -2,7 +2,7 @@
 const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
 const {nanoid} = require(`nanoid`);
-const {getRandomInt, getCreatedDate, shuffle, readFile} = require(`../../utils`);
+const {getRandomInt, generateCreatedDate, shuffle, readFile} = require(`../../utils`);
 const {ExitCode, MAX_ID_LENGTH} = require(`../../constants`);
 
 const FILE_OUTPUT = `${__dirname}/../../../mocks.json`;
@@ -36,7 +36,7 @@ const generateArticles = (count, titles, content, categories, comments) => (
   Array(count).fill({}).map(() => ({
     id: nanoid(MAX_ID_LENGTH),
     title: titles[getRandomInt(0, titles.length - 1)],
-    createdDate: getCreatedDate(DATE_DIFF_MONTH),
+    createdDate: generateCreatedDate(DATE_DIFF_MONTH),
     announce: shuffle(content).slice(0, getRandomInt(1, MAX_ANNOUNCE_COUNT)).join(` `),
     fullText: shuffle(content).slice(0, getRandomInt(1, content.length - 1)).join(` `),
     category: shuffle(categories).slice(0, getRandomInt(1, categories.length - 1)),

@@ -33,3 +33,6 @@
 .preview__toggle-wrapper {
  width: auto;
 }
+.popup--registration {
+  margin-top: 60px;
+}

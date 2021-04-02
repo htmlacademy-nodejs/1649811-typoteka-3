@@ -28,35 +28,36 @@ block content
             button.popup__tab-switcher.button(type='button') Регистрация
 
         .popup__form.popup__form--active.form.form--register
-          form(action='/register' method='get')
+          form(action='/register' method='POST' enctype='multipart/form-data')
             .form__field
               label
-                input(type='email' placeholder='Электронная почта' required='')
+                input(type='email' name='email'  placeholder='Электронная почта' required='' value=user.email)
             .form__field
               label
-                input(type='text' placeholder='Имя' required='')
+                input(type='text' name='firstname' placeholder='Имя' required='' value=user.firstname)
             .form__field
               label
-                input(type='text' placeholder='Фамилия' required='')
+                input(type='text' name='lastname' placeholder='Фамилия' required='' value=user.lastname)
             .form__field
               label
-                input(type='password' placeholder='Пароль' required='')
+                input(type='password' name='password' placeholder='Пароль' required='' value=user.password)
             .form__field
               label
-                input(type='password' placeholder='Повтор пароля' required='')
+                input(type='password' name='repeat' placeholder='Повтор пароля' required='' value=user.repeat)
             .form__image-loader
               a.form__avatar.avatar
                 img(src='/img/icons/smile.svg' alt='аватар пользователя')
               label
-                input.visually-hidden(type='file')
+                input.visually-hidden(type='file' name='avatar' value=`/img/${user.avatar}`)
                 | Загрузить фото профиля
             button.form__submit-btn.form__submit-btn--register.button.button--colored(type='submit') Зарегистрироваться
 
-            .form__validation-error
-              p.form__error-message При регистрации произошли ошибки:
-              ul.form__errors
-                li.form__error Пароль не может состоять из двух букв
-                li.form__error Фамилия не должна быть смешной
+            if errorMessages
+              .form__validation-error
+                p.form__error-message При регистрации произошли ошибки:
+                ul.form__errors
+                  each error in errorMessages
+                    li.form__error #{error}
 
       .modal__overlay
 
