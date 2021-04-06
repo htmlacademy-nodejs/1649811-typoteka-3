@@ -8,16 +8,9 @@ const user = require(`./user`);
 const DataService = require(`../data-service/user`);
 const initDb = require(`../lib/init-db`);
 const {HttpCode} = require(`../const`);
-const {RegisterMessage} = require(`src/service/const-messages`);
+const {RegisterMessage} = require(`../const-messages`);
+const {mockUser} = require(`../../../data/test-data`);
 
-const mockUser = {
-  firstname: `Ivan`,
-  lastname: `Ivanov`,
-  email: `ivan@mail.com`,
-  password: `ivanov`,
-  repeat: `ivanov`,
-  avatar: `avatar-01.jpg`,
-};
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});

@@ -9,21 +9,9 @@ const category = require(`./category`);
 const DataService = require(`../data-service/category`);
 const initDb = require(`../lib/init-db`);
 const {HttpCode} = require(`../const`);
-
-const mockCategories = [`Деревья`, `За жизнь`, `Без рамки`, `Разное`, `IT`];
-const mockArticles = [
-  {
-    "title": `Как перестать беспокоиться и начать жить`,
-    "announce": `301 Moved Permanently — запрошенный документ был окончательно перенесен на новый URI, указанный в поле Location заголовка. 200 OK — успешный запрос. Если клиентом были запрошены какие-либо данные, то они находятся в заголовке и/или теле сообщения.`,
-    "fullText": `Программировать не настолько сложно, как об этом говорят. Содержание строк остаётся на ваше усмотрение. Помните, небольшое количество ежедневных упражнений лучше, чем один раз, но много. Рок-музыка всегда ассоциировалась с протестами. Так ли это на самом деле? Альбом стал настоящим открытием года. Мощные гитарные рифы и скоростные соло-партии не дадут заскучать. Освоить вёрстку несложно. Возьмите книгу новую книгу и закрепите все упражнения на практике. Собрать камни бесконечности легко, если вы прирожденный герой.`,
-  },
-];
-const mockUsers = [`Иван Иванов ivan@mail.com ivanov`];
-const mockComments = [
-  `Плюсую, но слишком много буквы! Согласен с автором! Хочу такую же футболку :-)`,
-  `Мне не нравится ваш стиль. Ощущение, что вы меня поучаете. Совсем немного...`,
-];
-
+const {
+  mockCategories, mockArticles, mockUsers, mockComments
+} = require(`../../../data/test-data`);
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
@@ -81,8 +69,8 @@ describe(`API returns category list with count articles`, () => {
 
   test(`Return list of 5`, () => expect(response.body.length).toBe(5));
 
-  test(`Each category has 1 article`, () =>
-    response.body.forEach((item) => expect(item.count).toBe(1)),
+  test(`Each category has 5 article`, () =>
+    response.body.forEach((item) => expect(item.count).toBe(5)),
   );
 
 });
