@@ -16,14 +16,13 @@ class UserService {
       userData.password = await bcrypt.hash(password, salt);
       await this._User.create(userData);
     } catch (err) {
-      console.error(err);
       return false;
     }
     return true;
   }
 
   async findByEmail(email) {
-    return this._User.findOne({
+    return await this._User.findOne({
       where: {email},
       raw: true,
     });
