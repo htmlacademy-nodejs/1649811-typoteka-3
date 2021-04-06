@@ -6,10 +6,11 @@ const dayjs = require(`dayjs`);
 const expressSession = require(`express-session`);
 const cookieParser = require(`cookie-parser`);
 const helmet = require(`helmet`);
-const mainRouter = require(`./routes/main-routes`);
-const myRouter = require(`./routes/my-routes`);
-const articlesRouter = require(`./routes/article-routes`);
-const categoriesRouter = require(`./routes/category-routes`);
+const mainRouter = require(`./routes/main`);
+const myRouter = require(`./routes/my`);
+const articlesRouter = require(`./routes/articles`);
+const categoriesRouter = require(`./routes/category`);
+const userRouter = require(`./routes/user`);
 const {HttpCode, PUBLIC_DIR, VIEWS_DIR, DEFAULT_PORT, SESSION_NAME} = require(`./const`);
 require(`dotenv`).config();
 
@@ -47,6 +48,7 @@ app.use(express.static(path.resolve(__dirname, PUBLIC_DIR)));
 
 app.locals.dayjs = dayjs;
 
+app.use(`/`, userRouter);
 app.use(`/`, mainRouter);
 app.use(`/my`, myRouter);
 app.use(`/articles`, articlesRouter);
