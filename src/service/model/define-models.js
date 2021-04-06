@@ -7,6 +7,7 @@ const defineCategory = require(`./category`);
 const defineUser = require(`./user`);
 const defineArticle = require(`./article`);
 const defineComment = require(`./comment`);
+const defineRefreshToken = require(`./refresh-token`);
 
 class ArticleCategory extends Model {
 }
@@ -17,6 +18,7 @@ const define = (sequelize) => {
   const User = defineUser(sequelize);
   const Article = defineArticle(sequelize);
   const Comment = defineComment(sequelize);
+  const RefreshToken = defineRefreshToken(sequelize);
 
   User.hasMany(Article, {
     as: Alias.ARTICLES,
@@ -74,7 +76,7 @@ const define = (sequelize) => {
     foreignKey: `articleId`,
   });
 
-  return {Category, User, Article, Comment};
+  return {Category, User, Article, Comment, RefreshToken};
 };
 
 module.exports = define;

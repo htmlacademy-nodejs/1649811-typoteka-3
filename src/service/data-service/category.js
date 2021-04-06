@@ -2,7 +2,6 @@
 
 const {QueryTypes} = require(`sequelize`);
 
-// const Alias = require(`../model/alias`);
 
 class CategoryService {
   constructor(sequelize) {
@@ -44,11 +43,10 @@ class CategoryService {
 
   async findAllOnlyHavingArticles() {
     const sql = `
-      SELECT c.id, c.title, COUNT(ac."articleId") as count
-      FROM categories c
-             LEFT JOIN article_categories ac ON ac."categoryId" = c.id
-      GROUP BY c.id
-      HAVING COUNT(ac."articleId") > 0;
+      SELECT c.id, c.title, COUNT(ac."articleId") as "count"
+      FROM article_categories ac
+             LEFT JOIN categories c ON ac."categoryId" = c.id
+      GROUP BY c.id, c.title ORDER BY c.title;
     `;
 
     return await this._sequelize.query(sql, {type: QueryTypes.SELECT});
@@ -61,9 +59,7 @@ class CategoryService {
       });
 
       return true;
-
     } catch (err) {
-      console.log(err.message);
       return false;
     }
   }

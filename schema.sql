@@ -3,6 +3,12 @@ DROP TABLE IF EXISTS users CASCADE;
 DROP TABLE IF EXISTS articles CASCADE;
 DROP TABLE IF EXISTS comments CASCADE;
 DROP TABLE IF EXISTS articles_categories CASCADE;
+DROP TABLE IF EXISTS tokens;
+
+DROP SEQUENCE IF EXISTS articles_id_seq;
+DROP SEQUENCE IF EXISTS categories_id_seq;
+DROP SEQUENCE IF EXISTS comments_id_seq;
+DROP SEQUENCE IF EXISTS users_id_seq;
 
 
 CREATE TABLE categories
@@ -62,6 +68,11 @@ CREATE TABLE articles_categories
     FOREIGN KEY (category_id) REFERENCES categories (id)
         ON DELETE CASCADE
         ON UPDATE CASCADE
+);
+
+CREATE TABLE tokens
+(
+    token VARCHAR PRIMARY KEY
 );
 
 
