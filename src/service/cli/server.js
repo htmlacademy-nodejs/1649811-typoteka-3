@@ -2,7 +2,7 @@
 
 const express = require(`express`);
 
-const {HttpCode, DEFAULT_PORT, API_PREFIX, ExitCode} = require(`../../constants`);
+const {HttpCode, DEFAULT_PORT, API_PREFIX, ExitCode} = require(`../const`);
 const routes = require(`../routes`);
 const {getLogger} = require(`../lib/logger`);
 const sequelize = require(`../lib/sequelize`);

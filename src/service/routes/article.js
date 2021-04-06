@@ -10,8 +10,8 @@ const validator = require(`../middleware/schema-validator`);
 const articleValidator = validator(articleSchema);
 const commentValidator = validator(commentSchema);
 
-const {asyncWrapper} = require(`../../utils`);
-const {HttpCode} = require(`../../constants`);
+const {asyncWrapper} = require(`../utils`);
+const {HttpCode} = require(`../const`);
 
 module.exports = (app, articleService, commentService) => {
   const router = new express.Router();

@@ -2,8 +2,8 @@
 const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
 const {nanoid} = require(`nanoid`);
-const {getRandomInt, generateCreatedDate, shuffle, readFile} = require(`../../utils`);
-const {ExitCode, MAX_ID_LENGTH} = require(`../../constants`);
+const {getRandomInt, generateCreatedDate, shuffle, readFile} = require(`../utils`);
+const {ExitCode, MAX_ID_LENGTH} = require(`../const`);
 
 const FILE_OUTPUT = `${__dirname}/../../../mocks.json`;
 const FILE_TITLES = `${__dirname}/../../../data/titles.txt`;

@@ -4,7 +4,7 @@ const express = require(`express`);
 const path = require(`path`);
 const fs = require(`fs`).promises;
 const api = require(`../api`).getApi();
-const {calculatePagination, getTotalPages, asyncWrapper} = require(`../../utils`);
+const {calculatePagination, getTotalPages, asyncWrapper} = require(`../utils`);
 const {emptyUser, getRequestData, absoluteUploadDir, upload} = require(`./user-helper`);
 const router = new express.Router();
 

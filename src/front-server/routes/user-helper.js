@@ -4,7 +4,7 @@ const path = require(`path`);
 const multer = require(`multer`);
 const {nanoid} = require(`nanoid`);
 const he = require(`he`);
-const {checkObjProp} = require(`../../utils`);
+const {checkObjProp} = require(`../utils`);
 
 const UPLOAD_DIR = `../upload/img/`;
 

@@ -4,7 +4,7 @@ const express = require(`express`);
 const bodyParser = require(`body-parser`);
 const {
   calculatePagination, getTotalPages, asyncWrapper, escapeHtml
-} = require(`../../utils`);
+} = require(`../utils`);
 const {
   emptyArticle,
   getRequestData,

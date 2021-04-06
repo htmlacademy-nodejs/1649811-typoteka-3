@@ -1,7 +1,7 @@
 'use strict';
 
 const Joi = require(`joi`);
-const {RegisterMessage} = require(`../../const-messages`);
+const {RegisterMessage} = require(`../const-messages`);
 
 module.exports = Joi.object({
 

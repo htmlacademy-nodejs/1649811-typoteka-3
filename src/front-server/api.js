@@ -1,11 +1,15 @@
 'use strict';
 
 const axios = require(`axios`);
+const {API_PREFIX} = require(`./const`);
+require(`dotenv`).config();
 
 const TIMEOUT = 1000;
 
-const port = process.env.API_PORT || 3000;
-const defaultURL = `http://localhost:${port}/api/`;
+const port = process.env.API_PORT;
+const host = process.env.API_HOST;
+const defaultURL = `${host}:${port}${API_PREFIX}`;
+
 
 class API {
   constructor(baseURL, timeout) {

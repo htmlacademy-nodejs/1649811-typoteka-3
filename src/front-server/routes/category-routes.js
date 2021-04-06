@@ -2,7 +2,7 @@
 
 const express = require(`express`);
 const bodyParser = require(`body-parser`);
-const {asyncWrapper} = require(`../../utils`);
+const {asyncWrapper} = require(`../utils`);
 
 const api = require(`../api`).getApi();
 const urlencodedParser = bodyParser.urlencoded({extended: false});

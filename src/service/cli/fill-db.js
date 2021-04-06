@@ -1,8 +1,8 @@
 'use strict';
 
 const path = require(`path`);
-const {ExitCode} = require(`../../constants`);
-const {getRandomInt, shuffle, readFile, generateCreatedDate} = require(`../../utils`);
+const {ExitCode} = require(`../const`);
+const {getRandomInt, shuffle, readFile, generateCreatedDate} = require(`../utils`);
 const sequelize = require(`../lib/sequelize`);
 const initDb = require(`../lib/init-db`);
 

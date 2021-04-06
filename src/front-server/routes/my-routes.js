@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require(`express`);
-const {asyncWrapper} = require(`../../utils`);
+const {asyncWrapper} = require(`../utils`);
 const api = require(`../api`).getApi();
 
 const router = new express.Router();

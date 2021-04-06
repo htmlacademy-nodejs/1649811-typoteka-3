@@ -8,7 +8,7 @@ const {Sequelize} = require(`sequelize`);
 const search = require(`./search`);
 const DataService = require(`../data-service/search`);
 const initDb = require(`../lib/init-db`);
-const {HttpCode} = require(`../../constants`);
+const {HttpCode} = require(`../const`);
 
 const mockCategories = [`Деревья`, `За жизнь`, `Без рамки`, `Разное`, `IT`];
 const mockArticles = [

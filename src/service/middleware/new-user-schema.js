@@ -1,8 +1,8 @@
 'use strict';
 
 const Joi = require(`joi`);
-const {MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH} = require(`../../constants`);
-const {RegisterMessage} = require(`../../const-messages`);
+const {MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH} = require(`../const`);
+const {RegisterMessage} = require(`../const-messages`);
 
 
 module.exports = Joi.object({

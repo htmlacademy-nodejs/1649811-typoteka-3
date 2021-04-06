@@ -1,7 +1,7 @@
 'use strict';
 
-const {HttpCode} = require(`../../constants`);
-const {RegisterMessage} = require(`../../const-messages`);
+const {HttpCode} = require(`../const`);
+const {RegisterMessage} = require(`../const-messages`);
 
 module.exports = (service) => async (req, res, next) => {
   const {email} = req.body;

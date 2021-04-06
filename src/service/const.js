@@ -8,6 +8,8 @@ const USER_ARGV_INDEX = 2;
 
 const ARTICLES_PER_PAGE = 4;
 
+const SALT_ROUNDS = 6;
+
 const ExitCode = {
   ERROR: 1,
   SUCCESS: 0,
@@ -47,4 +49,5 @@ module.exports = {
   Env,
   MIN_PASSWORD_LENGTH,
   MAX_PASSWORD_LENGTH,
+  SALT_ROUNDS,
 };

@@ -5,7 +5,7 @@ const fs = require(`fs`).promises;
 const {nanoid} = require(`nanoid`);
 const multer = require(`multer`);
 const customParseFormat = require(`dayjs/plugin/customParseFormat`);
-const {checkObjProp, escapeHtml} = require(`../../utils`);
+const {checkObjProp, escapeHtml} = require(`../utils`);
 
 const dayjs = require(`dayjs`).extend(customParseFormat);
 
