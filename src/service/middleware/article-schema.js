@@ -11,7 +11,7 @@ module.exports = Joi.object({
     .messages({
       'string.min': ArticleMessage.MIN_TITLE_LENGTH,
       'string.max': ArticleMessage.MAX_TITLE_LENGTH,
-      'any.required': ArticleMessage.MAX_TITLE_LENGTH,
+      'any.required': ArticleMessage.REQUIRED_FIELD,
     }),
 
   createdAt: Joi.date()
@@ -38,9 +38,10 @@ module.exports = Joi.object({
 
   categories: Joi.array()
     .items(Joi.number().min(1).required())
-    // .required()
+    .required()
     .messages({
       'array.includesRequiredUnknowns': ArticleMessage.EMPTY_CATEGORY,
+      'any.required': ArticleMessage.REQUIRED_FIELD,
     }),
 
   picture: Joi.string()

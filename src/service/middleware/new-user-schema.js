@@ -52,6 +52,7 @@ module.exports = Joi.object({
     .required()
     .valid(Joi.ref(`password`))
     .messages({
+      'string.empty': `Повтор пароля ${RegisterMessage.EMPTY_VALUE}`,
       'any.only': RegisterMessage.PASSWORDS_NOT_EQUALS,
       'any.required': `Повтор пароля ${RegisterMessage.REQUIRED_FIELD}`,
     }),

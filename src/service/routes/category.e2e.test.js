@@ -4,7 +4,9 @@ const express = require(`express`);
 const request = require(`supertest`);
 const {describe, test, beforeAll, expect} = require(`@jest/globals`);
 const {Sequelize} = require(`sequelize`);
-
+const user = require(`./user`);
+const UserService = require(`../data-service/user`);
+const RefreshTokenService = require(`../data-service/refresh-token`);
 const category = require(`./category`);
 const DataService = require(`../data-service/category`);
 const initDb = require(`../lib/init-db`);
@@ -27,15 +29,27 @@ const createAPI = async () => {
   app.use(express.json());
 
   category(app, new DataService(mockDB));
+  user(app, new UserService(mockDB), new RefreshTokenService(mockDB));
 
   return app;
 };
 
-describe(`API returns category list`, () => {
-  let response;
+let accessToken;
+let app;
+let response;
 
+beforeAll(async () => {
+  app = await createAPI();
+  response = await request(app).post(`/login`).send({
+    email: `ivan@mail.com`,
+    password: `ivanov`,
+  });
+  ({accessToken} = response.body);
+});
+
+
+describe(`API returns category list`, () => {
   beforeAll(async () => {
-    const app = await createAPI();
     response = await request(app).get(`/categories`);
   });
 
@@ -51,17 +65,12 @@ describe(`API returns category list`, () => {
 });
 
 test(`API return category with given id`, async () => {
-  const app = await createAPI();
-
   return request(app).get(`/categories/1`)
     .expect(HttpCode.OK);
 });
 
 describe(`API returns category list with count articles`, () => {
-  let response;
-
   beforeAll(async () => {
-    const app = await createAPI();
     response = await request(app).get(`/categories?count=true`);
   });
 
@@ -76,15 +85,15 @@ describe(`API returns category list with count articles`, () => {
 });
 
 describe(`API created an category if data is valid`, () => {
-  let response;
-
   const newCategory = {
     title: `Test new category`,
   };
 
   beforeAll(async () => {
-    const app = await createAPI();
-    response = await request(app).post(`/categories`).send(newCategory);
+    response = await request(app).post(`/categories`)
+      .send(newCategory).set(`Authorization`, `Bearer: ${accessToken}`);
+
+
   });
 
   test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
@@ -94,15 +103,13 @@ describe(`API created an category if data is valid`, () => {
 });
 
 describe(`API update an category if data is valid`, () => {
-  let response;
-
   const categoryData = {
     title: `Test update category`,
   };
 
   beforeAll(async () => {
-    const app = await createAPI();
-    response = await request(app).put(`/categories/1`).send(categoryData);
+    response = await request(app).put(`/categories/1`)
+      .send(categoryData).set(`Authorization`, `Bearer: ${accessToken}`);
   });
 
   test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.OK));
@@ -112,11 +119,9 @@ describe(`API update an category if data is valid`, () => {
 });
 
 describe(`API correctly delete an category`, () => {
-  let response;
-
   beforeAll(async () => {
-    const app = await createAPI();
-    response = await request(app).delete(`/categories/1`);
+    response = await request(app)
+      .delete(`/categories/1`).set(`Authorization`, `Bearer: ${accessToken}`);
   });
 
   test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.OK));
@@ -124,4 +129,3 @@ describe(`API correctly delete an category`, () => {
   test(`Returns response with data eq "true"`, () =>
     expect(response.body).toBe(true));
 });
-

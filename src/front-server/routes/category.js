@@ -2,6 +2,7 @@
 
 const express = require(`express`);
 const bodyParser = require(`body-parser`);
+const privateRoute = require(`../middleware/private-route`);
 const {asyncWrapper} = require(`../utils`);
 
 const api = require(`../api`).getApi();
@@ -15,11 +16,12 @@ router.get(`/`, asyncWrapper(async (req, res) => {
   res.render(`my/categories`, {categories});
 }));
 
-router.post(`/add`, urlencodedParser, asyncWrapper(async (req, res) => {
+router.post(`/add`, privateRoute, urlencodedParser, asyncWrapper(async (req, res) => {
   const {body: {category}} = req;
 
   try {
-    const newCategory = await api.createCategory({title: category});
+    const {accessToken} = res.locals;
+    const newCategory = await api.createCategory({title: category}, accessToken);
 
     res.redirect(`/articles/category/${newCategory.id}`);
 
@@ -30,12 +32,13 @@ router.post(`/add`, urlencodedParser, asyncWrapper(async (req, res) => {
   }
 }));
 
-router.post(`/edit/:id`, urlencodedParser, asyncWrapper(async (req, res) => {
+router.post(`/edit/:id`, privateRoute, urlencodedParser, asyncWrapper(async (req, res) => {
   const {id} = req.params;
   const {body: {category}} = req;
 
   try {
-    await api.updateCategory(id, {title: category});
+    const {accessToken} = res.locals;
+    await api.updateCategory(id, {title: category}, accessToken);
   } catch (err) {
     console.log(err.message);
   }
@@ -44,11 +47,12 @@ router.post(`/edit/:id`, urlencodedParser, asyncWrapper(async (req, res) => {
 
 }));
 
-router.get(`/delete/:id`, asyncWrapper(async (req, res) => {
+router.get(`/delete/:id`, privateRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
 
   try {
-    await api.deleteCategory(id);
+    const {accessToken} = res.locals;
+    await api.deleteCategory(id, accessToken);
   } catch (err) {
     console.log(err.message);
   }

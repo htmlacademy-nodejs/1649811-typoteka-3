@@ -4,14 +4,17 @@ const express = require(`express`);
 const request = require(`supertest`);
 const {describe, test, beforeAll, expect} = require(`@jest/globals`);
 const {Sequelize} = require(`sequelize`);
-
 const article = require(`./article`);
+const user = require(`./user`);
+const UserService = require(`../data-service/user`);
+const RefreshTokenService = require(`../data-service/refresh-token`);
 const DataService = require(`../data-service/article`);
 const CommentService = require(`../data-service/comment`);
 const {HttpCode} = require(`../const`);
+const {ArticleMessage} = require(`../const-messages`);
 const initDb = require(`../lib/init-db`);
 const {
-  mockCategories, mockArticles, mockUsers, mockComments, mockArticle
+  mockCategories, mockArticles, mockUsers, mockComments, mockArticle,
 } = require(`../../../data/test-data`);
 
 const createAPI = async () => {
@@ -28,13 +31,25 @@ const createAPI = async () => {
   app.use(express.json());
 
   article(app, new DataService(mockDB), new CommentService(mockDB));
+  user(app, new UserService(mockDB), new RefreshTokenService(mockDB));
 
   return app;
 };
 
+let accessToken;
+
+
+beforeAll(async () => {
+  const app = await createAPI();
+  const response = await request(app).post(`/login`).send({
+    email: `ivan@mail.com`,
+    password: `ivanov`,
+  });
+  ({accessToken} = response.body);
+});
+
 describe(`API return a list of all articles`, () => {
   let response;
-
   beforeAll(async () => {
     const app = await createAPI();
     response = await request(app).get(`/articles`);
@@ -50,7 +65,6 @@ describe(`API return a list of all articles`, () => {
 
 describe(`API return a list of all articles with comments`, () => {
   let response;
-
   beforeAll(async () => {
     const app = await createAPI();
     response = await request(app).get(`/articles?comments=true`);
@@ -69,7 +83,6 @@ describe(`API return a list of all articles with comments`, () => {
 
 describe(`API returns an article with given id`, () => {
   let response;
-
   beforeAll(async () => {
     const app = await createAPI();
     response = await request(app).get(`/articles/1`);
@@ -83,7 +96,6 @@ describe(`API returns an article with given id`, () => {
 
 describe(`API returns an article with comments`, () => {
   let response;
-
   beforeAll(async () => {
     const app = await createAPI();
     response = await request(app).get(`/articles/1?comments=true`);
@@ -97,10 +109,10 @@ describe(`API returns an article with comments`, () => {
 describe(`API created an article if data is valid`, () => {
   let response;
   let app;
-
   beforeAll(async () => {
     app = await createAPI();
-    response = await request(app).post(`/articles`).send({...mockArticle});
+    response = await request(app).post(`/articles`)
+      .send({...mockArticle}).set(`Authorization`, `Bearer: ${accessToken}`);
   });
 
   test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
@@ -115,22 +127,27 @@ describe(`API created an article if data is valid`, () => {
 describe(`API refuses to create an article if data is invalid`, () => {
   const newArticle = Object.assign({}, mockArticle);
   delete newArticle.fullText;
+  let response;
+  let app;
+
+  beforeAll(async () => {
+    app = await createAPI();
+  });
 
 
   test(`Without any required property response code is 400`, async () => {
-
-    const app = await createAPI();
 
     for (const key of Object.keys(newArticle)) {
       const badArticle = {...newArticle};
       delete badArticle[key];
 
-      const response = await request(app).post(`/articles`).send(badArticle);
+      response = await request(app).post(`/articles`)
+        .send(badArticle).set(`Authorization`, `Bearer: ${accessToken}`);
 
       expect(response.statusCode).toBe(400);
-      const {message} = JSON.parse(response.text);
+      const {errors} = response.body;
 
-      expect(message.join(`. `)).toBe(`"${key}" is required`);
+      expect(errors[key]).toContain(`Поле обязательно для заполнения.`);
     }
   });
 });
@@ -143,14 +160,17 @@ describe(`API changes existent article if data is valid`, () => {
     app = await createAPI();
   });
 
-  test(`Status code 200`, () =>
-    request(app).put(`/articles/1`).send(updatedArticle)
+
+  test(`Status code 200`, async () =>
+    await request(app).put(`/articles/1`)
+      .send(updatedArticle)
+      .set(`Authorization`, `Bearer: ${accessToken}`)
       .expect(HttpCode.OK),
   );
 
 
-  test(`Article is really changed`, () =>
-    request(app).get(`/articles/1`)
+  test(`Article is really changed`, async () =>
+    await request(app).get(`/articles/1`)
       .expect((res) => expect(res.body.title).toEqual(updatedArticle.title)),
   );
 
@@ -159,54 +179,53 @@ describe(`API changes existent article if data is valid`, () => {
 describe(`API refuses to update article if title is empty`, () => {
   const invalidArticle = {...mockArticle};
   delete invalidArticle.title;
-
-  let app;
   let response;
 
   beforeAll(async () => {
-    app = await createAPI();
-    response = await request(app).put(`/articles/1`).send(invalidArticle);
+    const app = await createAPI();
+    response = await request(app).put(`/articles/1`)
+      .send(invalidArticle).set(`Authorization`, `Bearer: ${accessToken}`);
   });
 
-  test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
-  test(`Error message "title" is required`, () =>
-    expect(response.body.message).toContain(`"title" is required`));
+  test(`Status code 400`, async () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+  test(`Error message "title" is required`, async () =>
+    expect(response.body.errors).toStrictEqual({title: `Поле обязательно для заполнения.`}));
 });
 
 describe(`API refuses to update an article if data is invalid`, () => {
   const updatedArticle = {...mockArticle};
   delete updatedArticle.fullText;
+  let app;
+  beforeAll(async () => {
+    app = await createAPI();
+  });
 
   test(`Without any required property response code is 400`, async () => {
-
-    const app = await createAPI();
-
     for (const key of Object.keys(updatedArticle)) {
       const badArticle = {...updatedArticle};
       delete badArticle[key];
 
-      const response = await request(app).put(`/articles/1`).send(badArticle);
+      const response = await request(app).put(`/articles/1`)
+        .send(badArticle).set(`Authorization`, `Bearer: ${accessToken}`);
 
       expect(response.statusCode).toBe(400);
 
-      const {message} = JSON.parse(response.text);
+      const {errors} = response.body;
 
-      expect(message.join(`. `)).toBe(`"${key}" is required`);
+      expect(errors[key]).toContain(ArticleMessage.REQUIRED_FIELD);
     }
   });
 
   test(`With announce < 30 response code is 400`, async () => {
-
-    const app = await createAPI();
-
     const updArticle = {...updatedArticle};
     updArticle.announce = `123`;
 
-    const response = await request(app).put(`/articles/1`).send(updArticle);
+    const response = await request(app).put(`/articles/1`)
+      .send(updArticle).set(`Authorization`, `Bearer: ${accessToken}`);
 
     expect(response.statusCode).toBe(400);
-    const {message} = JSON.parse(response.text);
-    expect(message.join(`. `)).toBe(`"announce" length must be at least 30 characters long`);
+    const {errors} = JSON.parse(response.text);
+    expect(errors.announce).toBe(ArticleMessage.MIN_ANNOUNCE_LENGTH);
 
   });
 });
@@ -218,16 +237,18 @@ test(`API return status code 404 when trying to change non-existent article`, as
   return request(app)
     .put(`/articles/NO-EXIST`)
     .send(newArticle)
+    .set(`Authorization`, `Bearer: ${accessToken}`)
     .expect(HttpCode.NOT_FOUND);
 });
 
 describe(`API correctly deletes an article`, () => {
-  let app;
   let response;
+  let app;
 
   beforeAll(async () => {
     app = await createAPI();
-    response = await request(app).delete(`/articles/1`);
+    response = await request(app).delete(`/articles/1`)
+      .set(`Authorization`, `Bearer: ${accessToken}`);
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
@@ -243,15 +264,15 @@ test(`API refuses to delete non-existent article`, async () => {
 
   return request(app)
     .delete(`/articles/NO-EXIST`)
+    .set(`Authorization`, `Bearer: ${accessToken}`)
     .expect(HttpCode.NOT_FOUND);
 });
 
 describe(`API return a list of comments to given article`, () => {
-  let app;
   let response;
 
   beforeAll(async () => {
-    app = await createAPI();
+    const app = await createAPI();
     response = await request(app).get(`/articles/1/comments`);
   });
 
@@ -264,13 +285,13 @@ describe(`API return a list of comments to given article`, () => {
 });
 
 describe(`API creates a comment if data is valid`, () => {
-  const newComment = {text: `Статья так себе. Это где ж такие красоты?`, userId: 1};
-  let app;
-  let response;
+  const newComment = {text: `Статья так себе. Это где ж такие красоты?`};
+  let response; let app;
 
   beforeAll(async () => {
     app = await createAPI();
-    response = await request(app).post(`/articles/1/comments`).send(newComment);
+    response = await request(app).post(`/articles/1/comments`)
+      .send(newComment).set(`Authorization`, `Bearer: ${accessToken}`);
   });
 
   test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
@@ -281,42 +302,48 @@ describe(`API creates a comment if data is valid`, () => {
     .expect((res) => expect(res.body.length).toBe(4)));
 });
 
-test(`API refuses to create a comment when data empty, and returns status code 400`, async () => {
-  const app = await createAPI();
+describe(`API refuses to create a comment`, () => {
+  let app;
+  beforeAll(async () => {
+    app = await createAPI();
+  });
 
-  return request(app)
-    .post(`/articles/1/comments`)
-    .send({})
-    .expect(HttpCode.BAD_REQUEST);
-});
+  test(`Should returns status code 400`, async () => {
 
-test(`API refuses to create a comment when comment length < 30, and returns status code 400`, async () => {
-  const app = await createAPI();
+    return request(app)
+      .post(`/articles/1/comments`)
+      .send({})
+      .set(`Authorization`, `Bearer: ${accessToken}`)
+      .expect(HttpCode.BAD_REQUEST);
+  });
 
-  return request(app)
-    .post(`/articles/1/comments`)
-    .send({text: `123`, userId: 1})
-    .expect(HttpCode.BAD_REQUEST);
-});
+  test(`Should return 400 when comment length < 30`, async () => {
+    return request(app)
+      .post(`/articles/1/comments`)
+      .send({text: `123`, userId: 1})
+      .set(`Authorization`, `Bearer: ${accessToken}`)
+      .expect(HttpCode.BAD_REQUEST);
+  });
 
-test(`API refuses to create a comment to non-existent article and returns status code 404`, async () => {
-  const app = await createAPI();
-
-  return request(app)
-    .post(`/articles/NO-EXIST/comments`)
-    .send({text: `Тестовый комментарий`})
-    .expect(HttpCode.NOT_FOUND);
+  test(`Should return 404 (non-existent article)`, async () => {
+    return request(app)
+      .post(`/articles/NO-EXIST/comments`)
+      .send({text: `Тестовый комментарий`})
+      .set(`Authorization`, `Bearer: ${accessToken}`)
+      .expect(HttpCode.NOT_FOUND);
+  });
 });
 
 describe(`API correctly deletes a comment`, () => {
-  let app;
   let response;
+  let app;
 
   beforeAll(async () => {
     app = await createAPI();
     response = await request(app).get(`/articles/1/comments`);
     const commentId = response.body[0].id;
-    response = await request(app).delete(`/articles/1/comments/${commentId}`);
+    response = await request(app)
+      .delete(`/articles/1/comments/${commentId}`).set(`Authorization`, `Bearer: ${accessToken}`);
   });
 
   test(`Status code is 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
@@ -329,16 +356,8 @@ describe(`API correctly deletes a comment`, () => {
 
 test(`API refuses to delete non-existent comment`, async () => {
   const app = await createAPI();
-
   return request(app)
     .delete(`/articles/1/comments/NO-EXIST`)
-    .expect(HttpCode.NOT_FOUND);
-});
-
-test(`API refused to delete a comment to non-existent article`, async () => {
-  const app = await createAPI();
-
-  return request(app)
-    .delete(`/articles/NO-EXIST/comments/1`)
-    .expect(HttpCode.NOT_FOUND);
+    .expect(HttpCode.NOT_FOUND)
+    .set(`Authorization`, `Bearer: ${accessToken}`);
 });

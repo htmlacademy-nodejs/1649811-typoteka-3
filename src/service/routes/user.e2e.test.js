@@ -39,7 +39,7 @@ describe(`API refuses to create an user if data is invalid`, () => {
   let badUser;
   let app;
   let response;
-  let message;
+  let errors;
 
   beforeAll(async () => {
     app = await createAPI();
@@ -47,7 +47,7 @@ describe(`API refuses to create an user if data is invalid`, () => {
 
   beforeEach(() => {
     response = null;
-    message = null;
+    errors = null;
     badUser = {...mockUser};
   });
 
@@ -55,109 +55,130 @@ describe(`API refuses to create an user if data is invalid`, () => {
     badUser.firstname = ``;
 
     response = await request(app).post(`/user`).send(badUser);
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(message.join(`. `)).toBe(`Имя ${RegisterMessage.EMPTY_VALUE}`);
+    expect(errors.firstname).toBe(`Имя ${RegisterMessage.EMPTY_VALUE}`);
 
     badUser.firstname = 123;
     response = await request(app).post(`/user`).send(badUser);
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(message.join(`. `)).toBe(`Имя ${RegisterMessage.ALPHA_VALUE}`);
+    expect(errors.firstname).toBe(`Имя ${RegisterMessage.ALPHA_VALUE}`);
 
     delete badUser.firstname;
 
     response = await request(app).post(`/user`).send(badUser);
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(message.join(`. `)).toBe(`Имя ${RegisterMessage.REQUIRED_FIELD}`);
+    expect(errors.firstname).toBe(`Имя ${RegisterMessage.REQUIRED_FIELD}`);
   });
 
   test(`Bad lastname`, async () => {
     badUser.lastname = ``;
 
     response = await request(app).post(`/user`).send(badUser);
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(message.join(`. `)).toBe(`Фамилия ${RegisterMessage.EMPTY_VALUE}`);
+    expect(errors.lastname).toBe(`Фамилия ${RegisterMessage.EMPTY_VALUE}`);
 
     badUser.lastname = 123;
     response = await request(app).post(`/user`).send(badUser);
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(message.join(`. `)).toBe(`Фамилия ${RegisterMessage.ALPHA_VALUE}`);
+    expect(errors.lastname).toBe(`Фамилия ${RegisterMessage.ALPHA_VALUE}`);
 
     delete badUser.lastname;
 
     response = await request(app).post(`/user`).send(badUser);
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(message.join(`. `)).toBe(`Фамилия ${RegisterMessage.REQUIRED_FIELD}`);
+    expect(errors.lastname).toBe(`Фамилия ${RegisterMessage.REQUIRED_FIELD}`);
   });
 
   test(`Bad email`, async () => {
     badUser.email = ``;
 
     response = await request(app).post(`/user`).send(badUser);
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(message.join(`. `)).toBe(`email ${RegisterMessage.EMPTY_VALUE}`);
+    expect(errors.email).toBe(`email ${RegisterMessage.EMPTY_VALUE}`);
 
     badUser.email = 123;
     response = await request(app).post(`/user`).send(badUser);
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(message.join(`. `)).toBe(RegisterMessage.WRONG_EMAIL);
+    expect(errors.email).toBe(RegisterMessage.WRONG_EMAIL);
 
     delete badUser.email;
 
     response = await request(app).post(`/user`).send(badUser);
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(message.join(`. `)).toBe(`email ${RegisterMessage.REQUIRED_FIELD}`);
+    expect(errors.email).toBe(`email ${RegisterMessage.REQUIRED_FIELD}`);
   });
 
   test(`Bad password`, async () => {
     badUser.password = ``;
 
     response = await request(app).post(`/user`).send(badUser);
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(message.join(`. `)).toBe(`Пароль не указано значение. Пароли не совпадают`);
+    expect(errors.password).toBe(`Пароль не указано значение.`);
 
     badUser.password = `23`;
     response = await request(app).post(`/user`).send(badUser);
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(message.join(`. `)).toBe(`Пароль должен быть не меньше 6 символов. Пароли не совпадают`);
+    expect(errors.password).toBe(`Пароль должен быть не меньше 6 символов.`);
 
     badUser.password = `123wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww`;
     response = await request(app).post(`/user`).send(badUser);
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(message.join(`. `)).toBe(`Пароль должен быть не больше 20 символов. Пароли не совпадают`);
+    expect(errors.password).toBe(`Пароль должен быть не больше 20 символов.`);
 
     delete badUser.password;
 
     response = await request(app).post(`/user`).send(badUser);
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
-    expect(message.join(`. `)).toBe(`Пароль обязательно для заполнения. Пароли не совпадают`);
+    expect(errors.password).toBe(`Пароль обязательно для заполнения.`);
   });
+
+  test(`Bad password repeat`, async () => {
+    badUser.repeat = ``;
+
+    response = await request(app).post(`/user`).send(badUser);
+    ({errors} = JSON.parse(response.text));
+
+    expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
+    expect(errors.repeat).toBe(`Пароли не совпадают. Повтор пароля не указано значение.`);
+
+    badUser.repeat = `123`;
+
+    response = await request(app).post(`/user`).send(badUser);
+    ({errors} = JSON.parse(response.text));
+
+    expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
+    expect(errors.repeat).toBe(`Пароли не совпадают.`);
+  });
+
+
 });
+
 
 describe(`API refuses to create an user if user exist`, () => {
   const newUser = Object.assign({}, mockUser);
@@ -177,7 +198,7 @@ describe(`API refuses to create an user if user exist`, () => {
 
   test(`Should return message "email" already exist`, async () => {
     response = await request(app).post(`/user`).send(newUser);
-    return expect(response.body).toStrictEqual({message: [`Пользователь с таким email уже зарегистрирован`]});
+    return expect(response.body).toStrictEqual({errors: {email: `Пользователь с таким email уже зарегистрирован.`}});
   });
 });
 
@@ -208,7 +229,7 @@ describe(`Login`, () => {
     });
 
     expect(response.statusCode).toBe(404);
-    expect(response.body).toStrictEqual({"message": [`User with email bad@mail.com not found`]});
+    expect(response.body).toStrictEqual({errors: {email: `Пользователь с таким email не зарегистрирован.`}});
   });
 
   test(`Should return Wrong password`, async () => {
@@ -218,14 +239,14 @@ describe(`Login`, () => {
     });
 
     expect(response.statusCode).toBe(401);
-    expect(response.body).toStrictEqual({"message": [`Wrong password`]});
+    expect(response.body).toStrictEqual({errors: {password: `Неверный пароль.`}});
   });
 });
 
 describe(`Login bad`, () => {
   let app;
   let response;
-  let message;
+  let errors;
 
   beforeAll(async () => {
     app = await createAPI();
@@ -238,10 +259,22 @@ describe(`Login bad`, () => {
       password: null,
     });
 
-    ({message} = JSON.parse(response.text));
+    ({errors} = JSON.parse(response.text));
 
     expect(response.statusCode).toBe(400);
-    expect(message.join(`. `)).toBe(`Некорректный email. Пароль обязательно для заполнения`);
+    expect(errors.email).toBe(`Некорректный email.`);
+  });
+  test(`Should return 401 and error message`, async () => {
+
+    response = await request(app).post(`/login`).send({
+      email: `ivan@mail.com`,
+      password: `123`,
+    });
+
+    ({errors} = JSON.parse(response.text));
+
+    expect(response.statusCode).toBe(401);
+    expect(errors.password).toBe(`Неверный пароль.`);
   });
 });
 
@@ -287,7 +320,7 @@ describe(`Refresh`, () => {
 
     ({accessToken, refreshToken} = response.body);
   });
-  
+
   test(`Should return 400`, async () => {
     response = await request(app).post(`/refresh`).send({});
     expect(response.statusCode).toBe(HttpCode.BAD_REQUEST);
@@ -308,5 +341,3 @@ describe(`Refresh`, () => {
     }, 1000);
   });
 });
-
-

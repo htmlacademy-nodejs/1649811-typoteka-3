@@ -2,6 +2,7 @@
 
 const express = require(`express`);
 const {HttpCode} = require(`../const`);
+const authenticateJwt = require(`../middleware/authenticate-jwt`);
 const {asyncWrapper} = require(`../utils`);
 
 module.exports = (app, service) => {
@@ -17,7 +18,7 @@ module.exports = (app, service) => {
     return res.status(HttpCode.OK).json(categories);
   }));
 
-  router.post(`/`, asyncWrapper(async (req, res) => {
+  router.post(`/`, authenticateJwt, asyncWrapper(async (req, res) => {
     const article = await service.create(req.body);
 
     return res.status(HttpCode.CREATED).json(article);
@@ -31,7 +32,7 @@ module.exports = (app, service) => {
     return res.status(HttpCode.OK).json(category);
   }));
 
-  router.put(`/:id`, asyncWrapper(async (req, res) => {
+  router.put(`/:id`, authenticateJwt, asyncWrapper(async (req, res) => {
     const {id} = req.params;
 
     const updated = await service.update(id, req.body);
@@ -43,7 +44,7 @@ module.exports = (app, service) => {
     return res.status(HttpCode.OK).json(updated);
   }));
 
-  router.delete(`/:id`, asyncWrapper(async (req, res) => {
+  router.delete(`/:id`, authenticateJwt, asyncWrapper(async (req, res) => {
     const {id} = req.params;
 
     const deleted = await service.drop(id);
