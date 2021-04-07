@@ -47,8 +47,6 @@ router.post(`/add`, privateRoute, upload.single(`picture`), asyncWrapper(async (
     [isPictureExist, articleData] = getRequestData(req);
     const {accessToken} = res.locals;
 
-    console.log(articleData);
-
     await api.createArticle(articleData, accessToken);
     res.redirect(`/my`);
 
@@ -138,24 +136,20 @@ router.get(`/delete/:id`, privateRoute, asyncWrapper(async (req, res) => {
 router.post(`/:id/comments`, privateRoute, bodyParser.urlencoded({extended: true}), asyncWrapper(async (req, res) => {
   const {id} = req.params;
   const {comment} = req.body;
-  const {loggedUser} = res.locals;
 
-  const data = {
-    text: he.escape(comment),
-    userId: loggedUser.id,
-  };
+  const data = {text: he.escape(comment)};
 
   try {
-    const accessToken = req.signedCookies[COOKIE_ACCESS];
+    const {accessToken} = res.locals;
     await api.createComment(id, data, accessToken);
     res.redirect(`/articles/${id}`);
 
   } catch (err) {
-    const {message: errorMessage} = err.response.data;
+    const {errors} = err.response.data;
 
     const article = await api.getArticle(id, true);
 
-    res.render(`article/post`, {article, comment: data.text, errorMessage});
+    res.render(`article/post`, {article, comment: data.text, errorMessages: errors});
   }
 
 }));

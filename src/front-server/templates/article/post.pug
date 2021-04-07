@@ -52,8 +52,11 @@ block content
 
                 button.comments__button.button.button--colored(type='submit') Опубликовать
 
-                if (errorMessage)
-                  span(style={display: 'block', color: 'red'}) #{errorMessage}
+                if errorMessages
+                  .form__validation-error
+                    ul.form__errors
+                      each error in errorMessages
+                        li.form__error #{error}
 
 
 block scripts

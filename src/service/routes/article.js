@@ -41,8 +41,8 @@ module.exports = (app, articleService, commentService) => {
     try {
       const {user} = res.locals;
       const data = req.body;
-      data.userId = user.id;
-      article = await articleService.create(data);
+
+      article = await articleService.create(data, user.id);
     } catch (err) {
       return res.sendStatus(HttpCode.BAD_REQUEST);
     }
@@ -85,7 +85,8 @@ module.exports = (app, articleService, commentService) => {
 
   router.post(`/:articleId/comments`, authenticateJwt, articleExists(articleService), validator(commentSchema), asyncWrapper(async (req, res) => {
     const {article} = res.locals;
-    const comment = await commentService.create(article.id, req.body);
+    const {user} = res.locals;
+    const comment = await commentService.create(article.id, user.id, req.body);
 
     return res.status(HttpCode.CREATED).json(comment);
   }));

@@ -12,8 +12,11 @@ class ArticleService {
     this._sequelize = sequelize;
   }
 
-  async create(articleData) {
-    const article = await this._Article.create(articleData);
+  async create(articleData, userId) {
+    const article = await this._Article.create({
+      ...articleData,
+      userId,
+    });
     await article.addCategories(articleData.categories);
 
     return article;
