@@ -4,7 +4,7 @@ const express = require(`express`);
 const {asyncWrapper} = require(`../utils`);
 const api = require(`../api`).getApi();
 const privateRoute = require(`../middleware/private-route`);
-const {COOKIE_ACCESS} = require(`../const`);
+
 
 const router = new express.Router();
 
@@ -27,7 +27,7 @@ router.get(`/comments/delete/:id`, privateRoute, asyncWrapper(async (req, res) =
   const {articleId} = req.query;
 
   try {
-    const accessToken = req.signedCookies[COOKIE_ACCESS];
+    const {accessToken} = res.locals;
     await api.deleteComment(id, articleId, accessToken);
 
   } catch (error) {

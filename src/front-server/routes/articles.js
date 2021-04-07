@@ -8,7 +8,6 @@ const {
   calculatePagination, getTotalPages, asyncWrapper, removeUploadedImage, moveUploadedImage,
 } = require(`../utils`);
 const {emptyArticle, getRequestData, upload} = require(`./article-helper`);
-const {COOKIE_ACCESS} = require(`../const`);
 
 
 const api = require(`../api`).getApi();
@@ -124,7 +123,7 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
 router.get(`/delete/:id`, privateRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
   try {
-    const accessToken = req.signedCookies[COOKIE_ACCESS];
+    const {accessToken} = res.locals;
     await api.deleteArticle(id, accessToken);
   } catch (error) {
     console.log(error.message);
