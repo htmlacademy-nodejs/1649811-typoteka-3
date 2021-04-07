@@ -29,6 +29,7 @@ block content
 
       .post__wrapper.post__wrapper--comments
         section.post__comments.comments
+        if (article.comments.length > 0)
           h2.comments__title.title.title--middle Комментарии
           ul.comments__list
             each comment in article.comments
@@ -40,25 +41,31 @@ block content
                     p #{comment.user.firstname} #{comment.user.lastname}
                     time.comments__date(datetime=`${comment.createdAt}`) #{formatDate(comment.createdAt)}
                   p.comments__message #{comment.text}
+        else
+          h2.comments__title.title.title--middle Комментарии отсутствуют
 
-          if (loggedUser)
-            .comments__footer.comments__footer--user
-              form(action=`/articles/${article.id}/comments` method='POST')
-                if (loggedUser.avatar)
-                  .comments__avatar.avatar
-                    img(src=`/img/${loggedUser.avatar}` alt='аватар пользователя')
-                label
-                  textarea(rows='1' placeholder='Присоединиться к обсуждению' name='comment') #{comment}
+        if (loggedUser)
+          .comments__footer.comments__footer--user
+            form(action=`/articles/${article.id}/comments` method='POST')
+              if (loggedUser.avatar)
+                .comments__avatar.avatar
+                  img(src=`/img/${loggedUser.avatar}` alt='аватар пользователя')
+              label
+                textarea(rows='1' placeholder='Присоединиться к обсуждению' name='comment') #{comment}
 
-                button.comments__button.button.button--colored(type='submit') Опубликовать
+              button.comments__button.button.button--colored(type='submit') Опубликовать
 
-                if errorMessages
-                  .form__validation-error
-                    ul.form__errors
-                      each error in errorMessages
-                        li.form__error #{error}
-
+              if errorMessages
+                .form__validation-error
+                  ul.form__errors
+                    each error in errorMessages
+                      li.form__error #{error}
+        else
+          .comments__footer.comments__footer--visitor
+            a.comments__button.button.button--colored(href='/login') Войти
+            a.comments__registration(href='/register')
+                b.title.title--small Регистрация
+                | Чтобы присоединиться к переписке нужно зарегистрироваться
 
 block scripts
-  //script(src='/js/vendor.js')
   script(src='/js/main.js')
