@@ -8,7 +8,6 @@ const router = new express.Router();
 router.get(`/`, asyncWrapper(async (req, res) => {
 
   const [page, limit, offset] = calculatePagination(req.query);
-
   const [
     {count, articles},
     categories,

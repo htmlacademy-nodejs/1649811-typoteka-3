@@ -2,13 +2,11 @@
 
 const axios = require(`axios`);
 const {API_PREFIX} = require(`./const`);
-require(`dotenv`).config();
-
+const {API_PORT, API_HOST} = process.env;
 const TIMEOUT = 1000;
 
-const port = process.env.API_PORT;
-const host = process.env.API_HOST;
-const defaultURL = `${host}:${port}${API_PREFIX}`;
+
+const defaultURL = `${API_HOST}:${API_PORT}${API_PREFIX}`;
 
 
 class API {
@@ -47,56 +45,64 @@ class API {
     return this._load(`/search`, {params: {query}});
   }
 
-  async createArticle(data) {
+  async createArticle(data, accessToken) {
     return this._load(`/articles`, {
       method: `POST`,
+      headers: {'Authorization': `Bearer: ${accessToken}`},
       data,
     });
   }
 
-  async editArticle(id, data) {
+  async editArticle(id, data, accessToken) {
     return this._load(`/articles/${id}`, {
       method: `PUT`,
+      headers: {'Authorization': `Bearer: ${accessToken}`},
       data,
     });
   }
 
-  async deleteArticle(id) {
+  async deleteArticle(id, accessToken) {
     return this._load(`/articles/${id}`, {
       method: `DELETE`,
+      headers: {'Authorization': `Bearer: ${accessToken}`},
     });
   }
 
-  async createComment(id, data) {
+  async createComment(id, data, accessToken) {
     return this._load(`/articles/${id}/comments`, {
       method: `POST`,
+      headers: {'Authorization': `Bearer: ${accessToken}`},
       data,
     });
   }
 
-  async deleteComment(id, articleId) {
+  async deleteComment(id, articleId, accessToken) {
     return this._load(`/articles/${articleId}/comments/${id}`, {
       method: `DELETE`,
+      headers: {'Authorization': `Bearer: ${accessToken}`},
     });
   }
 
-  async createCategory(data) {
+  async createCategory(data, accessToken) {
     return this._load(`/categories`, {
       method: `POST`,
+      headers: {'Authorization': `Bearer: ${accessToken}`},
       data,
     });
   }
 
-  async updateCategory(id, data) {
+  async updateCategory(id, data, accessToken) {
     return this._load(`/categories/${id}`, {
       method: `PUT`,
+      headers: {'Authorization': `Bearer: ${accessToken}`},
       data,
     });
   }
 
-  async deleteCategory(id) {
+  async deleteCategory(id, accessToken) {
     return this._load(`/categories/${id}`, {
       method: `DELETE`,
+      headers: {'Authorization': `Bearer: ${accessToken}`},
     });
   }
 
@@ -104,6 +110,30 @@ class API {
     return this._load(`/user`, {
       method: `POST`,
       data
+    });
+  }
+
+  async login(data) {
+    return this._load(`/login`, {
+      method: `POST`,
+      data
+    });
+  }
+
+  async refresh(refreshToken) {
+    const data = {token: refreshToken};
+    return this._load(`/refresh`, {
+      method: `POST`,
+      data
+    });
+  }
+
+  async logout(accessToken, refreshToken) {
+    const data = {token: refreshToken};
+    return this._load(`/logout`, {
+      method: `DELETE`,
+      headers: {'Authorization': `Bearer: ${accessToken}`},
+      data,
     });
   }
 

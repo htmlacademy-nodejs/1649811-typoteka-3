@@ -13,12 +13,34 @@ const RegisterMessage = {
 
 const LoginMessage = {
   USER_NOT_EXISTS: `Пользователь с таким email не зарегистрирован`,
-  WRONG_PASSWORD: `Неправильно введён логин или пароль`,
+  // WRONG_PASSWORD: `Неправильно введён логин или пароль`,
+  WRONG_PASSWORD: `Неверный пароль`,
   WRONG_EMAIL: `Неправильный email`,
   REQUIRED_FIELD: `Поле обязательно для заполнения`,
 };
 
+const ArticleMessage = {
+  REQUIRED_FIELD: `Поле обязательно для заполнения`,
+  MIN_TITLE_LENGTH: `Заголовок должен быть не менее 30 символов.`,
+  MAX_TITLE_LENGTH: `Заголовок должен быть не более 250 символов.`,
+  MIN_ANNOUNCE_LENGTH: `Анонс должен быть не менее 30 символов.`,
+  MAX_ANNOUNCE_LENGTH: `Анонс должен быть не менее 250 символов.`,
+  MAX_TEXT_LENGTH: `Максимальная длина текста 1000 символов.`,
+  EMPTY_CATEGORY: `Не выбрана категория, выберите как минимум одну.`,
+  IMAGE_FORMAT: `Допустимый формат изображения JPEG(JPG) или PNG.`,
+  MAX_IMAGE_LENGTH: `Максимальная длина названия файла изображения 255 символов.`,
+  WRONG_DATE_FORMAT: `Неверный формат даты`,
+};
+
+const CommentMessage = {
+  MIX_TEXT_LENGTH: `Минимальная длина текста 20 символов.`,
+  REQUIRED_FIELD: `Поле обязательно для заполнения`,
+};
+
+
 module.exports = {
   RegisterMessage,
   LoginMessage,
+  ArticleMessage,
+  CommentMessage,
 };

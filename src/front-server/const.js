@@ -1,6 +1,10 @@
 'use strict';
 
+const path = require(`path`);
+
 const DEFAULT_PORT = 8080;
+const PUBLIC_IMG_DIR = path.resolve(__dirname, `public`, `img`);
+const UPLOAD_DIR = path.join(__dirname, `upload`);
 const PUBLIC_DIR = `public`;
 const VIEWS_DIR = `templates`;
 const SESSION_NAME = `sid`;
@@ -22,6 +26,7 @@ const MAX_ID_LENGTH = 6;
 const MIN_PASSWORD_LENGTH = 6;
 const MAX_PASSWORD_LENGTH = 20;
 
+const userCookieOption = {signed: true, httpOnly: true, sameSite: `strict`};
 
 module.exports = {
   DEFAULT_PORT,
@@ -36,4 +41,7 @@ module.exports = {
   SESSION_NAME,
   COOKIE_ACCESS,
   COOKIE_REFRESH,
+  userCookieOption,
+  PUBLIC_IMG_DIR,
+  UPLOAD_DIR,
 };

@@ -5,7 +5,7 @@ const SearchService = require(`./search`);
 const ArticleService = require(`./article`);
 const CommentService = require(`./comment`);
 const UserService = require(`./user`);
-const TokenService = require(`./refresh-token`);
+const RefreshTokenService = require(`./refresh-token`);
 
 module.exports = {
   CategoryService,
@@ -13,5 +13,5 @@ module.exports = {
   SearchService,
   ArticleService,
   UserService,
-  TokenService,
+  RefreshTokenService,
 };

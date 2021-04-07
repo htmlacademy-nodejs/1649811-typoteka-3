@@ -27,47 +27,62 @@ block content
                   label
                     input(type='text' placeholder='Заголовок' required='' value=article.title name='title')
 
-                  each error in errorMessages.filter((item) => item.includes(`title`))
-                    span(style={display: 'block', color: 'red'}) #{error}
+                  if (errors && errors.title)
+                    span.form__error-message #{errors.title}
 
                 .form__field.form__field--post-image
+                  img.preview__image(alt='Фотография' src='')
                   label
-                    input#image-name-field(type='text' name='old-picture' value=`${article.picture}` placeholder='Фотография' readonly='')
+                    input(type='hidden' name='old-picture' value=`${article.picture}` readonly='')
+
                   .form__image-loader.form__image-loader--publication
                     label
-                      input.visually-hidden(type='file' name=`picture`)
+                      input#image-input.visually-hidden(type='file' name=`picture` accept=".jpg, .jpeg, .png")
                       | Обзор
-                  button.button.button--transparent Удалить
+
+                  button#image-remove.button.button--transparent Удалить
+
+                if (errors && errors.picture)
+                  span.form__error-message #{errors.picture}
 
                 .new-publication__checkbox.new-publication__checkbox--auto
                   each category in categories
                     input(type='checkbox' id=category.id name=`categories[]` value=category.id checked=article.categories.some(item => +item === +category.id))
                     label(for=category.id) #{category.title}
 
-                each error in errorMessages.filter((item) => item.includes(`categories`))
-                  span(style={display: 'block', color: 'red'}) #{error}
+                  if (errors && errors.category)
+                    span.form__error-message #{errors.category}
 
                 a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
+
               .form__wrapper.form__wrapper--text
                 .form__field.form__field--publication-text
                   label
                     textarea(rows='2' placeholder='Анонс публикации' name=`announce` required='')
                       | #{article.announce}
 
-                each error in errorMessages.filter((item) => item.includes(`announce`))
-                  span(style={display: 'block', color: 'red'}) #{error}
+                  if (errors && errors.announce)
+                    span.form__error-message #{errors.announce}
 
                 .form__field.form__field--publication-text
-                  label
-                    textarea(rows='5' placeholder='Полный текст публикации' name='full-text')
-                      | #{article.fullText}
+                    label
+                      textarea(rows='5' placeholder='Полный текст публикации' name='full-text')
+                        | #{article.fullText}
 
-                each error in errorMessages.filter((item) => item.includes(`fullText`))
-                  span(style={display: 'block', color: 'red'}) #{error}
+                if (errors && errors.fullText)
+                  span.form__error-message #{errors.fullText}
 
+
+            if errors
+              .form__validation-error
+                p.form__error-message Ошибки при заполнении формы:
+                ul.form__errors
+                  each error in Object.values(errors)
+                    li.form__error #{error}
       .modal__overlay
 
 block scripts
   script(src='/js/vendor-flatpickr.js')
   script(src='/js/main.js')
+  script(src='/js/image.js')
 

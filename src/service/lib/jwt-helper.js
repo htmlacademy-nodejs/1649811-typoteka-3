@@ -2,7 +2,6 @@
 
 const jwt = require(`jsonwebtoken`);
 const {JWT_EXPIRES} = require(`../const`);
-require(`dotenv`).config();
 const {JWT_ACCESS_SECRET, JWT_REFRESH_SECRET} = process.env;
 
 const makeTokens = (tokenData) => {

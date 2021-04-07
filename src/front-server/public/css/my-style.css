@@ -36,3 +36,12 @@
 .popup--registration {
   margin-top: 60px;
 }
+
+.preview__image {
+  color: rgba(0, 0, 0, 0.4);
+  max-width: 150px;
+}
+
+.header__logo--403::before{content:"/ 403"}.header--error
+
+

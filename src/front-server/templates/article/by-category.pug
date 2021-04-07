@@ -1,8 +1,9 @@
 extends ../layout
 
-block content
+block header
+  include ../partials/header
 
-  include header
+block content
 
   main.articles-category
     h1 #{category.title}

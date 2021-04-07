@@ -2,15 +2,13 @@
 
 const express = require(`express`);
 const bodyParser = require(`body-parser`);
+const he = require(`he`);
+const privateRoute = require(`../middleware/private-route`);
 const {
-  calculatePagination, getTotalPages, asyncWrapper, escapeHtml
+  calculatePagination, getTotalPages, asyncWrapper, removeUploadedImage, moveUploadedImage,
 } = require(`../utils`);
-const {
-  emptyArticle,
-  getRequestData,
-  upload,
-  movePicture,
-} = require(`./article-helper`);
+const {emptyArticle, getRequestData, upload} = require(`./article-helper`);
+const {COOKIE_ACCESS} = require(`../const`);
 
 
 const api = require(`../api`).getApi();
@@ -32,37 +30,46 @@ router.get(`/category/:id`, asyncWrapper(async (req, res) => {
   res.render(`article/by-category`, {category, articles, page, totalPages});
 }));
 
-
-router.get(`/add`, asyncWrapper(async (req, res) => {
+router.get(`/add`, privateRoute, asyncWrapper(async (req, res) => {
   const newArticle = Object.assign({}, emptyArticle);
   newArticle.createdDate = new Date();
 
   const categories = await api.getAllCategories();
 
-  res.render(`my/post-add`, {article: newArticle, categories, errorMessages: []});
+  res.render(`my/post-add`, {article: newArticle, categories});
 }));
 
-router.post(`/add`, upload.single(`picture`), asyncWrapper(async (req, res) => {
-
-  const [isPictureExist, articleData] = getRequestData(req);
+router.post(`/add`, privateRoute, upload.single(`picture`), asyncWrapper(async (req, res) => {
+  let isPictureExist;
+  let articleData;
 
   try {
-    await api.createArticle(articleData);
+    [isPictureExist, articleData] = getRequestData(req);
+    const {accessToken} = res.locals;
+
+    console.log(articleData);
+
+    await api.createArticle(articleData, accessToken);
     res.redirect(`/my`);
 
     if (isPictureExist) {
-      await movePicture(articleData.picture);
+      await moveUploadedImage(articleData.picture);
     }
 
   } catch (error) {
-    const {message: errorMessages} = error.response.data;
-
     const categories = await api.getAllCategories();
-    res.render(`my/post-add`, {article: articleData, categories, errorMessages});
+    articleData.createdAt = new Date().toISOString();
+    if (isPictureExist) {
+      await removeUploadedImage(articleData.picture);
+      articleData.picture = ``;
+    }
+    const {errors} = error.response.data;
+
+    res.render(`my/post-add`, {article: articleData, categories, errors});
   }
 }));
 
-router.get(`/edit/:id`, asyncWrapper(async (req, res) => {
+router.get(`/edit/:id`, privateRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
 
   const [article, categories] = await Promise.all([
@@ -70,27 +77,38 @@ router.get(`/edit/:id`, asyncWrapper(async (req, res) => {
     await api.getAllCategories(),
   ]);
 
-  res.render(`my/post-edit`, {article, categories, errorMessages: []});
+  res.render(`my/post-edit`, {article, categories});
 }));
 
-router.post(`/edit/:id`, upload.single(`picture`), asyncWrapper(async (req, res) => {
-  const {id} = req.params;
-  const [isPictureExist, articleData] = getRequestData(req);
+router.post(`/edit/:id`, privateRoute, upload.single(`picture`), asyncWrapper(async (req, res) => {
+  let id;
+  let isPictureExist;
+  let articleData;
 
   try {
-    await api.editArticle(id, articleData);
+    ({id} = req.params);
+    [isPictureExist, articleData] = getRequestData(req);
+    const {accessToken} = res.locals;
+
+    await api.editArticle(id, articleData, accessToken);
     res.redirect(`/my`);
 
     if (isPictureExist) {
-      await movePicture(articleData.picture);
+      await moveUploadedImage(articleData.picture);
     }
   } catch (error) {
-
-    const {message: errorMessages} = error.response.data;
-
     const categories = await api.getAllCategories();
+
     articleData.id = id;
-    res.render(`my/post-edit`, {article: articleData, categories, errorMessages});
+    articleData.createdAt = new Date().toISOString();
+    if (isPictureExist) {
+      await removeUploadedImage(articleData.picture);
+      articleData.picture = ``;
+    }
+
+    const {errors} = error.response.data;
+
+    res.render(`my/post-edit`, {article: articleData, categories, errors});
   }
 }));
 
@@ -105,10 +123,11 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
   res.render(`article/post`, {article, comment: null});
 }));
 
-router.get(`/delete/:id`, asyncWrapper(async (req, res) => {
+router.get(`/delete/:id`, privateRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
   try {
-    await api.deleteArticle(id);
+    const accessToken = req.signedCookies[COOKIE_ACCESS];
+    await api.deleteArticle(id, accessToken);
   } catch (error) {
     console.log(error.message);
   }
@@ -116,17 +135,19 @@ router.get(`/delete/:id`, asyncWrapper(async (req, res) => {
   res.redirect(`/my`);
 }));
 
-router.post(`/:id/comments`, bodyParser.urlencoded({extended: true}), asyncWrapper(async (req, res) => {
+router.post(`/:id/comments`, privateRoute, bodyParser.urlencoded({extended: true}), asyncWrapper(async (req, res) => {
   const {id} = req.params;
   const {comment} = req.body;
+  const {loggedUser} = res.locals;
 
   const data = {
-    text: escapeHtml(comment),
-    userId: 1,
+    text: he.escape(comment),
+    userId: loggedUser.id,
   };
 
   try {
-    await api.createComment(id, data);
+    const accessToken = req.signedCookies[COOKIE_ACCESS];
+    await api.createComment(id, data, accessToken);
     res.redirect(`/articles/${id}`);
 
   } catch (err) {

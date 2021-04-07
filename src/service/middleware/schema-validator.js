@@ -13,7 +13,11 @@ module.exports = (schema) => (
 
       res.status(HttpCode.BAD_REQUEST)
         .json({
-          message: details.map((errorDescription) => errorDescription.message),
+          errors: details.reduce((e, item) => {
+            const [key] = item.path;
+            e[key] = e[key] ? `${e[key]} ${item.message}` : item.message;
+            return e;
+          }, {})
         });
 
       return;

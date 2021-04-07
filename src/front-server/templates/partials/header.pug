@@ -1,0 +1,28 @@
+header.header
+  a.header__logo.logo(href='/')
+    img.logo__image(src='/img/icons/logo-image-only.svg' alt='логотип')
+    span.logo__name Типотека
+  if (loggedUser)
+    nav.header__nav
+      ul.header__nav-list
+        li.header__list-item
+          p #{loggedUser.firstname} #{loggedUser.lastname}
+        li.header__list-item
+          a.header__exit(href='/logout') Выйти
+    if (loggedUser.avatar)
+      a.header__avatar.avatar(href='/my')
+        img(src=`/img/${loggedUser.avatar}` alt='аватар пользователя')
+
+  else
+    nav.header__nav
+      ul.header__nav-list
+        li.header__list-item
+          a.header__registration(href='/register') Регистрация
+        li.header__list-item
+          a.header__enter(href='/login') Вход с паролем
+
+  a.header__search.button.button--search(href='/search' aria-label='поиск по сайту')
+
+
+
+

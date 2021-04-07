@@ -12,6 +12,7 @@ const {
   CommentService,
   SearchService,
   UserService,
+  RefreshTokenService,
 } = require(`../data-service`);
 
 const sequelize = require(`../lib/sequelize`);
@@ -25,7 +26,7 @@ defineModels(sequelize);
   category(app, new CategoryService(sequelize));
   article(app, new ArticleService(sequelize), new CommentService(sequelize));
   search(app, new SearchService(sequelize));
-  user(app, new UserService(sequelize));
+  user(app, new UserService(sequelize), new RefreshTokenService(sequelize));
 })();
 
 module.exports = app;

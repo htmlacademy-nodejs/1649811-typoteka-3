@@ -3,30 +3,35 @@
 const express = require(`express`);
 const {asyncWrapper} = require(`../utils`);
 const api = require(`../api`).getApi();
+const privateRoute = require(`../middleware/private-route`);
+const {COOKIE_ACCESS} = require(`../const`);
 
 const router = new express.Router();
 
-router.get(`/`, asyncWrapper(async (req, res) => {
+router.get(`/`, privateRoute, asyncWrapper(async (req, res) => {
+  const {loggedUser} = res.locals;
 
-  const articles = await api.getArticles({userId: 1});
+  const articles = await api.getArticles({userId: loggedUser.id});
 
   res.render(`my`, {articles});
 }));
 
-router.get(`/comments`, asyncWrapper(async (req, res) => {
-  const articles = await api.getArticles({userId: 1, comments: true});
+router.get(`/comments`, privateRoute, asyncWrapper(async (req, res) => {
+  const {loggedUser} = res.locals;
+  const articles = await api.getArticles({userId: loggedUser.id, comments: true});
   res.render(`my/comments`, {articles});
 }));
 
-router.get(`/comments/delete/:id`, asyncWrapper(async (req, res) => {
+router.get(`/comments/delete/:id`, privateRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
   const {articleId} = req.query;
 
   try {
-    await api.deleteComment(id, articleId);
+    const accessToken = req.signedCookies[COOKIE_ACCESS];
+    await api.deleteComment(id, articleId, accessToken);
 
   } catch (error) {
-    console.log(error.message);
+    res.redirect(`/my/comments`);
   }
 
   res.redirect(`/my/comments`);

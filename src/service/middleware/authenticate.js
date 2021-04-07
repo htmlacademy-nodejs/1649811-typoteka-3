@@ -1,6 +1,7 @@
 'use strict';
 
 const {HttpCode} = require(`../const`);
+const {LoginMessage} = require(`../const-messages`);
 
 module.exports = (service) => async (req, res, next) => {
   const {email, password} = req.body;
@@ -8,12 +9,12 @@ module.exports = (service) => async (req, res, next) => {
   const user = await service.findByEmail(email);
   if (!user) {
     return res.status(HttpCode.NOT_FOUND)
-						.json({message: [`User with email ${email} not found`]});
+						.json({errors: {email: LoginMessage.USER_NOT_EXISTS}});
   }
 
   if (!await service.checkAuth(user, password)) {
     return res.status(HttpCode.UNAUTHORIZED)
-						.json({message: [`Wrong password`]});
+						.json({errors: {password: LoginMessage.WRONG_PASSWORD}});
   }
 
   res.locals.user = user;

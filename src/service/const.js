@@ -37,7 +37,7 @@ const Env = {
 const MIN_PASSWORD_LENGTH = 6;
 const MAX_PASSWORD_LENGTH = 20;
 
-const JWT_EXPIRES = `15m`;
+const JWT_EXPIRES = `15s`;
 
 module.exports = {
   DEFAULT_COMMAND,

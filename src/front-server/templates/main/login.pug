@@ -1,7 +1,7 @@
 extends ../layout
 
 block header
-  include login-header
+  include ../partials/header
 
 block content
   main
@@ -24,7 +24,18 @@ block content
             .form__field
               label
                 input(type='password' placeholder='Пароль' required='' name='password' value=user.password)
+
+            input(type="hidden" name="_csrf" value=csrf)
+
             button.form__submit-btn.form__submit-btn--log-in.button.button--colored(type='submit') Войти
+
+            if errorMessages
+              .form__validation-error
+                p.form__error-message При входе произошли ошибки:
+                ul.form__errors
+                  each error in errorMessages
+                    li.form__error #{error}
+
       .modal__overlay
 
 block scripts

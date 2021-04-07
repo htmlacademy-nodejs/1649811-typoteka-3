@@ -1,8 +1,9 @@
 'use strict';
 
 const fs = require(`fs`).promises;
+const path = require(`path`);
 
-const {ARTICLES_PER_PAGE} = require(`./const`);
+const {ARTICLES_PER_PAGE, UPLOAD_DIR, PUBLIC_IMG_DIR} = require(`./const`);
 
 const checkObjProp = (obj, prop) => {
   return typeof obj === `object` && prop in obj;
@@ -34,10 +35,26 @@ const asyncWrapper = (callback) => {
   };
 };
 
+const moveUploadedImage = async (image) => {
+  const picture = path.join(UPLOAD_DIR, image);
+  await fs.copyFile(
+      picture,
+      path.join(PUBLIC_IMG_DIR, image)
+  );
+
+  await fs.unlink(picture);
+};
+
+const removeUploadedImage = async (image) => {
+  await fs.unlink(path.join(UPLOAD_DIR, image));
+};
+
 module.exports = {
   checkObjProp,
   readFile,
   getTotalPages,
   calculatePagination,
   asyncWrapper,
+  moveUploadedImage,
+  removeUploadedImage,
 };

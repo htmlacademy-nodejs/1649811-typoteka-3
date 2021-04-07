@@ -1,16 +1,14 @@
 'use strict';
 
-const path = require(`path`);
-const fs = require(`fs`).promises;
 const {nanoid} = require(`nanoid`);
 const multer = require(`multer`);
+const he = require(`he`);
 const customParseFormat = require(`dayjs/plugin/customParseFormat`);
-const {checkObjProp, escapeHtml} = require(`../utils`);
+const {checkObjProp} = require(`../utils`);
+const {UPLOAD_DIR} = require(`../const`);
 
 const dayjs = require(`dayjs`).extend(customParseFormat);
 
-const UPLOAD_DIR = `../upload/img/`;
-const IMAGE_DIR = `../public/img`;
 
 const emptyArticle = {
   title: ``,
@@ -21,7 +19,6 @@ const emptyArticle = {
   picture: ``,
 };
 
-const absoluteUploadDir = path.resolve(__dirname, UPLOAD_DIR);
 
 const getRequestData = (request) => {
   const {body, file} = request;
@@ -29,21 +26,19 @@ const getRequestData = (request) => {
   const isPictureExist = checkObjProp(file, `filename`);
 
   const articleData = {
-    title: escapeHtml(body.title),
+    title: he.escape(body.title),
     createdAt: dayjs(body.login, `DD.MM.YYYY HH:mm`).format(),
-    announce: escapeHtml(body.announce),
-    fullText: escapeHtml(body[`full-text`]),
+    announce: he.escape(body.announce),
+    fullText: he.escape(body[`full-text`]),
     categories: Array.isArray(body.categories) ? body.categories : [],
     picture: isPictureExist ? file.filename : body[`old-picture`],
-    // temp
-    userId: 1,
   };
 
   return [isPictureExist, articleData];
 };
 
 const storage = multer.diskStorage({
-  destination: absoluteUploadDir,
+  destination: UPLOAD_DIR,
   filename: (req, file, cb) => {
     const uniqueName = nanoid(10);
     const extension = file.originalname.split(`.`).pop();
@@ -53,21 +48,8 @@ const storage = multer.diskStorage({
 
 const upload = multer({storage});
 
-const movePicture = async (picture) => {
-  const uploadedFile = path.resolve(absoluteUploadDir, picture);
-
-  await fs.copyFile(
-      uploadedFile,
-      path.resolve(__dirname, IMAGE_DIR, picture),
-  );
-
-  await fs.unlink(uploadedFile);
-};
-
 module.exports = {
   emptyArticle,
   getRequestData,
   upload,
-  absoluteUploadDir,
-  movePicture,
 };

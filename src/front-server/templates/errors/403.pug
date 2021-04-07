@@ -8,18 +8,19 @@ html(lang='ru')
     link(rel='preload' href='./fonts/Inter-Regular.woff2' as='font' crossorigin='anonymous')
     link(rel='preload' href='./fonts/Inter-Medium.woff2' as='font' crossorigin='anonymous')
     link(rel='stylesheet' href='/css/style.min.css')
+    link(rel='stylesheet' href='/css/my-style.css')
   body
     .wrapper-color
       header.header.header--error
-        a.header__logo.header__logo--404.logo(href='/')
+        a.header__logo.header__logo--403.logo(href='/')
           img(src='/img/icons/logo.svg' alt='логотип Тайпотеки')
         a.header__registration(href='/register') Регистрация
         a.header__enter(href='/login') Вход с паролем
         a.header__search.button.button--search(href='/search' aria-label='поиск по сайту')
       main
-        h1.visually-hidden Ошибка 404
+        h1.visually-hidden Ошибка 403
         section.error
-          h2.error__title.title.title--big Похоже ошиблись адресом
+          h2.error__title.title.title--big Доступ запрещён
           a.error__link.text.text--big(href='/') Вернуться на главную
       footer.footer
         a.footer__copyright(href='#' aria-label='HTMLAcademy')
