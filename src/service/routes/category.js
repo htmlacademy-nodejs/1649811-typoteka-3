@@ -3,7 +3,11 @@
 const express = require(`express`);
 const {HttpCode} = require(`../const`);
 const authenticateJwt = require(`../middleware/authenticate-jwt`);
+const categorySchema = require(`../middleware/category-schema`);
 const {asyncWrapper} = require(`../utils`);
+
+const validator = require(`../middleware/schema-validator`)(categorySchema);
+
 
 module.exports = (app, service) => {
   const router = new express.Router();
@@ -18,12 +22,6 @@ module.exports = (app, service) => {
     return res.status(HttpCode.OK).json(categories);
   }));
 
-  router.post(`/`, authenticateJwt, asyncWrapper(async (req, res) => {
-    const article = await service.create(req.body);
-
-    return res.status(HttpCode.CREATED).json(article);
-  }));
-
   router.get(`/:id`, asyncWrapper(async (req, res) => {
     const {id} = req.params;
 
@@ -32,13 +30,19 @@ module.exports = (app, service) => {
     return res.status(HttpCode.OK).json(category);
   }));
 
-  router.put(`/:id`, authenticateJwt, asyncWrapper(async (req, res) => {
+  router.post(`/`, authenticateJwt, validator, asyncWrapper(async (req, res) => {
+    const article = await service.create(req.body);
+
+    return res.status(HttpCode.CREATED).json(article);
+  }));
+
+  router.put(`/:id`, authenticateJwt, validator, asyncWrapper(async (req, res) => {
     const {id} = req.params;
 
     const updated = await service.update(id, req.body);
 
     if (!updated) {
-      return res.status(HttpCode.BAD_REQUEST).send(`Wrong data`);
+      return res.sendStatus(HttpCode.BAD_REQUEST);
     }
 
     return res.status(HttpCode.OK).json(updated);

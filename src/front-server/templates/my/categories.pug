@@ -9,10 +9,19 @@ block content
       h1.category__title Категории
       .category__add-form
         form(action='/categories/add' method='POST')
-          input#add-form-add-category(type='text' name='category' placeholder='Новая категория')
+          input#add-form-add-category(type='text' name='category' placeholder='Новая категория'
+            value=newCategory.title)
           label(for='add-form-add-category')
             span.visually-hidden Добавить категорию
           button.category__button.button.button--category(type='submit') Добавить
+
+        if (newCategoryErrors)
+            .form__validation-error
+              p.form__error-message Ошибки при заполнении формы:
+              ul.form__errors
+                each error in Object.values(newCategoryErrors)
+                  li.form__error #{error}
+
       ul.category__list
         each category in categories
           li.category__list-item
@@ -23,10 +32,10 @@ block content
               button.category__button.button.button--category(type=`submit`) Сохранить
               if +category.count === 0
                 a.category__button.button.button--category(href=`/categories/delete/${category.id}`) Удалить
-                //button.category__button.button.button--category(type=`button`) Удалить
 
+            if (editCategory && +editCategory.id === +category.id)
+              p.form__error-message #{editCategory.error}
 
 
 block scripts
-  //script(src='/js/vendor.js')
   script(src='/js/main.js')

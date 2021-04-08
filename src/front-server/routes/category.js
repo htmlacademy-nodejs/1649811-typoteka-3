@@ -13,7 +13,7 @@ const router = new express.Router();
 router.get(`/`, asyncWrapper(async (req, res) => {
   const categories = await api.getCategories(true);
 
-  res.render(`my/categories`, {categories});
+  res.render(`my/categories`, {categories, newCategory: {title: ``}});
 }));
 
 router.get(`/:id`, asyncWrapper(async (req, res) => {
@@ -38,17 +38,21 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
 
 router.post(`/add`, privateRoute, urlencodedParser, asyncWrapper(async (req, res) => {
   const {body: {category}} = req;
+  let newCategory;
 
   try {
     const {accessToken} = res.locals;
-    const newCategory = await api.createCategory({title: category}, accessToken);
+    newCategory = await api.createCategory({title: category}, accessToken);
 
-    res.redirect(`/articles/category/${newCategory.id}`);
+    res.redirect(`/categories/${newCategory.id}`);
 
   } catch (err) {
     console.log(err.message);
 
-    res.redirect(`/categories`);
+    const {errors} = err.response.data;
+    const categories = await api.getCategories(true);
+
+    res.render(`my/categories`, {categories, newCategoryErrors: errors, newCategory: {title: category}});
   }
 }));
 
@@ -59,12 +63,14 @@ router.post(`/edit/:id`, privateRoute, urlencodedParser, asyncWrapper(async (req
   try {
     const {accessToken} = res.locals;
     await api.updateCategory(id, {title: category}, accessToken);
+    res.redirect(`/categories`);
   } catch (err) {
-    console.log(err.message);
+    const {errors} = err.response.data;
+    const categories = await api.getCategories(true);
+    const editCategory = {id, error: Object.values(errors).join(` `)};
+
+    res.render(`my/categories`, {categories, editCategory, newCategory: {title: ``}});
   }
-
-  res.redirect(`/categories`);
-
 }));
 
 router.get(`/delete/:id`, privateRoute, asyncWrapper(async (req, res) => {

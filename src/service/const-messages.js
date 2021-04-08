@@ -37,10 +37,17 @@ const CommentMessage = {
   REQUIRED_FIELD: `Поле обязательно для заполнения`,
 };
 
+const CategoryMessage = {
+  MIX_TEXT_TITLE: `Название категории должно содержать не менее 5 символов.`,
+  MAX_TEXT_TITLE: `Название категории должно содержать не более 30 символов.`,
+  REQUIRED_FIELD: `Поле обязательно для заполнения`,
+};
+
 
 module.exports = {
   RegisterMessage,
   LoginMessage,
   ArticleMessage,
   CommentMessage,
+  CategoryMessage,
 };
