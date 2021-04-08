@@ -61,7 +61,7 @@ module.exports = async (sequelize, {categories, users, articles, comments}, isRa
 
       const commentModel = await Comment.create({
         text,
-        createdAt: generateCreatedDate(DIFF_MONTH),
+        createdAt: generateCreatedDate(-2),
       });
       await commentModel.setUser(commentUser);
       await commentModel.setArticle(articleModel);

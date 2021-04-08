@@ -1,9 +1,12 @@
 'use strict';
 
+const {QueryTypes} = require(`sequelize`);
+const {LAST_COMMENTS_LIMIT} = require(`../const`);
 
 class CommentService {
   constructor(sequelize) {
     this._Comment = sequelize.models.Comment;
+    this._sequelize = sequelize;
   }
 
   async create(articleId, userId, comment) {
@@ -16,7 +19,7 @@ class CommentService {
 
   async drop(id) {
     const deletedRows = await this._Comment.destroy({
-      where: {id}
+      where: {id},
     });
 
     return !!deletedRows;
@@ -25,7 +28,23 @@ class CommentService {
   async findAll(articleId) {
     return await this._Comment.findAll({
       where: {articleId},
-      raw: true
+      raw: true,
+    });
+  }
+
+  async getLastComments() {
+    const sql = `SELECT substr(c.text, 0, 100) || '...'  as text,
+                        c."articleId",
+                        u.avatar                         as "userAvatar",
+                        u.firstname || ' ' || u.lastname as username
+                 FROM comments c
+                          LEFT JOIN users u on c."userId" = u.id
+                 ORDER BY c."createdAt" DESC
+                 LIMIT :limit`;
+
+    return await this._sequelize.query(sql, {
+      type: QueryTypes.SELECT,
+      replacements: {limit: LAST_COMMENTS_LIMIT},
     });
   }
 }

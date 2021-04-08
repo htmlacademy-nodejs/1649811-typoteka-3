@@ -1,6 +1,8 @@
 'use strict';
 
 const Alias = require(`../model/alias`);
+const {QueryTypes} = require(`sequelize`);
+const {MOST_POPULAR_LIMIT} = require(`../const`);
 
 class ArticleService {
   constructor(sequelize) {
@@ -8,7 +10,6 @@ class ArticleService {
     this._Comment = sequelize.models.Comment;
     this._Category = sequelize.models.Category;
     this._ArticleCategory = sequelize.models.ArticleCategory;
-
     this._sequelize = sequelize;
   }
 
@@ -28,6 +29,21 @@ class ArticleService {
     });
 
     return !!deletedRows;
+  }
+
+  async getMostPopular() {
+    const sql = `SELECT a.id, substr(a.announce, 0, 100) || '...' as announce, count(c.id) as "commentsCount"
+                 FROM articles a
+                          LEFT JOIN comments c on a.id = c."articleId"
+                 GROUP BY a.id
+                 ORDER BY "commentsCount" DESC
+                 LIMIT :limit`;
+
+    return await this._sequelize.query(sql, {
+      type: QueryTypes.SELECT,
+      replacements: {limit: MOST_POPULAR_LIMIT},
+    });
+
   }
 
   async findAll({userId, comments}) {

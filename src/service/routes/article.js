@@ -25,10 +25,20 @@ module.exports = (app, articleService, commentService) => {
 
     if (!articles) {
       return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found articles`);
+          .send(`Not found articles`);
     }
 
     return res.status(HttpCode.OK).json(articles);
+  }));
+
+  router.get(`/most-popular`, asyncWrapper(async (req, res) => {
+    const mostPopular = await articleService.getMostPopular();
+    return res.status(HttpCode.OK).json(mostPopular);
+  }));
+
+  router.get(`/last-comments`, asyncWrapper(async (req, res) => {
+    const comments = await commentService.getLastComments();
+    return res.status(HttpCode.OK).json(comments);
   }));
 
   router.get(`/:articleId`, articleExists(articleService), asyncWrapper(async (req, res) => {
@@ -61,7 +71,7 @@ module.exports = (app, articleService, commentService) => {
 
         if (!updated) {
           return res.status(HttpCode.NOT_FOUND)
-          .send(`Not found article with ${articleId} id`);
+              .send(`Not found article with ${articleId} id`);
         }
 
         return res.status(HttpCode.OK).json(updated);
@@ -76,7 +86,7 @@ module.exports = (app, articleService, commentService) => {
 
         if (!isDeleted) {
           return res.status(HttpCode.NOT_FOUND)
-          .send(`Not found article with ${articleId} id`);
+              .send(`Not found article with ${articleId} id`);
         }
 
         return res.status(HttpCode.OK).json(isDeleted);
@@ -112,7 +122,7 @@ module.exports = (app, articleService, commentService) => {
 
         if (!isDeleted) {
           return res.status(HttpCode.NOT_FOUND)
-          .send(`Not found comment with ${commentId} id`);
+              .send(`Not found comment with ${commentId} id`);
         }
 
         return res.status(HttpCode.OK).json(isDeleted);

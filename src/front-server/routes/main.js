@@ -11,14 +11,18 @@ router.get(`/`, asyncWrapper(async (req, res) => {
   const [
     {count, articles},
     categories,
+    lastComments,
+    mostPopular,
   ] = await Promise.all([
     api.getArticles({limit, offset, comments: true}),
     api.getCategories(),
+    api.getLastComments(),
+    api.getMostPopular(),
   ]);
 
   const totalPages = getTotalPages(count);
 
-  res.render(`main`, {articles, categories, page, totalPages});
+  res.render(`main`, {articles, categories, lastComments, mostPopular, page, totalPages});
 }));
 
 router.get(`/search`, asyncWrapper(async (req, res) => {

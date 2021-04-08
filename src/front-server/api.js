@@ -29,16 +29,20 @@ class API {
     return this._load(`/articles/category/${id}`, {params: {limit, offset}});
   }
 
+  async getLastComments() {
+    return this._load(`/articles/last-comments`);
+  }
+
+  async getMostPopular() {
+    return this._load(`/articles/most-popular`);
+  }
+
   async getCategory(id) {
     return this._load(`/categories/${id}`);
   }
 
-  async getCategories() {
-    return this._load(`/categories`);
-  }
-
-  async getAllCategories() {
-    return this._load(`/categories`, {params: {all: true}});
+  async getCategories(all = null) {
+    return this._load(`/categories`, {params: {all}});
   }
 
   async search(query) {
@@ -109,14 +113,14 @@ class API {
   async createUser(data) {
     return this._load(`/user`, {
       method: `POST`,
-      data
+      data,
     });
   }
 
   async login(data) {
     return this._load(`/login`, {
       method: `POST`,
-      data
+      data,
     });
   }
 
@@ -124,7 +128,7 @@ class API {
     const data = {token: refreshToken};
     return this._load(`/refresh`, {
       method: `POST`,
-      data
+      data,
     });
   }
 

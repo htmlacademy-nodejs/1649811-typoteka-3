@@ -17,6 +17,7 @@ const define = (sequelize) => {
     sequelize,
     modelName: `Comment`,
     tableName: Alias.COMMENTS,
+    updatedAt: false,
   });
 
   return Comment;

@@ -39,6 +39,9 @@ const MAX_PASSWORD_LENGTH = 20;
 
 const JWT_EXPIRES = `15s`;
 
+const LAST_COMMENTS_LIMIT = 4;
+const MOST_POPULAR_LIMIT = 4;
+
 module.exports = {
   DEFAULT_COMMAND,
   DEFAULT_PORT,
@@ -53,4 +56,6 @@ module.exports = {
   MAX_PASSWORD_LENGTH,
   SALT_ROUNDS,
   JWT_EXPIRES,
+  LAST_COMMENTS_LIMIT,
+  MOST_POPULAR_LIMIT,
 };
