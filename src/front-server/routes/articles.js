@@ -4,35 +4,12 @@ const express = require(`express`);
 const bodyParser = require(`body-parser`);
 const he = require(`he`);
 const privateRoute = require(`../middleware/private-route`);
-const {
-  calculatePagination, getTotalPages, asyncWrapper, removeUploadedImage,
-} = require(`../utils`);
+const {asyncWrapper, removeUploadedImage} = require(`../utils`);
 const {emptyArticle, getRequestData, upload} = require(`./article-helper`);
 
-
 const api = require(`../api`).getApi();
-
 const router = new express.Router();
 
-router.get(`/category/:id`, asyncWrapper(async (req, res) => {
-  const {id} = req.params;
-
-  try {
-    const [page, limit, offset] = calculatePagination(req.query);
-
-    const [{count, articles}, category] = await Promise.all([
-      await api.getPreviews(limit, offset, id),
-      await api.getCategory(id),
-    ]);
-
-    const totalPages = getTotalPages(count.c);
-
-    res.render(`article/by-category`, {category, articles, page, totalPages});
-  } catch (err) {
-    console.log(err);
-    res.redirect(`/`);
-  }
-}));
 
 router.get(`/add`, privateRoute, asyncWrapper(async (req, res) => {
   const newArticle = Object.assign({}, emptyArticle);

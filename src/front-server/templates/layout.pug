@@ -21,7 +21,7 @@ html(lang='ru')
         each category in categories
           - const [id, title] = category.split(`__`);
           li.preview__breadcrumbs-item
-            a.preview__breadcrumbs-link(href=`/articles/category/${id}`) #{title}
+            a.preview__breadcrumbs-link(href=`/categories/${id}`) #{title}
 
       mixin pagination(page, totalPages, width, prefix)
         -

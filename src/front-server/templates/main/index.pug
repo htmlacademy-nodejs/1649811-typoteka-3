@@ -56,7 +56,7 @@ block content
               a.preview__name-link(href=`/articles/${article.id}`) #{article.title}
             p.preview__text
               | #{article.announce}
-            a.preview__comment(href=`/my/comments`)
+            a.preview__comment(href=`/articles/${article.id}`)
               | Комментарии
               span.preview__cloud
               b.preview__comment-count #{article.commentsCount}

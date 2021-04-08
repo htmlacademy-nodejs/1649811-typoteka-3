@@ -3,6 +3,6 @@ section.main-page__theme-list
   ul.themes
     each category in categories
       li.themes__item
-        a.themes__item-link(href=`/articles/category/${category.id}`)
+        a.themes__item-link(href=`/categories/${category.id}`)
           | #{category.title}&nbsp;
           sup #{category.count}

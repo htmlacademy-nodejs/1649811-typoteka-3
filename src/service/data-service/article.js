@@ -94,7 +94,7 @@ class ArticleService {
       replacements: {limit, offset},
     });
 
-    const count = await this._sequelize.query(
+    const totalCount = await this._sequelize.query(
         `SELECT count(*) as c
          FROM articles`,
         {
@@ -104,8 +104,7 @@ class ArticleService {
         },
     );
 
-
-    return {count, articles};
+    return {count: totalCount.c, articles};
   }
 
   async findPreviewsInCategory(limit, offset, categoryId) {
@@ -133,7 +132,7 @@ class ArticleService {
       replacements: {limit, offset, categoryId},
     });
 
-    const count = await this._sequelize.query(
+    const totalCount = await this._sequelize.query(
         `SELECT count(ac."articleId") as c
          FROM article_categories ac
          WHERE ac."categoryId" = :categoryId`,
@@ -146,7 +145,7 @@ class ArticleService {
     );
 
 
-    return {count, articles};
+    return {count: totalCount.c, articles};
   }
 
   async findPage({limit, offset, userId, comments}) {

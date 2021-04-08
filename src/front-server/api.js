@@ -29,10 +29,6 @@ class API {
     return this._load(`/articles/previews`, {params: {limit, offset, categoryId}});
   }
 
-  async getLastComments() {
-    return this._load(`/articles/last-comments`);
-  }
-
   async getMostPopular() {
     return this._load(`/articles/most-popular`);
   }

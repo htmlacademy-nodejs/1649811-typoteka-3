@@ -45,13 +45,11 @@ module.exports = (app, articleService, commentService) => {
   }));
 
   router.get(`/most-popular`, asyncWrapper(async (req, res) => {
-    const mostPopular = await articleService.getMostPopular();
-    return res.status(HttpCode.OK).json(mostPopular);
-  }));
-
-  router.get(`/last-comments`, asyncWrapper(async (req, res) => {
-    const comments = await commentService.getLastComments();
-    return res.status(HttpCode.OK).json(comments);
+    const [mostPopular, lastComments] = await Promise.all([
+      articleService.getMostPopular(),
+      commentService.getLastComments(),
+    ]);
+    return res.status(HttpCode.OK).json({mostPopular, lastComments});
   }));
 
   router.get(`/:articleId`, articleExists(articleService), asyncWrapper(async (req, res) => {

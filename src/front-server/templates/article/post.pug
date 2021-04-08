@@ -14,12 +14,14 @@ block content
             a.post__backwards.button.button--backwards(href='javascript:history.back()') Назад
             time.post__date(datetime=`article.createdAt`) #{formatDate(article.createdAt)}
             h2.post__title.title.title--main #{article.title}
+
             ul.post__themes.themes
               each category in article.categories
                 li.themes__item
-                  a.themes__item-link(href=`/articles/category/${category.id}`)
+                  a.themes__item-link(href=`/categories/${category.id}`)
                     | #{category.title}
                     //sup #{category.count}
+
           .post__picture
             img(src=`/img/${article.picture}` alt=`${article.title}`)
           .post__text
