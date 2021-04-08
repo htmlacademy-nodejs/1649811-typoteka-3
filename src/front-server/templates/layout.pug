@@ -49,6 +49,9 @@ html(lang='ru')
               li
                 a.pagination__button.button.button--backwards(href=`${prefix}page=${page - 1}` aria-label='Страница назад') Назад
             while i++ < end
+              if (i === page)
+                  - continue
+
               li.pagination__item(class=[{'pagination__item--active': i === page}])
                 a(href=`${prefix}page=${i}`)= i
 
