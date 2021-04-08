@@ -14,14 +14,14 @@ router.get(`/`, asyncWrapper(async (req, res) => {
     lastComments,
     mostPopular,
   ] = await Promise.all([
-    api.getArticles({limit, offset, comments: true}),
+    // api.getArticles({limit, offset, comments: true}),
+    api.getPreviews(limit, offset),
     api.getCategories(),
     api.getLastComments(),
     api.getMostPopular(),
   ]);
 
-  const totalPages = getTotalPages(count);
-
+  const totalPages = getTotalPages(count.c);
   res.render(`main`, {articles, categories, lastComments, mostPopular, page, totalPages});
 }));
 

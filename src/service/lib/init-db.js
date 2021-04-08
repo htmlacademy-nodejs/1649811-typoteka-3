@@ -5,9 +5,7 @@ const defineModels = require(`../model`);
 const {shuffle, getRandomInt, generateCreatedDate} = require(`../utils`);
 const {SALT_ROUNDS} = require(`../const`);
 
-
 const MAX_COMMENTS = 5;
-const DIFF_MONTH = 2;
 
 module.exports = async (sequelize, {categories, users, articles, comments}, isRandom = false) => {
 

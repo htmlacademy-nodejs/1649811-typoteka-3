@@ -59,6 +59,6 @@ block content
             a.preview__comment(href=`/my/comments`)
               | Комментарии
               span.preview__cloud
-              b.preview__comment-count #{article.comments.length}
+              b.preview__comment-count #{article.commentsCount}
 
   +pagination(page, totalPages, 2, `?`)

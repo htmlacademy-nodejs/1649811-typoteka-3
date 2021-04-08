@@ -25,8 +25,8 @@ class API {
     return this._load(`/articles/${id}`, {params: {comments}});
   }
 
-  async getArticlesByCategory(id, {limit, offset} = {}) {
-    return this._load(`/articles/category/${id}`, {params: {limit, offset}});
+  async getPreviews(limit, offset, categoryId = null) {
+    return this._load(`/articles/previews`, {params: {limit, offset, categoryId}});
   }
 
   async getLastComments() {

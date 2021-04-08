@@ -5,7 +5,7 @@ const bodyParser = require(`body-parser`);
 const he = require(`he`);
 const privateRoute = require(`../middleware/private-route`);
 const {
-  calculatePagination, getTotalPages, asyncWrapper, removeUploadedImage
+  calculatePagination, getTotalPages, asyncWrapper, removeUploadedImage,
 } = require(`../utils`);
 const {emptyArticle, getRequestData, upload} = require(`./article-helper`);
 
@@ -17,16 +17,21 @@ const router = new express.Router();
 router.get(`/category/:id`, asyncWrapper(async (req, res) => {
   const {id} = req.params;
 
-  const [page, limit, offset] = calculatePagination(req.query);
+  try {
+    const [page, limit, offset] = calculatePagination(req.query);
 
-  const [{count, articles}, category] = await Promise.all([
-    await api.getArticlesByCategory(id, {limit, offset}),
-    await api.getCategory(id),
-  ]);
+    const [{count, articles}, category] = await Promise.all([
+      await api.getPreviews(limit, offset, id),
+      await api.getCategory(id),
+    ]);
 
-  const totalPages = getTotalPages(count);
+    const totalPages = getTotalPages(count.c);
 
-  res.render(`article/by-category`, {category, articles, page, totalPages});
+    res.render(`article/by-category`, {category, articles, page, totalPages});
+  } catch (err) {
+    console.log(err);
+    res.redirect(`/`);
+  }
 }));
 
 router.get(`/add`, privateRoute, asyncWrapper(async (req, res) => {

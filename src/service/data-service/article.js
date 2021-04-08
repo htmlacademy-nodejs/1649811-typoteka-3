@@ -71,10 +71,86 @@ class ArticleService {
     });
   }
 
+
+  async findPreviews(limit, offset) {
+    const sql = `SELECT a.id,
+                        a.title,
+                        a.announce,
+                        a.picture,
+                        a."createdAt",
+                        count(c)                           as "commentsCount",
+                        array(SELECT ct.id::text || '__' || ct.title
+                              FROM categories ct
+                                       LEFT JOIN article_categories ac on ct.id = ac."categoryId"
+                              WHERE ac."articleId" = a.id) as categories
+                 FROM articles a
+                          LEFT JOIN comments c on a.id = c."articleId"
+                 GROUP BY a.id, a."createdAt"
+                 ORDER BY a."createdAt" DESC
+                 LIMIT :limit OFFSET :offset`;
+
+    const articles = await this._sequelize.query(sql, {
+      type: QueryTypes.SELECT,
+      replacements: {limit, offset},
+    });
+
+    const count = await this._sequelize.query(
+        `SELECT count(*) as c
+         FROM articles`,
+        {
+          raw: true,
+          plain: true,
+          type: QueryTypes.SELECT,
+        },
+    );
+
+
+    return {count, articles};
+  }
+
+  async findPreviewsInCategory(limit, offset, categoryId) {
+    const sql = `SELECT a.id,
+                        a.title,
+                        a.announce,
+                        a.picture,
+                        a."createdAt",
+                        count(c)                           as "commentsCount",
+                        array(SELECT ct.id::text || '__' || ct.title
+                              FROM categories ct
+                                       LEFT JOIN article_categories ac on ct.id = ac."categoryId"
+                              WHERE ac."articleId" = a.id) as categories
+                 FROM articles a
+                          LEFT JOIN comments c on a.id = c."articleId"
+                          LEFT JOIN article_categories act ON act."articleId" = a.id
+                 WHERE act."categoryId" = :categoryId
+                 GROUP BY a.id, a."createdAt"
+                 ORDER BY a."createdAt" DESC
+                 LIMIT :limit OFFSET :offset`;
+
+    const articles = await this._sequelize.query(sql, {
+      type: QueryTypes.SELECT,
+      raw: true,
+      replacements: {limit, offset, categoryId},
+    });
+
+    const count = await this._sequelize.query(
+        `SELECT count(ac."articleId") as c
+         FROM article_categories ac
+         WHERE ac."categoryId" = :categoryId`,
+        {
+          raw: true,
+          plain: true,
+          type: QueryTypes.SELECT,
+          replacements: {categoryId},
+        },
+    );
+
+
+    return {count, articles};
+  }
+
   async findPage({limit, offset, userId, comments}) {
-
     const include = [Alias.CATEGORIES];
-
     if (comments) {
       include.push({
         model: this._Comment,

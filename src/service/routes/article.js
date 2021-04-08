@@ -31,6 +31,19 @@ module.exports = (app, articleService, commentService) => {
     return res.status(HttpCode.OK).json(articles);
   }));
 
+  router.get(`/previews`, asyncWrapper(async (req, res) => {
+    const {limit, offset, categoryId} = req.query;
+    try {
+      const result = categoryId ?
+        await articleService.findPreviewsInCategory(limit, offset, categoryId) :
+        await articleService.findPreviews(limit, offset);
+
+      return res.status(HttpCode.OK).json(result);
+    } catch (err) {
+      return res.sendStatus(HttpCode.NOT_FOUND);
+    }
+  }));
+
   router.get(`/most-popular`, asyncWrapper(async (req, res) => {
     const mostPopular = await articleService.getMostPopular();
     return res.status(HttpCode.OK).json(mostPopular);
@@ -127,19 +140,6 @@ module.exports = (app, articleService, commentService) => {
 
         return res.status(HttpCode.OK).json(isDeleted);
       }));
-
-  router.get(`/category/:id`, asyncWrapper(async (req, res) => {
-    const {id} = req.params;
-    const {limit, offset} = req.query;
-
-    const articles = await articleService.findAllByCategory(id, {limit, offset});
-
-    if (!articles) {
-      return res.status(HttpCode.NOT_FOUND).send(`Not found articles`);
-    }
-
-    return res.status(HttpCode.OK).json(articles);
-  }));
 
   app.use(`/articles`, router);
 };
