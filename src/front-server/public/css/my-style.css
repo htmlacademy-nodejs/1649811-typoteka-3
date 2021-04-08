@@ -42,6 +42,10 @@
   max-width: 150px;
 }
 
+.error__message {
+  color:#eb5757;
+}
+
 .header__logo--403::before{content:"/ 403"}.header--error
 
 

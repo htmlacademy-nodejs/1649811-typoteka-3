@@ -29,12 +29,13 @@ block content
               input(id=`modify-form-category-${category.id}` type='text' name='category' value=category.title)
               label(for=`modify-form-category-${category.id}`)
                 span.visually-hidden Редактировать категорию
+
+              if (category.errors)
+                span.form__error-message #{category.errors}
+
               button.category__button.button.button--category(type=`submit`) Сохранить
               if +category.count === 0
                 a.category__button.button.button--category(href=`/categories/delete/${category.id}`) Удалить
-
-            if (editCategory && +editCategory.id === +category.id)
-              p.form__error-message #{editCategory.error}
 
 
 block scripts

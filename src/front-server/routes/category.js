@@ -67,9 +67,11 @@ router.post(`/edit/:id`, privateRoute, urlencodedParser, asyncWrapper(async (req
   } catch (err) {
     const {errors} = err.response.data;
     const categories = await api.getCategories(true);
-    const editCategory = {id, error: Object.values(errors).join(` `)};
+    const edit = categories.find((item) => +item.id === +id);
+    edit.title = category;
+    edit.errors = Object.values(errors).join(` `);
 
-    res.render(`my/categories`, {categories, editCategory, newCategory: {title: ``}});
+    res.render(`my/categories`, {categories, newCategory: {title: ``}});
   }
 }));
 
