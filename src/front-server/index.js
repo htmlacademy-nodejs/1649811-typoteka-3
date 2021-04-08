@@ -25,13 +25,13 @@ app.disable(`x-powered-by`);
 app.use(
     helmet.contentSecurityPolicy({
       directives: {
-        defaultSrc: [`'self'`, `'unsafe-inline'`],
-        scriptSrc: [`'self'`, `'unsafe-inline'`],
-        imgSrc: [`'self'`, `blob:`],
+        defaultSrc: [`'self'`],
+        scriptSrc: [`'self'`],
+        imgSrc: [`'self'`, `blob:`, `data:`],
         objectSrc: [`'none'`],
         upgradeInsecureRequests: [],
       },
-      reportOnly: false,
+      reportOnly: true,
     }),
     helmet.xssFilter()
 );
@@ -41,6 +41,7 @@ app.use(expressSession({
   saveUninitialized: false,
   name: SESSION_NAME,
   cookie: {
+    sameSite: true,
     httpOnly: true,
     expires: new Date(Date.now() + 60 * 60 * 1000 * 24)
   }

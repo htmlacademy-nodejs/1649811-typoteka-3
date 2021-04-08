@@ -46,7 +46,7 @@ const moveUploadedImage = async (image) => {
 };
 
 const removeUploadedImage = async (image) => {
-  await fs.unlink(path.join(UPLOAD_DIR, image));
+  await fs.unlink(path.join(PUBLIC_IMG_DIR, image));
 };
 
 module.exports = {

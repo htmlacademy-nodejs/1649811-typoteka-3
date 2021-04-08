@@ -7,7 +7,9 @@ const imageDeleteBtn = document.getElementById(`image-remove`);
 
 const changeImageHandler = () => {
   const [file] = imageInput.files;
-  previewImage.src = window.URL.createObjectURL(file);
+  if (file) {
+    previewImage.src = window.URL.createObjectURL(file);
+  }
 }
 
 const deleteImageHandler = (evt) => {

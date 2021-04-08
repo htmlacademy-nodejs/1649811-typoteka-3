@@ -5,7 +5,7 @@ const bodyParser = require(`body-parser`);
 const he = require(`he`);
 const privateRoute = require(`../middleware/private-route`);
 const {
-  calculatePagination, getTotalPages, asyncWrapper, removeUploadedImage, moveUploadedImage,
+  calculatePagination, getTotalPages, asyncWrapper, removeUploadedImage
 } = require(`../utils`);
 const {emptyArticle, getRequestData, upload} = require(`./article-helper`);
 
@@ -39,27 +39,26 @@ router.get(`/add`, privateRoute, asyncWrapper(async (req, res) => {
 }));
 
 router.post(`/add`, privateRoute, upload.single(`picture`), asyncWrapper(async (req, res) => {
-  let isPictureExist;
   let articleData;
+  let {articlePicture} = req.session;
 
   try {
-    [isPictureExist, articleData] = getRequestData(req);
+    articleData = getRequestData(req);
     const {accessToken} = res.locals;
 
-    await api.createArticle(articleData, accessToken);
-    res.redirect(`/my`);
-
-    if (isPictureExist) {
-      await moveUploadedImage(articleData.picture);
+    if (articlePicture && articlePicture !== articleData.picture) {
+      await removeUploadedImage(articlePicture);
     }
+    req.session.articlePicture = articleData.picture;
+
+    await api.createArticle(articleData, accessToken);
+
+    delete req.session.articlePicture;
+    res.redirect(`/my`);
 
   } catch (error) {
     const categories = await api.getAllCategories();
     articleData.createdAt = new Date().toISOString();
-    if (isPictureExist) {
-      await removeUploadedImage(articleData.picture);
-      articleData.picture = ``;
-    }
     const {errors} = error.response.data;
 
     res.render(`my/post-add`, {article: articleData, categories, errors});
@@ -74,34 +73,37 @@ router.get(`/edit/:id`, privateRoute, asyncWrapper(async (req, res) => {
     await api.getAllCategories(),
   ]);
 
+  req.session.articlePicture = article.picture;
+
   res.render(`my/post-edit`, {article, categories});
 }));
 
 router.post(`/edit/:id`, privateRoute, upload.single(`picture`), asyncWrapper(async (req, res) => {
   let id;
-  let isPictureExist;
   let articleData;
+  let {articlePicture} = req.session;
 
   try {
     ({id} = req.params);
-    [isPictureExist, articleData] = getRequestData(req);
+    articleData = getRequestData(req);
     const {accessToken} = res.locals;
 
+    if (articlePicture && articlePicture !== articleData.picture) {
+      await removeUploadedImage(articlePicture);
+    }
+
+    req.session.articlePicture = articleData.picture;
     await api.editArticle(id, articleData, accessToken);
+
+    delete req.session.articlePicture;
     res.redirect(`/my`);
 
-    if (isPictureExist) {
-      await moveUploadedImage(articleData.picture);
-    }
   } catch (error) {
+    console.log(error.message);
     const categories = await api.getAllCategories();
 
     articleData.id = id;
     articleData.createdAt = new Date().toISOString();
-    if (isPictureExist) {
-      await removeUploadedImage(articleData.picture);
-      articleData.picture = ``;
-    }
 
     const {errors} = error.response.data;
 
@@ -122,9 +124,13 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
 
 router.get(`/delete/:id`, privateRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
+  const article = await api.getArticle(id);
   try {
     const {accessToken} = res.locals;
     await api.deleteArticle(id, accessToken);
+    if (article.picture) {
+      await removeUploadedImage(article.picture);
+    }
   } catch (error) {
     console.log(error.message);
   }
