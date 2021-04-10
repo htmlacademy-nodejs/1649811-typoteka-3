@@ -16,14 +16,15 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
   try {
     const [page, limit, offset] = calculatePagination(req.query);
 
-    const [{count, articles}, category] = await Promise.all([
+    const [{count, articles}, categories] = await Promise.all([
       await api.getPreviews(limit, offset, id),
-      await api.getCategory(id),
+      await api.getCategories(),
     ]);
 
     const totalPages = getTotalPages(count);
+    const currentCategory = categories.find((item) => +item.id === +id);
 
-    res.render(`article/by-category`, {category, articles, page, totalPages});
+    res.render(`article/by-category`, {categories, currentCategory, articles, page, totalPages});
   } catch (err) {
     console.log(err);
     res.redirect(`/`);

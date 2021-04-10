@@ -4,6 +4,7 @@ const express = require(`express`);
 const bodyParser = require(`body-parser`);
 const he = require(`he`);
 const privateRoute = require(`../middleware/private-route`);
+const adminRoute = require(`../middleware/admin-route`);
 const {asyncWrapper, removeUploadedImage} = require(`../utils`);
 const {emptyArticle, getRequestData, upload} = require(`./article-helper`);
 
@@ -11,16 +12,16 @@ const api = require(`../api`).getApi();
 const router = new express.Router();
 
 
-router.get(`/add`, privateRoute, asyncWrapper(async (req, res) => {
-  const newArticle = Object.assign({}, emptyArticle);
+router.get(`/add`, adminRoute, asyncWrapper(async (req, res) => {
+  const newArticle = {...emptyArticle};
   newArticle.createdDate = new Date();
 
   const categories = await api.getCategories(true);
 
-  res.render(`my/post-add`, {article: newArticle, categories});
+  res.render(`admin/post-add`, {article: newArticle, categories});
 }));
 
-router.post(`/add`, privateRoute, upload.single(`picture`), asyncWrapper(async (req, res) => {
+router.post(`/add`, adminRoute, upload.single(`picture`), asyncWrapper(async (req, res) => {
   let articleData;
   let {articlePicture} = req.session;
 
@@ -33,21 +34,21 @@ router.post(`/add`, privateRoute, upload.single(`picture`), asyncWrapper(async (
     }
     req.session.articlePicture = articleData.picture;
 
-    await api.createArticle(articleData, accessToken);
-
+    const article = await api.createArticle(articleData, accessToken);
     delete req.session.articlePicture;
-    res.redirect(`/my`);
+
+    res.redirect(`/articles/${article.id}`);
 
   } catch (error) {
     const categories = await api.getCategories(true);
     articleData.createdAt = new Date().toISOString();
     const {errors} = error.response.data;
 
-    res.render(`my/post-add`, {article: articleData, categories, errors});
+    res.render(`admin/post-add`, {article: articleData, categories, errors});
   }
 }));
 
-router.get(`/edit/:id`, privateRoute, asyncWrapper(async (req, res) => {
+router.get(`/edit/:id`, adminRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
 
   const [article, categories] = await Promise.all([
@@ -57,10 +58,10 @@ router.get(`/edit/:id`, privateRoute, asyncWrapper(async (req, res) => {
 
   req.session.articlePicture = article.picture;
 
-  res.render(`my/post-edit`, {article, categories});
+  res.render(`admin/post-edit`, {article, categories});
 }));
 
-router.post(`/edit/:id`, privateRoute, upload.single(`picture`), asyncWrapper(async (req, res) => {
+router.post(`/edit/:id`, adminRoute, upload.single(`picture`), asyncWrapper(async (req, res) => {
   let id;
   let articleData;
   let {articlePicture} = req.session;
@@ -78,7 +79,7 @@ router.post(`/edit/:id`, privateRoute, upload.single(`picture`), asyncWrapper(as
     await api.editArticle(id, articleData, accessToken);
 
     delete req.session.articlePicture;
-    res.redirect(`/my`);
+    res.redirect(`/articles/${id}`);
 
   } catch (error) {
     console.log(error.message);
@@ -89,22 +90,28 @@ router.post(`/edit/:id`, privateRoute, upload.single(`picture`), asyncWrapper(as
 
     const {errors} = error.response.data;
 
-    res.render(`my/post-edit`, {article: articleData, categories, errors});
+    res.render(`admin/post-edit`, {article: articleData, categories, errors});
   }
 }));
 
 router.get(`/:id`, asyncWrapper(async (req, res) => {
   const {id} = req.params;
-  const article = await api.getArticle(id, true);
+  const [
+    article,
+    categories,
+  ] = await Promise.all([
+    api.getArticle(id, true),
+    api.getArticleCategories(id),
+  ]);
 
   if (article.comments) {
     article.comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
   }
 
-  res.render(`article/post`, {article, comment: null});
+  res.render(`article/post`, {article, categories, comment: null});
 }));
 
-router.get(`/delete/:id`, privateRoute, asyncWrapper(async (req, res) => {
+router.get(`/delete/:id`, adminRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
   const article = await api.getArticle(id);
   try {

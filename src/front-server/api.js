@@ -47,6 +47,10 @@ class API {
     return this._load(`/categories`, {params: {all}});
   }
 
+  async getArticleCategories(articleId) {
+    return this._load(`/categories/by-article`, {params: {articleId}});
+  }
+
   async search(query) {
     return this._load(`/search`, {params: {query}});
   }

@@ -3,7 +3,9 @@ extends ../layout
 block content
 
   main.articles-category
-    h1 #{category.title}
+    h1 #{currentCategory.title}
+
+    include ../partials/categories
 
     section.articles-category__list.preview
       h2.visually-hidden Список превью статей

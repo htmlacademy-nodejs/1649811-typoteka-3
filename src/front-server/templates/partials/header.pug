@@ -19,7 +19,7 @@ header.header
         li.header__list-item
           a.header__exit(href='/logout') Выйти
     if (loggedUser.avatar)
-      a.header__avatar.avatar(href='/my')
+      a.header__avatar.avatar(href='#')
         img(src=`/img/${loggedUser.avatar}` alt='аватар пользователя')
 
   else if (loggedUser.role === 'admin')

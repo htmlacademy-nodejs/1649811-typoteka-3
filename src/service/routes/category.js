@@ -23,6 +23,12 @@ module.exports = (app, service) => {
     return res.status(HttpCode.OK).json(categories);
   }));
 
+  router.get(`/by-article`, asyncWrapper(async (req, res) => {
+    const {articleId} = req.query;
+    const categories = await service.findByArticle(articleId);
+    return res.status(HttpCode.OK).json(categories);
+  }));
+
   router.get(`/:id`, asyncWrapper(async (req, res) => {
     const {id} = req.params;
 

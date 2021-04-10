@@ -9,8 +9,8 @@ block content
         each comment in comments
           li.publication__list-item
             .publication__header
-              - const avatarSrc = comment.userAvatar ? `/img/${comment.userAvatar}` : ``;
-              img.publication__list-image(src=avatarSrc width='20' height='20' alt='Аватар пользователя')
+              if (comment.userAvatar)
+                img.publication__list-image(src=`/img/${comment.userAvatar}` width='20' height='20' alt='Аватар пользователя')
               b.publication__list-name #{comment.username}
               time.publication__item-time(datetime=comment.createdAt) #{dayjs(comment.createdAt).format('DD.MM.YYYY, HH:mm')}
 

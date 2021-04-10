@@ -41,6 +41,21 @@ class CategoryService {
     return await this._sequelize.query(sql, {type: QueryTypes.SELECT});
   }
 
+  async findByArticle(articleId) {
+    const sql = `
+      SELECT c.id, c.title, (SELECT COUNT(s."articleId") FROM article_categories s WHERE s."categoryId" = c.id) as "count"
+      FROM categories c
+             LEFT JOIN article_categories ac on c.id = ac."categoryId"
+      WHERE ac."articleId" = :articleId
+      GROUP BY c.id, c.title ORDER BY c.title;
+    `;
+
+    return await this._sequelize.query(sql, {
+      type: QueryTypes.SELECT,
+      replacements: {articleId}
+    });
+  }
+
   async findAllOnlyHavingArticles() {
     const sql = `
       SELECT c.id, c.title, COUNT(ac."articleId") as "count"

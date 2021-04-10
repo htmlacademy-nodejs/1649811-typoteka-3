@@ -13,7 +13,7 @@ router.get(`/`, adminRoute, asyncWrapper(async (req, res) => {
 
   const articles = await api.getArticles({userId: loggedUser.id});
 
-  res.render(`my`, {articles});
+  res.render(`admin/main`, {articles});
 }));
 
 router.get(`/comments`, adminRoute, asyncWrapper(async (req, res) => {

@@ -28,6 +28,9 @@ class CommentService {
   async findAll(articleId) {
     return await this._Comment.findAll({
       where: {articleId},
+      order: [
+        [`createdAt`, `DESC`],
+      ],
       raw: true,
     });
   }

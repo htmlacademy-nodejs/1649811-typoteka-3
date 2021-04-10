@@ -1,8 +1,5 @@
 extends ../layout
 
-block header
-  include header
-
 block content
   main.main-page.main-page--padding
     section.main-page__notes.notes
@@ -14,8 +11,3 @@ block content
             a.notes__item-text(href=`/articles/${article.id}`) #{article.announce}
             a.notes__button-edit.button.button--edit-item(href=`/articles/edit/${article.id}` title=`Редактировать`)
             a.notes__button-delete.button.button--close-item(href=`/articles/delete/${article.id}` title=`Удалить`)
-
-block scripts
-  //script(src='/js/vendor.js')
-  script(src='/js/main.js')
-

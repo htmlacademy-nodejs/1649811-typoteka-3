@@ -1,8 +1,5 @@
 extends ../layout
 
-block header
-  include ../partials/header
-
 block content
   main
     section.post
@@ -16,11 +13,11 @@ block content
             h2.post__title.title.title--main #{article.title}
 
             ul.post__themes.themes
-              each category in article.categories
+              each category in categories
                 li.themes__item
                   a.themes__item-link(href=`/categories/${category.id}`)
                     | #{category.title}
-                    //sup #{category.count}
+                    sup #{category.count}
 
           .post__picture
             img(src=`/img/${article.picture}` alt=`${article.title}`)
@@ -65,6 +62,3 @@ block content
             a.comments__registration(href='/register')
                 b.title.title--small Регистрация
                 | Чтобы присоединиться к переписке нужно зарегистрироваться
-
-block scripts
-  script(src='/js/main.js')

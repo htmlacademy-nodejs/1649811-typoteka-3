@@ -280,9 +280,6 @@ describe(`API return a list of comments to given article`, () => {
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 
   test(`Return a list of 3 comments`, () => expect(response.body.length).toBe(3));
-
-  test(`First comment text equal "Совсем немного... Мне кажется или я уже читал это где-то?"`, () =>
-    expect(response.body[0].text).toEqual(`Совсем немного... Мне кажется или я уже читал это где-то?`));
 });
 
 describe(`API creates a comment if data is valid`, () => {

@@ -72,6 +72,12 @@ test(`API return category with given id`, async () => {
     .expect(HttpCode.OK);
 });
 
+test(`API return all article categories`, async () => {
+  response = await request(app).get(`/categories/by-article?articleId=1`);
+
+  expect(response.statusCode).toBe(200);
+});
+
 describe(`API returns category list with count articles`, () => {
   beforeAll(async () => {
     response = await request(app).get(`/categories?count=true`);

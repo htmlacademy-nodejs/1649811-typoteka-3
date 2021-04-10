@@ -6,7 +6,7 @@ const dayjs = require(`dayjs`);
 const connectTimeout = require(`connect-timeout`);
 const expressSession = require(`express-session`);
 const cookieParser = require(`cookie-parser`);
-const helmet = require(`helmet`);
+const xXssProtection = require(`x-xss-protection`);
 const mainRouter = require(`./routes/main`);
 const myRouter = require(`./routes/my`);
 const articlesRouter = require(`./routes/articles`);
@@ -24,19 +24,7 @@ app.set(`views`, path.resolve(__dirname, VIEWS_DIR));
 app.set(`view engine`, `pug`);
 
 app.disable(`x-powered-by`);
-app.use(
-    helmet.contentSecurityPolicy({
-      directives: {
-        defaultSrc: [`'self'`],
-        scriptSrc: [`'self'`],
-        imgSrc: [`'self'`, `blob:`, `data:`],
-        objectSrc: [`'none'`],
-        upgradeInsecureRequests: [],
-      },
-      reportOnly: true,
-    }),
-    helmet.xssFilter()
-);
+app.use(xXssProtection());
 app.use(expressSession({
   secret: SECRET_SESSION,
   resave: false,

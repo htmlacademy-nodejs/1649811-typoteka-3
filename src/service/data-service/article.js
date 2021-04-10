@@ -95,8 +95,7 @@ class ArticleService {
     });
 
     const totalCount = await this._sequelize.query(
-        `SELECT count(*) as c
-         FROM articles`,
+        `SELECT count(*) as c FROM articles`,
         {
           raw: true,
           plain: true,
@@ -134,8 +133,8 @@ class ArticleService {
 
     const totalCount = await this._sequelize.query(
         `SELECT count(ac."articleId") as c
-         FROM article_categories ac
-         WHERE ac."categoryId" = :categoryId`,
+       FROM article_categories ac
+       WHERE ac."categoryId" = :categoryId`,
         {
           raw: true,
           plain: true,
@@ -174,34 +173,9 @@ class ArticleService {
     return {count, articles: rows};
   }
 
-
-  async findAllByCategory(categoryId, {limit, offset}) {
-
-    const {count, rows} = await this._Article.findAndCountAll({
-      limit,
-      offset,
-      include: [
-        Alias.CATEGORIES,
-        {
-          model: this._ArticleCategory,
-          as: Alias.ARTICLE_CATEGORIES,
-          attributes: [],
-          where: {categoryId},
-        },
-        Alias.COMMENTS,
-      ],
-      order: [
-        [`createdAt`, `DESC`],
-      ],
-      distinct: true,
-    });
-
-    return {count, articles: rows};
-  }
-
   async findOne(id, needComments = false) {
 
-    const include = [Alias.CATEGORIES];
+    const include = [];
 
     if (needComments) {
 
