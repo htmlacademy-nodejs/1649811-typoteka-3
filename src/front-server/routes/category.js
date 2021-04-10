@@ -2,19 +2,13 @@
 
 const express = require(`express`);
 const bodyParser = require(`body-parser`);
-const privateRoute = require(`../middleware/private-route`);
+const adminRoute = require(`../middleware/admin-route`);
 const {asyncWrapper, calculatePagination, getTotalPages} = require(`../utils`);
 
 const api = require(`../api`).getApi();
 const urlencodedParser = bodyParser.urlencoded({extended: false});
 
 const router = new express.Router();
-
-router.get(`/`, asyncWrapper(async (req, res) => {
-  const categories = await api.getCategories(true);
-
-  res.render(`my/categories`, {categories, newCategory: {title: ``}});
-}));
 
 router.get(`/:id`, asyncWrapper(async (req, res) => {
   const {id} = req.params;
@@ -36,7 +30,13 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
   }
 }));
 
-router.post(`/add`, privateRoute, urlencodedParser, asyncWrapper(async (req, res) => {
+router.get(`/`, adminRoute, asyncWrapper(async (req, res) => {
+  const categories = await api.getCategories(true);
+
+  res.render(`admin/categories`, {categories, newCategory: {title: ``}});
+}));
+
+router.post(`/add`, adminRoute, urlencodedParser, asyncWrapper(async (req, res) => {
   const {body: {category}} = req;
   let newCategory;
 
@@ -52,11 +52,11 @@ router.post(`/add`, privateRoute, urlencodedParser, asyncWrapper(async (req, res
     const {errors} = err.response.data;
     const categories = await api.getCategories(true);
 
-    res.render(`my/categories`, {categories, newCategoryErrors: errors, newCategory: {title: category}});
+    res.render(`admin/categories`, {categories, newCategoryErrors: errors, newCategory: {title: category}});
   }
 }));
 
-router.post(`/edit/:id`, privateRoute, urlencodedParser, asyncWrapper(async (req, res) => {
+router.post(`/edit/:id`, adminRoute, urlencodedParser, asyncWrapper(async (req, res) => {
   const {id} = req.params;
   const {body: {category}} = req;
 
@@ -71,11 +71,11 @@ router.post(`/edit/:id`, privateRoute, urlencodedParser, asyncWrapper(async (req
     edit.title = category;
     edit.errors = Object.values(errors).join(` `);
 
-    res.render(`my/categories`, {categories, newCategory: {title: ``}});
+    res.render(`admin/categories`, {categories, newCategory: {title: ``}});
   }
 }));
 
-router.get(`/delete/:id`, privateRoute, asyncWrapper(async (req, res) => {
+router.get(`/delete/:id`, adminRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
 
   try {
