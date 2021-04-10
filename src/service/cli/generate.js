@@ -24,6 +24,7 @@ const generateComments = (count, comments) => {
     text: shuffle(comments)
       .slice(0, getRandomInt(1, 3))
       .join(` `),
+    userId: getRandomInt(1, 4),
   }));
 };
 

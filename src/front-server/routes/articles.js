@@ -135,8 +135,9 @@ router.post(`/:id/comments`, privateRoute, bodyParser.urlencoded({extended: true
     const {errors} = err.response.data;
 
     const article = await api.getArticle(id, true);
+    const errorMessages = Object.values(errors).join(` `);
 
-    res.render(`article/post`, {article, comment: data.text, errorMessages: errors});
+    res.render(`article/post`, {article, comment: data.text, errorMessages});
   }
 
 }));

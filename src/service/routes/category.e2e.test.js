@@ -12,13 +12,14 @@ const DataService = require(`../data-service/category`);
 const initDb = require(`../lib/init-db`);
 const {HttpCode} = require(`../const`);
 const {
-  mockCategories, mockArticles, mockUsers, mockComments
+  mockCategories, mockArticles, mockUsers, mockComments, mockAdmin,
 } = require(`../../../data/test-data`);
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
 
   await initDb(mockDB, {
+    admin: mockAdmin,
     categories: [...mockCategories],
     users: [...mockUsers],
     articles: mockArticles.map((item) => Object.assign({}, item)),
@@ -34,16 +35,18 @@ const createAPI = async () => {
   return app;
 };
 
+const admin = {
+  email: `admin@mail.com`,
+  password: `webmaster`,
+};
+
 let accessToken;
 let app;
 let response;
 
 beforeAll(async () => {
   app = await createAPI();
-  response = await request(app).post(`/login`).send({
-    email: `ivan@mail.com`,
-    password: `ivanov`,
-  });
+  response = await request(app).post(`/login`).send(admin);
   ({accessToken} = response.body);
 });
 
@@ -124,8 +127,5 @@ describe(`API correctly delete an category`, () => {
       .delete(`/categories/1`).set(`Authorization`, `Bearer: ${accessToken}`);
   });
 
-  test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.OK));
-
-  test(`Returns response with data eq "true"`, () =>
-    expect(response.body).toBe(true));
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
 });

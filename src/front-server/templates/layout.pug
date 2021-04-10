@@ -41,26 +41,31 @@ html(lang='ru')
           if(start < 1){
             start = 1;
           }
-          let i = start - 1
+          let i = start - 1;
 
         .preview__toggle-wrapper
           ul.preview__pagination.pagination
-            if start > 1
-              li
-                a.pagination__button.button.button--backwards(href=`${prefix}page=${page - 1}` aria-label='Страница назад') Назад
+            li
+              a.pagination__button.button.button--backwards(
+                class=[{'button--disabled': page === 1}]
+                href=`${prefix}page=${page - 1}`
+                aria-label='Страница назад') Назад
             while i++ < end
               if (i === page)
-                  - continue
+                li.pagination__item.pagination__item--active
+                  a.disabled= i
+              else
+                li.pagination__item
+                  a(href=`${prefix}page=${i}`)= i
+            li
+              a.pagination__button.button.button--forward(
+                class=[{'button--disabled': page >= end }]
+                href=`${prefix}page=${page + 1}`
+                aria-label='Страница вперед') Вперед
 
-              li.pagination__item(class=[{'pagination__item--active': i === page}])
-                a(href=`${prefix}page=${i}`)= i
-
-            if end < totalPages
-              li
-                a.pagination__button.button.button--forward(href=`${prefix}page=${page + 1}` aria-label='Страница вперед') Вперед
 
 
-      block header
+      include partials/header
 
       block content
 

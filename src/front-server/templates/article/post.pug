@@ -57,11 +57,8 @@ block content
 
               button.comments__button.button.button--colored(type='submit') Опубликовать
 
-              if errorMessages
-                .form__validation-error
-                  ul.form__errors
-                    each error in errorMessages
-                      li.form__error #{error}
+            if errorMessages
+              p.comments__error #{errorMessages}
         else
           .comments__footer.comments__footer--visitor
             a.comments__button.button.button--colored(href='/login') Войти

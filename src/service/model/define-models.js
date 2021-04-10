@@ -20,15 +20,6 @@ const define = (sequelize) => {
   const Comment = defineComment(sequelize);
   const RefreshToken = defineRefreshToken(sequelize);
 
-  User.hasMany(Article, {
-    as: Alias.ARTICLES,
-    foreignKey: `userId`,
-    onDelete: `CASCADE`,
-    onUpdate: `CASCADE`,
-  });
-  Article.belongsTo(User, {
-    as: Alias.USER,
-  });
 
   User.hasMany(Comment, {
     as: Alias.COMMENTS,

@@ -1,8 +1,5 @@
 extends ../layout
 
-block header
-  include ../partials/header
-
 block content
 
   main.articles-category
@@ -28,5 +25,4 @@ block content
               b.preview__comment-count #{article.commentsCount}
   +pagination(page, totalPages, 2, `?`)
 
-block scripts
 

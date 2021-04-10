@@ -11,6 +11,7 @@ const createService = async () => {
   const sequelize = new Sequelize(`sqlite::memory:`, {logging: false});
 
   await initDb(sequelize, {
+    admin: `Webmaster Webmaster admin@mail.com webmaster avatar-5.png`,
     categories: [...mockCategories],
     users: [],
     articles: mockArticles.slice(0, 3).map((item) => Object.assign({}, item)),

@@ -7,7 +7,7 @@ const {SALT_ROUNDS} = require(`../const`);
 
 const MAX_COMMENTS = 5;
 
-module.exports = async (sequelize, {categories, users, articles, comments}, isRandom = false) => {
+module.exports = async (sequelize, {admin, categories, users, articles, comments}, isRandom = false) => {
 
   const {Category, User, Article, Comment} = defineModels(sequelize);
 
@@ -18,6 +18,18 @@ module.exports = async (sequelize, {categories, users, articles, comments}, isRa
   );
 
   const salt = await bcrypt.genSalt(SALT_ROUNDS);
+
+  const [fName, lName, aEmail, aPass, avatar] = admin.split(` `);
+  const adminPass = await bcrypt.hash(aPass, salt);
+
+  await User.create({
+    firstname: fName,
+    lastname: lName,
+    email: aEmail,
+    password: adminPass,
+    avatar,
+    role: `admin`,
+  });
 
   const userModels = await User.bulkCreate(
       await Promise.all(
@@ -41,12 +53,7 @@ module.exports = async (sequelize, {categories, users, articles, comments}, isRa
       ? shuffle([...categoryModels]).slice(0, getRandomInt(1, categoryModels.length))
       : categoryModels;
 
-    const articleUser = isRandom
-      ? userModels[getRandomInt(0, userModels.length - 1)]
-      : userModels[0];
-
     const articleModel = await Article.create(article);
-    await articleModel.setUser(articleUser);
     await articleModel.addCategories(articleCategories);
 
     const articleComments = isRandom
@@ -66,7 +73,6 @@ module.exports = async (sequelize, {categories, users, articles, comments}, isRa
     });
 
     await Promise.all(articleCommentsPromises);
-
   });
 
   await Promise.all(articlePromises);

@@ -10,7 +10,7 @@ const DataService = require(`../data-service/search`);
 const initDb = require(`../lib/init-db`);
 const {HttpCode} = require(`../const`);
 const {
-  mockCategories, mockArticles, mockUsers, mockComments
+  mockCategories, mockArticles, mockUsers, mockComments, mockAdmin,
 } = require(`../../../data/test-data`);
 
 
@@ -20,6 +20,7 @@ app.use(express.json());
 
 beforeAll(async () => {
   await initDb(mockDb, {
+    admin: mockAdmin,
     categories: mockCategories,
     users: mockUsers,
     articles: mockArticles,

@@ -10,12 +10,13 @@ const TokenService = require(`../data-service/refresh-token`);
 const initDb = require(`../lib/init-db`);
 const {HttpCode} = require(`../const`);
 const {RegisterMessage} = require(`../const-messages`);
-const {mockUser} = require(`../../../data/test-data`);
+const {mockUser, mockAdmin} = require(`../../../data/test-data`);
 
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
   await initDb(mockDB, {
+    admin: mockAdmin,
     categories: [],
     users: [],
     articles: [],

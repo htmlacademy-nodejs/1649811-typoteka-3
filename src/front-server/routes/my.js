@@ -3,12 +3,12 @@
 const express = require(`express`);
 const {asyncWrapper} = require(`../utils`);
 const api = require(`../api`).getApi();
-const privateRoute = require(`../middleware/private-route`);
+const adminRoute = require(`../middleware/admin-route`);
 
 
 const router = new express.Router();
 
-router.get(`/`, privateRoute, asyncWrapper(async (req, res) => {
+router.get(`/`, adminRoute, asyncWrapper(async (req, res) => {
   const {loggedUser} = res.locals;
 
   const articles = await api.getArticles({userId: loggedUser.id});
@@ -16,22 +16,25 @@ router.get(`/`, privateRoute, asyncWrapper(async (req, res) => {
   res.render(`my`, {articles});
 }));
 
-router.get(`/comments`, privateRoute, asyncWrapper(async (req, res) => {
-  const {loggedUser} = res.locals;
-  const articles = await api.getArticles({userId: loggedUser.id, comments: true});
-  res.render(`my/comments`, {articles});
+router.get(`/comments`, adminRoute, asyncWrapper(async (req, res) => {
+  try {
+    const {accessToken} = res.locals;
+    const comments = await api.getComments(accessToken);
+    res.render(`admin/comments`, {comments});
+  } catch (err) {
+    console.log(err);
+  }
 }));
 
-router.get(`/comments/delete/:id`, privateRoute, asyncWrapper(async (req, res) => {
+router.get(`/comments/delete/:id`, adminRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
-  const {articleId} = req.query;
 
   try {
     const {accessToken} = res.locals;
-    await api.deleteComment(id, articleId, accessToken);
+    await api.deleteComment(id, accessToken);
 
   } catch (error) {
-    res.redirect(`/my/comments`);
+    console.log(error);
   }
 
   res.redirect(`/my/comments`);

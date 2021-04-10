@@ -1,0 +1,89 @@
+extends ../layout
+
+block header
+  include header
+
+block content
+  main
+    section.modal.modal--flex
+      .popup.popup--new-publication.popup--flex
+        .new-publication
+          form(action=`/articles/edit/${article.id}` method='POST' enctype='multipart/form-data')
+            .new-publication__header
+              h1 Редактирование публикации
+              .new-publication__date-form
+                h3 Дата публикации
+                .new-publication__date-form-division
+                  .new-publication__date-block
+                    label(for='new-publication-date' aria-label='Календарь')
+                    input#new-publication-date.publication-date(type='text' name='login' value=article.createdAt)
+              button.new-publication__button.button.button--colored(type='submit') Опубликовать
+            a.popup__button.button.button--popup-close(href='/my' aria-label='Закрыть окно')
+              | Закрыть
+              | окно
+            .new-publication__form.form
+              .form__wrapper.form__wrapper--intro
+                .form__field
+                  label
+                    input(type='text' placeholder='Заголовок' required='' value=article.title name='title')
+
+                  if (errors && errors.title)
+                    span.form__error-message #{errors.title}
+
+                .form__field.form__field--post-image
+                  - const imgSrc = article.picture ? `/img/${article.picture}` : ``
+                  img.preview__image(alt='Фотография' src=imgSrc)
+                  label
+                    input#image-name(type='hidden' name='old-picture' value=`${article.picture}` readonly='')
+
+                  .form__image-loader.form__image-loader--publication
+                    label
+                      input#image-input.visually-hidden(type='file' name=`picture` accept=".jpg, .jpeg, .png")
+                      | Обзор
+
+                  button#image-remove.button.button--transparent Удалить
+
+                if (errors && errors.picture)
+                  span.form__error-message #{errors.picture}
+
+                .new-publication__checkbox.new-publication__checkbox--auto
+                  each category in categories
+                    input(type='checkbox' id=category.id name=`categories[]`
+                      value=category.id
+                      checked=article.categories.some(item => (item.id ? +item.id : +item) === +category.id))
+                    label(for=category.id) #{category.title}
+
+                  if (errors && errors.categories)
+                    span.form__error-message #{errors.categories}
+
+                a.new-publication__form-link.button.button--transparent(href='#') Добавить категорию
+
+              .form__wrapper.form__wrapper--text
+                .form__field.form__field--publication-text
+                  label
+                    textarea(rows='2' placeholder='Анонс публикации' name=`announce` required='')
+                      | #{article.announce}
+
+                  if (errors && errors.announce)
+                    span.form__error-message #{errors.announce}
+
+                .form__field.form__field--publication-text
+                  label
+                    textarea(rows='5' placeholder='Полный текст публикации' name='full-text')
+                      | #{article.fullText}
+
+                if (errors && errors.fullText)
+                  span.form__error-message #{errors.fullText}
+
+            if errors
+              .form__validation-error
+                p.form__error-message Ошибки при заполнении формы:
+                ul.form__errors
+                  each error in Object.values(errors)
+                    li.form__error #{error}
+      .modal__overlay
+
+block scripts
+  script(src='/js/vendor-flatpickr.js')
+  script(src='/js/main.js')
+  script(src='/js/image.js')

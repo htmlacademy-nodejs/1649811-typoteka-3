@@ -2,7 +2,16 @@ header.header
   a.header__logo.logo(href='/')
     img.logo__image(src='/img/icons/logo-image-only.svg' alt='логотип')
     span.logo__name Типотека
-  if (loggedUser)
+
+  if (!loggedUser)
+    nav.header__nav
+      ul.header__nav-list
+        li.header__list-item
+          a.header__registration(href='/register') Регистрация
+        li.header__list-item
+          a.header__enter(href='/login') Вход с паролем
+
+  else if (loggedUser.role === 'reader')
     nav.header__nav
       ul.header__nav-list
         li.header__list-item
@@ -13,13 +22,21 @@ header.header
       a.header__avatar.avatar(href='/my')
         img(src=`/img/${loggedUser.avatar}` alt='аватар пользователя')
 
-  else
-    nav.header__nav
-      ul.header__nav-list
-        li.header__list-item
-          a.header__registration(href='/register') Регистрация
-        li.header__list-item
-          a.header__enter(href='/login') Вход с паролем
+  else if (loggedUser.role === 'admin')
+    a.button.button--colored.header__button-new(href='/articles/add') Новая запись
+    .header__dropdown
+      a.button.button--burger.header__burger(href='#') Открыть меню
+      ul.navigation.header__navigation
+        li.navigation__item
+          a(href='/') Главная страница
+        li.navigation__item
+          a(href='/my') Мои записи
+        li.navigation__item
+          a(href='/categories') Категории
+        li.navigation__item
+          a(href='/my/comments') Комментарии
+        li.navigation__item
+          a(href='/articles/add') Добавить пост
 
   a.header__search.button.button--search(href='/search' aria-label='поиск по сайту')
 

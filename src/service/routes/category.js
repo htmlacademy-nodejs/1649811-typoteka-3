@@ -4,6 +4,7 @@ const express = require(`express`);
 const {HttpCode} = require(`../const`);
 const authenticateJwt = require(`../middleware/authenticate-jwt`);
 const categorySchema = require(`../middleware/category-schema`);
+const adminRoute = require(`../middleware/admin-route`);
 const {asyncWrapper} = require(`../utils`);
 
 const validator = require(`../middleware/schema-validator`)(categorySchema);
@@ -30,13 +31,13 @@ module.exports = (app, service) => {
     return res.status(HttpCode.OK).json(category);
   }));
 
-  router.post(`/`, authenticateJwt, validator, asyncWrapper(async (req, res) => {
+  router.post(`/`, authenticateJwt, adminRoute, validator, asyncWrapper(async (req, res) => {
     const article = await service.create(req.body);
 
     return res.status(HttpCode.CREATED).json(article);
   }));
 
-  router.put(`/:id`, authenticateJwt, validator, asyncWrapper(async (req, res) => {
+  router.put(`/:id`, authenticateJwt, adminRoute, validator, asyncWrapper(async (req, res) => {
     const {id} = req.params;
 
     const updated = await service.update(id, req.body);
@@ -48,7 +49,7 @@ module.exports = (app, service) => {
     return res.status(HttpCode.OK).json(updated);
   }));
 
-  router.delete(`/:id`, authenticateJwt, asyncWrapper(async (req, res) => {
+  router.delete(`/:id`, authenticateJwt, adminRoute, asyncWrapper(async (req, res) => {
     const {id} = req.params;
 
     const deleted = await service.drop(id);
@@ -58,7 +59,7 @@ module.exports = (app, service) => {
         .send(`Not found category with ${id} id`);
     }
 
-    return res.status(HttpCode.OK).json(deleted);
+    return res.sendStatus(HttpCode.OK);
   }));
 
 

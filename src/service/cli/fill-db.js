@@ -11,6 +11,7 @@ const FILE_SENTENCES = path.resolve(__dirname, `../../../data/sentences.txt`);
 const FILE_CATEGORIES = path.resolve(__dirname, `../../../data/categories.txt`);
 const FILE_COMMENTS = path.resolve(__dirname, `../../../data/comments.txt`);
 const FILE_USERS = path.resolve(__dirname, `../../../data/users.txt`);
+const FILE_ADMIN = path.resolve(__dirname, `../../../data/admin.txt`);
 
 const ARTICLES_COUNT = 5;
 const MAX_ANNOUNCE_COUNT = 5;
@@ -45,11 +46,12 @@ module.exports = {
       const categories = await readFile(FILE_CATEGORIES);
       const comments = await readFile(FILE_COMMENTS);
       const users = await readFile(FILE_USERS);
+      const [admin] = await readFile(FILE_ADMIN);
 
       const count = Math.min(Number.parseInt(arg, 10) || ARTICLES_COUNT, titles.length);
       const articles = generateArticles(count, titles, content);
 
-      await initDb(sequelize, {categories, users, articles, comments}, true);
+      await initDb(sequelize, {admin, categories, users, articles, comments}, true);
 
       console.info(`Database created and populated`);
       await sequelize.close();

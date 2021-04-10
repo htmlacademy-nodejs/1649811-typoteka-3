@@ -21,9 +21,6 @@ const define = (sequelize) => {
     announce: {
       type: DataTypes.STRING,
       allowNull: false,
-      validate: {
-        len: [30, 250],
-      },
     },
     fullText: {
       type: DataTypes.TEXT,
@@ -36,6 +33,7 @@ const define = (sequelize) => {
     sequelize,
     modelName: `Article`,
     tableName: Alias.ARTICLES,
+    updatedAt: false,
   });
 
   return Article;

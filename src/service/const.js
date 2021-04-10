@@ -25,6 +25,11 @@ const HttpCode = {
   BAD_REQUEST: 400,
 };
 
+const UserRole = {
+  ADMIN: `admin`,
+  READER: `reader`,
+};
+
 const MAX_ID_LENGTH = 6;
 
 const API_PREFIX = `/api`;
@@ -58,4 +63,5 @@ module.exports = {
   JWT_EXPIRES,
   LAST_COMMENTS_LIMIT,
   MOST_POPULAR_LIMIT,
+  UserRole,
 };

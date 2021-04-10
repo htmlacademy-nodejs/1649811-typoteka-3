@@ -17,12 +17,18 @@ class API {
     });
   }
 
-  async getArticles({limit, offset, userId, comments} = {}) {
-    return this._load(`/articles`, {params: {limit, offset, userId, comments}});
+  async getArticles({limit, offset, comments} = {}) {
+    return this._load(`/articles`, {params: {limit, offset, comments}});
   }
 
   async getArticle(id, comments) {
     return this._load(`/articles/${id}`, {params: {comments}});
+  }
+
+  async getComments(accessToken) {
+    return this._load(`/articles/comments`, {
+      headers: {'Authorization': `Bearer: ${accessToken}`},
+    });
   }
 
   async getPreviews(limit, offset, categoryId = null) {
@@ -76,8 +82,8 @@ class API {
     });
   }
 
-  async deleteComment(id, articleId, accessToken) {
-    return this._load(`/articles/${articleId}/comments/${id}`, {
+  async deleteComment(id, accessToken) {
+    return this._load(`/articles/comments/${id}`, {
       method: `DELETE`,
       headers: {'Authorization': `Bearer: ${accessToken}`},
     });

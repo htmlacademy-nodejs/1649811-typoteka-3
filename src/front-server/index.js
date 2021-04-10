@@ -3,6 +3,7 @@
 const express = require(`express`);
 const path = require(`path`);
 const dayjs = require(`dayjs`);
+const connectTimeout = require(`connect-timeout`);
 const expressSession = require(`express-session`);
 const cookieParser = require(`cookie-parser`);
 const helmet = require(`helmet`);
@@ -13,10 +14,11 @@ const categoriesRouter = require(`./routes/category`);
 const userRouter = require(`./routes/user`);
 const loggedUser = require(`./middleware/logged-user`);
 const csrfError = require(`./middleware/csrf-error`);
-const {HttpCode, PUBLIC_DIR, VIEWS_DIR, SESSION_NAME} = require(`./const`);
+const {HttpCode, PUBLIC_DIR, VIEWS_DIR, SESSION_NAME, CONNECT_TIMEOUT} = require(`./const`);
 const {FRONT_PORT, SECRET_SESSION, SECRET_COOKIE} = process.env;
 
 const app = express();
+app.use(connectTimeout(CONNECT_TIMEOUT));
 
 app.set(`views`, path.resolve(__dirname, VIEWS_DIR));
 app.set(`view engine`, `pug`);

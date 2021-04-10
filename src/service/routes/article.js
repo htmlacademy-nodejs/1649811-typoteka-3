@@ -7,7 +7,7 @@ const articleSchema = require(`../middleware/article-schema`);
 const commentSchema = require(`../middleware/comment-schema`);
 const validator = require(`../middleware/schema-validator`);
 const authenticateJwt = require(`../middleware/authenticate-jwt`);
-const articleOwner = require(`../middleware/article-owner`);
+const adminRoute = require(`../middleware/admin-route`);
 const {asyncWrapper} = require(`../utils`);
 const {HttpCode} = require(`../const`);
 
@@ -25,10 +25,20 @@ module.exports = (app, articleService, commentService) => {
 
     if (!articles) {
       return res.status(HttpCode.NOT_FOUND)
-          .send(`Not found articles`);
+        .send(`Not found articles`);
     }
 
     return res.status(HttpCode.OK).json(articles);
+  }));
+
+  router.get(`/comments`, authenticateJwt, adminRoute, asyncWrapper(async (req, res) => {
+    try {
+      const result = await commentService.getAll();
+      return res.status(HttpCode.OK).json(result);
+    } catch (err) {
+      console.log(err);
+      return res.sendStatus(HttpCode.NOT_FOUND);
+    }
   }));
 
   router.get(`/previews`, asyncWrapper(async (req, res) => {
@@ -57,7 +67,7 @@ module.exports = (app, articleService, commentService) => {
     return res.status(HttpCode.OK).json(article);
   }));
 
-  router.post(`/`, authenticateJwt, validator(articleSchema), asyncWrapper(async (req, res) => {
+  router.post(`/`, authenticateJwt, adminRoute, validator(articleSchema), asyncWrapper(async (req, res) => {
     let article;
 
     try {
@@ -73,71 +83,70 @@ module.exports = (app, articleService, commentService) => {
   }));
 
   router.put(
-      `/:articleId`,
-      authenticateJwt, articleExists(articleService), articleOwner, validator(articleSchema),
-      asyncWrapper(async (req, res) => {
-        const {articleId} = req.params;
+    `/:articleId`,
+    authenticateJwt, articleExists(articleService), adminRoute, validator(articleSchema),
+    asyncWrapper(async (req, res) => {
+      const {articleId} = req.params;
 
-        const updated = await articleService.update(articleId, req.body);
+      const updated = await articleService.update(articleId, req.body);
 
-        if (!updated) {
-          return res.status(HttpCode.NOT_FOUND)
-              .send(`Not found article with ${articleId} id`);
-        }
+      if (!updated) {
+        return res.status(HttpCode.NOT_FOUND)
+          .send(`Not found article with ${articleId} id`);
+      }
 
-        return res.status(HttpCode.OK).json(updated);
-      }));
+      return res.status(HttpCode.OK).json(updated);
+    }));
 
   router.delete(
-      `/:articleId`,
-      authenticateJwt, articleExists(articleService), articleOwner,
-      asyncWrapper(async (req, res) => {
-        const {articleId} = req.params;
-        const isDeleted = await articleService.drop(articleId);
+    `/:articleId`,
+    authenticateJwt, adminRoute, articleExists(articleService),
+    asyncWrapper(async (req, res) => {
+      const {articleId} = req.params;
+      const isDeleted = await articleService.drop(articleId);
 
-        if (!isDeleted) {
-          return res.status(HttpCode.NOT_FOUND)
-              .send(`Not found article with ${articleId} id`);
-        }
+      if (!isDeleted) {
+        return res.status(HttpCode.NOT_FOUND)
+          .send(`Not found article with ${articleId} id`);
+      }
 
-        return res.status(HttpCode.OK).json(isDeleted);
-      }));
+      return res.status(HttpCode.OK).json(isDeleted);
+    }));
 
   router.get(
-      `/:articleId/comments`,
-      articleExists(articleService),
-      asyncWrapper(async (req, res) => {
-        const {article} = res.locals;
+    `/:articleId/comments`,
+    articleExists(articleService),
+    asyncWrapper(async (req, res) => {
+      const {article} = res.locals;
 
-        const comments = await commentService.findAll(article.id);
+      const comments = await commentService.findAll(article.id);
 
-        return res.status(HttpCode.OK).json(comments);
-      }));
+      return res.status(HttpCode.OK).json(comments);
+    }));
 
   router.post(`/:articleId/comments`,
-      authenticateJwt, articleExists(articleService), validator(commentSchema),
-      asyncWrapper(async (req, res) => {
-        const {article} = res.locals;
-        const {user} = res.locals;
-        const comment = await commentService.create(article.id, user.id, req.body);
+    authenticateJwt, articleExists(articleService), validator(commentSchema),
+    asyncWrapper(async (req, res) => {
+      const {article} = res.locals;
+      const {user} = res.locals;
+      const comment = await commentService.create(article.id, user.id, req.body);
 
-        return res.status(HttpCode.CREATED).json(comment);
-      }));
+      return res.status(HttpCode.CREATED).json(comment);
+    }));
 
   router.delete(
-      `/:articleId/comments/:commentId`,
-      authenticateJwt, articleExists(articleService), articleOwner,
-      asyncWrapper(async (req, res) => {
-        const {commentId} = req.params;
-        const isDeleted = await commentService.drop(commentId);
+    `/comments/:commentId`,
+    authenticateJwt, adminRoute,
+    asyncWrapper(async (req, res) => {
+      const {commentId} = req.params;
+      const isDeleted = await commentService.drop(commentId);
 
-        if (!isDeleted) {
-          return res.status(HttpCode.NOT_FOUND)
-              .send(`Not found comment with ${commentId} id`);
-        }
+      if (!isDeleted) {
+        return res.sendStatus(HttpCode.NOT_FOUND);
+      }
 
-        return res.status(HttpCode.OK).json(isDeleted);
-      }));
+      return res.sendStatus(HttpCode.OK);
+    }));
 
   app.use(`/articles`, router);
 };

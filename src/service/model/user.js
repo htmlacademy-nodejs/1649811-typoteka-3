@@ -33,11 +33,16 @@ const define = (sequelize) => {
       type: DataTypes.STRING,
       allowNull: true,
     },
+    role: {
+      type: DataTypes.STRING,
+      defaultValue: `reader`,
+    }
 
   }, {
     sequelize,
     modelName: `User`,
     tableName: Alias.USERS,
+    updatedAt: false,
   });
 
   return User;

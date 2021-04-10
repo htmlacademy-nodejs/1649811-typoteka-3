@@ -20,6 +20,10 @@ const HttpCode = {
   UNAUTHORIZED: 401,
   BAD_REQUEST: 400,
 };
+const UserRole = {
+  ADMIN: `admin`,
+  READER: `reader`,
+};
 
 const ARTICLES_PER_PAGE = 4;
 const MAX_ID_LENGTH = 6;
@@ -27,6 +31,8 @@ const MIN_PASSWORD_LENGTH = 6;
 const MAX_PASSWORD_LENGTH = 20;
 
 const userCookieOption = {signed: true, httpOnly: true, sameSite: `strict`};
+
+const CONNECT_TIMEOUT = `5s`;
 
 module.exports = {
   DEFAULT_PORT,
@@ -44,4 +50,6 @@ module.exports = {
   userCookieOption,
   PUBLIC_IMG_DIR,
   UPLOAD_DIR,
+  UserRole,
+  CONNECT_TIMEOUT
 };

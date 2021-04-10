@@ -47,6 +47,25 @@ class CommentService {
       replacements: {limit: LAST_COMMENTS_LIMIT},
     });
   }
+
+  async getAll() {
+    const sql = `SELECT c.id,
+                        c.text,
+                        c."createdAt",
+                        a.title                          as "articleTitle",
+                        a.id                             as "articleId",
+                        u.avatar                         as "userAvatar",
+                        u.firstname || ' ' || u.lastname as username
+                 FROM comments c
+                          LEFT JOIN users u on c."userId" = u.id
+                          LEFT JOIN articles a on c."articleId" = a.id
+                 ORDER BY c."createdAt" DESC`;
+
+    return await this._sequelize.query(sql, {
+      type: QueryTypes.SELECT,
+    });
+
+  }
 }
 
 module.exports = CommentService;

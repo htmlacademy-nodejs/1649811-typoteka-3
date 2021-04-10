@@ -5,7 +5,7 @@ const {Sequelize} = require(`sequelize`);
 const initDb = require(`../lib/init-db`);
 const ArticleService = require(`../data-service/article`);
 const {
-  mockCategories, mockArticles, mockUsers, mockComments
+  mockCategories, mockArticles, mockUsers, mockComments, mockAdmin,
 } = require(`../../../data/test-data`);
 
 
@@ -13,6 +13,7 @@ const createService = async () => {
   const sequelize = new Sequelize(`sqlite::memory:`, {logging: false});
 
   await initDb(sequelize, {
+    admin: mockAdmin,
     categories: [...mockCategories],
     users: [...mockUsers],
     articles: mockArticles.map((item) => Object.assign({}, item)),
@@ -21,6 +22,7 @@ const createService = async () => {
 
   return new ArticleService(sequelize);
 };
+
 
 describe(`Test ArticleService`, () => {
   let service;

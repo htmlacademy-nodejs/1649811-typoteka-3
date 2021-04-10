@@ -1,64 +1,37 @@
 extends ../layout
 
-block header
-  include ../partials/header
-
 block content
   main.main-page
     h1.visually-hidden Главная страница личного блога Типотека
     p
       | Это приветственный текст, который владелец блога может выбрать, чтобы описать себя 👏
 
-    include ../partials/categories
+    if (!articles.length)
+      include empty
 
-    .main-page__section-flex
-      section.main-page__hot.hot
-        h2.hot__name
-          | Самое обсуждаемое &nbsp;
-          span.hot__icon.hot__icon--fire
-        if (mostPopular.length)
-          ul.hot__list
-            each item in mostPopular
-              li.hot__list-item
-                a.hot__list-link(href=`/articles/${item.id}`) #{item.announce}
-                  sup.hot__link-sup #{item.commentsCount}
-        else
-          p
-            | Здесь пока ничего нет
+    else
+      include ../partials/categories
 
-      section.main-page__last.last
-        h2.last__name
-          | Последние комментарии  &nbsp;
-          span.last__icon.last__icon--cloud
-        if (lastComments.length)
-          ul.last__list
-            each comment in lastComments
-              - const avatarSrc = comment.userAvatar ? `/img/${comment.userAvatar}` : ``;
-              li.last__list-item
-                img.last__list-image(src=avatarSrc width='20' height='20' alt='Аватар пользователя')
-                b.last__list-name #{comment.username}
-                a.last__list-link(href=`/articles/${comment.articleId}`) #{comment.text}
-        else
-          p
-            | Здесь пока ничего нет
+      include hot
 
-    section.main-page__list.preview
-      h2.visually-hidden Список превью статей
-      ul.preview__list
-        each article in articles
-          li.preview__item
-            ul.preview__breadcrumbs
-              +categoriesList(article.categories)
-            .preview__background
-              img.preview__background-image(src=`/img/${article.picture}` width='460' height='240'  alt=`${article.title}`)
-            time.preview__time(datetime=`${article.createdAt}`) #{formatDate(article.createdAt)}
-            h3.preview__name
-              a.preview__name-link(href=`/articles/${article.id}`) #{article.title}
-            p.preview__text
-              | #{article.announce}
-            a.preview__comment(href=`/articles/${article.id}`)
-              | Комментарии
-              span.preview__cloud
-              b.preview__comment-count #{article.commentsCount}
+      section.main-page__list.preview
+        h2.visually-hidden Список превью статей
+        ul.preview__list
+          each article in articles
+            li.preview__item
+              ul.preview__breadcrumbs
+                +categoriesList(article.categories)
+              if (article.picture)
+                .preview__background
+                  img.preview__background-image(src=`/img/${article.picture}` width='460' height='240'  alt=`${article.title}`)
+              time.preview__time(datetime=`${article.createdAt}`) #{formatDate(article.createdAt)}
+              h3.preview__name
+                a.preview__name-link(href=`/articles/${article.id}`) #{article.title}
+              p.preview__text
+                | #{article.announce}
+              a.preview__comment(href=`/articles/${article.id}`)
+                | Комментарии
+                span.preview__cloud
+                b.preview__comment-count #{article.commentsCount}
 
-  +pagination(page, totalPages, 2, `?`)
+        +pagination(page, totalPages, 2, `?`)

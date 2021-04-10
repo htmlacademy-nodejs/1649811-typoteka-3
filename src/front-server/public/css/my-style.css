@@ -30,9 +30,7 @@
 .new-publication__date-block input {
   width: 120px;
 }
-.preview__toggle-wrapper {
- width: auto;
-}
+
 .popup--registration {
   margin-top: 60px;
 }
@@ -44,6 +42,10 @@
 
 .error__message {
   color:#eb5757;
+}
+
+.disabled {
+  pointer-events: none;
 }
 
 .header__logo--403::before{content:"/ 403"}.header--error

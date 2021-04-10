@@ -14,13 +14,14 @@ const {HttpCode} = require(`../const`);
 const {ArticleMessage} = require(`../const-messages`);
 const initDb = require(`../lib/init-db`);
 const {
-  mockCategories, mockArticles, mockUsers, mockComments, mockArticle,
+  mockCategories, mockArticles, mockUsers, mockComments, mockArticle, mockAdmin,
 } = require(`../../../data/test-data`);
 
 const createAPI = async () => {
   const mockDB = new Sequelize(`sqlite::memory:`, {logging: false});
 
   await initDb(mockDB, {
+    admin: mockAdmin,
     categories: [...mockCategories],
     users: [...mockUsers],
     articles: mockArticles.map((item) => Object.assign({}, item)),
@@ -42,8 +43,8 @@ let accessToken;
 beforeAll(async () => {
   const app = await createAPI();
   const response = await request(app).post(`/login`).send({
-    email: `ivan@mail.com`,
-    password: `ivanov`,
+    email: `admin@mail.com`,
+    password: `webmaster`,
   });
   ({accessToken} = response.body);
 });
@@ -343,12 +344,10 @@ describe(`API correctly deletes a comment`, () => {
     response = await request(app).get(`/articles/1/comments`);
     const commentId = response.body[0].id;
     response = await request(app)
-      .delete(`/articles/1/comments/${commentId}`).set(`Authorization`, `Bearer: ${accessToken}`);
+      .delete(`/articles/comments/${commentId}`).set(`Authorization`, `Bearer: ${accessToken}`);
   });
 
   test(`Status code is 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
-
-  test(`Returns true`, () => expect(response.body).toEqual(true));
 
   test(`Comments count is 2 now`, () => request(app).get(`/articles/1/comments`)
     .expect((res) => expect(res.body.length).toBe(2)));
@@ -360,4 +359,12 @@ test(`API refuses to delete non-existent comment`, async () => {
     .delete(`/articles/1/comments/NO-EXIST`)
     .expect(HttpCode.NOT_FOUND)
     .set(`Authorization`, `Bearer: ${accessToken}`);
+});
+
+test(`API returns all comments`, async () => {
+  const app = await createAPI();
+  const response = await request(app).get(`/articles/comments`)
+    .set(`Authorization`, `Bearer: ${accessToken}`);
+
+  expect(response.statusCode).toBe(HttpCode.OK);
 });
