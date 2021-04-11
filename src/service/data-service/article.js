@@ -94,16 +94,9 @@ class ArticleService {
       replacements: {limit, offset},
     });
 
-    const totalCount = await this._sequelize.query(
-        `SELECT count(*) as c FROM articles`,
-        {
-          raw: true,
-          plain: true,
-          type: QueryTypes.SELECT,
-        },
-    );
+    const count = await this._Article.count();
 
-    return {count: totalCount.c, articles};
+    return {count, articles};
   }
 
   async findPreviewsInCategory(limit, offset, categoryId) {
@@ -133,8 +126,8 @@ class ArticleService {
 
     const totalCount = await this._sequelize.query(
         `SELECT count(ac."articleId") as c
-       FROM article_categories ac
-       WHERE ac."categoryId" = :categoryId`,
+         FROM article_categories ac
+         WHERE ac."categoryId" = :categoryId`,
         {
           raw: true,
           plain: true,
@@ -142,7 +135,6 @@ class ArticleService {
           replacements: {categoryId},
         },
     );
-
 
     return {count: totalCount.c, articles};
   }
@@ -175,18 +167,16 @@ class ArticleService {
 
   async findOne(id, needComments = false) {
 
-    const include = [];
-
-    if (needComments) {
-
-      const comments = {
+    const include = needComments ?
+      {
         model: this._Comment,
         as: Alias.COMMENTS,
         include: [Alias.USER],
-      };
+        separate: true,
+        order: [[`createdAt`, `desc`]],
+      } :
+      null;
 
-      include.push(comments);
-    }
 
     return await this._Article.findByPk(id, {include});
   }

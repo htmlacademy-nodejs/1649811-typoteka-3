@@ -27,10 +27,13 @@ module.exports = (app, userService, tokenService) => {
 
       delete user.password;
       delete user.createdAt;
-      delete user.updatedAt;
 
       const {accessToken, refreshToken} = makeTokens(user);
-      await tokenService.create(refreshToken);
+      const token = await tokenService.create(refreshToken);
+      if (!token) {
+        return res.sendStatus(HttpCode.UNAUTHORIZED);
+      }
+
       return res.status(HttpCode.OK).json({accessToken, refreshToken});
     } catch (err) {
       return res.sendStatus(HttpCode.UNAUTHORIZED);
@@ -55,10 +58,10 @@ module.exports = (app, userService, tokenService) => {
       if (err) {
         return res.sendStatus(HttpCode.FORBIDDEN);
       }
-      const {id, firstname, lastname, email, avatar} = userData;
+      const {id, firstname, lastname, email, avatar, role} = userData;
 
       const {accessToken, refreshToken} = makeTokens(
-          {id, firstname, lastname, email, avatar}
+          {id, firstname, lastname, email, avatar, role},
       );
 
       await existToken.destroy();

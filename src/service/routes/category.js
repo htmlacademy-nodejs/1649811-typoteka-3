@@ -14,18 +14,17 @@ module.exports = (app, service) => {
   const router = new express.Router();
 
   router.get(`/`, asyncWrapper(async (req, res) => {
-    const {all} = req.query;
+    const {all, articleId} = req.query;
 
-    const categories = all
-      ? await service.findAll()
-      : await service.findAllOnlyHavingArticles();
+    let categories;
+    if (articleId) {
+      categories = await service.findByArticle(articleId);
+    } else if (all) {
+      categories = await service.findAll();
+    } else {
+      categories = await service.findOnlyHavingArticles();
+    }
 
-    return res.status(HttpCode.OK).json(categories);
-  }));
-
-  router.get(`/by-article`, asyncWrapper(async (req, res) => {
-    const {articleId} = req.query;
-    const categories = await service.findByArticle(articleId);
     return res.status(HttpCode.OK).json(categories);
   }));
 
@@ -38,9 +37,9 @@ module.exports = (app, service) => {
   }));
 
   router.post(`/`, authenticateJwt, adminRoute, validator, asyncWrapper(async (req, res) => {
-    const article = await service.create(req.body);
+    const category = await service.create(req.body);
 
-    return res.status(HttpCode.CREATED).json(article);
+    return res.status(HttpCode.CREATED).json(category);
   }));
 
   router.put(`/:id`, authenticateJwt, adminRoute, validator, asyncWrapper(async (req, res) => {
@@ -58,11 +57,15 @@ module.exports = (app, service) => {
   router.delete(`/:id`, authenticateJwt, adminRoute, asyncWrapper(async (req, res) => {
     const {id} = req.params;
 
+    const articlesCount = await service.getCountArticles(id);
+    if (articlesCount > 0) {
+      return res.sendStatus(HttpCode.BAD_REQUEST);
+    }
+
     const deleted = await service.drop(id);
 
     if (!deleted) {
-      return res.status(HttpCode.BAD_REQUEST)
-        .send(`Not found category with ${id} id`);
+      return res.sendStatus(HttpCode.BAD_REQUEST);
     }
 
     return res.sendStatus(HttpCode.OK);

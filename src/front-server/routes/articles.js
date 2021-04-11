@@ -16,7 +16,7 @@ router.get(`/add`, adminRoute, asyncWrapper(async (req, res) => {
   const newArticle = {...emptyArticle};
   newArticle.createdDate = new Date();
 
-  const categories = await api.getCategories(true);
+  const categories = await api.getCategories({all: true});
 
   res.render(`admin/post-add`, {article: newArticle, categories});
 }));
@@ -40,7 +40,7 @@ router.post(`/add`, adminRoute, upload.single(`picture`), asyncWrapper(async (re
     res.redirect(`/articles/${article.id}`);
 
   } catch (error) {
-    const categories = await api.getCategories(true);
+    const categories = await api.getCategories({all: true});
     articleData.createdAt = new Date().toISOString();
     const {errors} = error.response.data;
 
@@ -53,7 +53,7 @@ router.get(`/edit/:id`, adminRoute, asyncWrapper(async (req, res) => {
 
   const [article, categories] = await Promise.all([
     await api.getArticle(id),
-    await api.getCategories(true),
+    await api.getCategories({all: true}),
   ]);
 
   req.session.articlePicture = article.picture;
@@ -83,7 +83,7 @@ router.post(`/edit/:id`, adminRoute, upload.single(`picture`), asyncWrapper(asyn
 
   } catch (error) {
     console.log(error.message);
-    const categories = await api.getCategories(true);
+    const categories = await api.getCategories({all: true});
 
     articleData.id = id;
     articleData.createdAt = new Date().toISOString();
@@ -101,12 +101,8 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
     categories,
   ] = await Promise.all([
     api.getArticle(id, true),
-    api.getArticleCategories(id),
+    api.getCategories({articleId: id})
   ]);
-
-  if (article.comments) {
-    article.comments.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  }
 
   res.render(`article/post`, {article, categories, comment: null});
 }));

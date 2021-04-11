@@ -27,9 +27,9 @@ describe(`DataService Category test`, () => {
     service = await createService();
   });
 
-  test(`test findAllOnlyHavingArticles()`, async () => {
+  test(`test findOnlyHavingArticles()`, async () => {
 
-    const categories = await service.findAllOnlyHavingArticles();
+    const categories = await service.findOnlyHavingArticles();
     expect(categories).toHaveLength(5);
     for (const category of categories) {
       expect(category.count).toBe(3);

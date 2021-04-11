@@ -129,9 +129,20 @@ describe(`API update an category if data is valid`, () => {
 
 describe(`API correctly delete an category`, () => {
   beforeAll(async () => {
-    response = await request(app)
-      .delete(`/categories/1`).set(`Authorization`, `Bearer: ${accessToken}`);
+    response = await request(app).post(`/categories`)
+      .send({title: `test category`}).set(`Authorization`, `Bearer: ${accessToken}`);
   });
 
-  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+  test(`Status code 200`, async () => {
+    response = await request(app)
+      .delete(`/categories/${response.body.id}`)
+      .set(`Authorization`, `Bearer: ${accessToken}`)
+      .expect(HttpCode.OK);
+  });
+
+  test(`Bad request if category having articles`, async () => {
+    return request(app)
+      .delete(`/categories/1`).set(`Authorization`, `Bearer: ${accessToken}`)
+      .expect(HttpCode.BAD_REQUEST);
+  });
 });

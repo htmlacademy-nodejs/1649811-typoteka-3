@@ -32,7 +32,7 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
 }));
 
 router.get(`/`, adminRoute, asyncWrapper(async (req, res) => {
-  const categories = await api.getCategories(true);
+  const categories = await api.getCategories({all: true});
 
   res.render(`admin/categories`, {categories, newCategory: {title: ``}});
 }));
@@ -51,7 +51,7 @@ router.post(`/add`, adminRoute, urlencodedParser, asyncWrapper(async (req, res) 
     console.log(err.message);
 
     const {errors} = err.response.data;
-    const categories = await api.getCategories(true);
+    const categories = await api.getCategories({all: true});
 
     res.render(`admin/categories`, {categories, newCategoryErrors: errors, newCategory: {title: category}});
   }
@@ -67,7 +67,7 @@ router.post(`/edit/:id`, adminRoute, urlencodedParser, asyncWrapper(async (req, 
     res.redirect(`/categories`);
   } catch (err) {
     const {errors} = err.response.data;
-    const categories = await api.getCategories(true);
+    const categories = await api.getCategories({all: true});
     const edit = categories.find((item) => +item.id === +id);
     edit.title = category;
     edit.errors = Object.values(errors).join(` `);

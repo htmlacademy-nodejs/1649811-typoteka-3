@@ -24,7 +24,7 @@ const createAPI = async () => {
     admin: mockAdmin,
     categories: [...mockCategories],
     users: [...mockUsers],
-    articles: mockArticles.map((item) => Object.assign({}, item)),
+    articles: mockArticles.map((item) => ({...item})),
     comments: [...mockComments],
   });
 
@@ -284,7 +284,8 @@ describe(`API return a list of comments to given article`, () => {
 
 describe(`API creates a comment if data is valid`, () => {
   const newComment = {text: `Статья так себе. Это где ж такие красоты?`};
-  let response; let app;
+  let response;
+  let app;
 
   beforeAll(async () => {
     app = await createAPI();

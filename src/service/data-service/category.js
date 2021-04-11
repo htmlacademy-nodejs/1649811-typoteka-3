@@ -32,10 +32,10 @@ class CategoryService {
 
   async findAll() {
     const sql = `
-      SELECT c.id, c.title, COUNT(ac."articleId") as count
-      FROM categories c
-             LEFT JOIN article_categories ac ON ac."categoryId" = c.id
-      GROUP BY c.id;
+        SELECT c.id, c.title, COUNT(ac."articleId") as count
+        FROM categories c
+                 LEFT JOIN article_categories ac ON ac."categoryId" = c.id
+        GROUP BY c.id;
     `;
 
     return await this._sequelize.query(sql, {type: QueryTypes.SELECT});
@@ -43,40 +43,44 @@ class CategoryService {
 
   async findByArticle(articleId) {
     const sql = `
-      SELECT c.id, c.title, (SELECT COUNT(s."articleId") FROM article_categories s WHERE s."categoryId" = c.id) as "count"
-      FROM categories c
-             LEFT JOIN article_categories ac on c.id = ac."categoryId"
-      WHERE ac."articleId" = :articleId
-      GROUP BY c.id, c.title ORDER BY c.title;
+        SELECT c.id,
+               c.title,
+               (SELECT COUNT(s."articleId") FROM article_categories s WHERE s."categoryId" = c.id) as "count"
+        FROM categories c
+                 LEFT JOIN article_categories ac on c.id = ac."categoryId"
+        WHERE ac."articleId" = :articleId
+        GROUP BY c.id, c.title
+        ORDER BY c.title;
     `;
 
     return await this._sequelize.query(sql, {
       type: QueryTypes.SELECT,
-      replacements: {articleId}
+      replacements: {articleId},
     });
   }
 
-  async findAllOnlyHavingArticles() {
+  async findOnlyHavingArticles() {
     const sql = `
-      SELECT c.id, c.title, COUNT(ac."articleId") as "count"
-      FROM article_categories ac
-             LEFT JOIN categories c ON ac."categoryId" = c.id
-      GROUP BY c.id, c.title ORDER BY c.title;
+        SELECT c.id, c.title, COUNT(ac."articleId") as "count"
+        FROM article_categories ac
+                 LEFT JOIN categories c ON ac."categoryId" = c.id
+        GROUP BY c.id, c.title
+        ORDER BY c.title;
     `;
 
     return await this._sequelize.query(sql, {type: QueryTypes.SELECT});
   }
 
-  async drop(id) {
-    try {
-      await this._Category.destroy({
-        where: {id},
-      });
+  async getCountArticles(categoryId) {
+    return await this._ArticleCategory.count({
+      where: {categoryId},
+    });
+  }
 
-      return true;
-    } catch (err) {
-      return false;
-    }
+  async drop(id) {
+    return await this._Category.destroy({
+      where: {id},
+    });
   }
 
 }

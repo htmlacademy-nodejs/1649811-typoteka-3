@@ -7,7 +7,7 @@ class RefreshToken extends Model {}
 const define = (sequelize) => {
   RefreshToken.init({
     token: {
-      type: DataTypes.STRING,
+      type: DataTypes.TEXT,
       primaryKey: true,
     },
   }, {
