@@ -35,7 +35,7 @@ class CommentService {
     });
   }
 
-  async getLastComments() {
+  async findLastComments() {
     const sql = `SELECT substr(c.text, 0, 100) || '...'  as text,
                         c."articleId",
                         u.avatar                         as "userAvatar",

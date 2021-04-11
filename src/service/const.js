@@ -42,7 +42,7 @@ const Env = {
 const MIN_PASSWORD_LENGTH = 6;
 const MAX_PASSWORD_LENGTH = 20;
 
-const JWT_EXPIRES = `15s`;
+const JWT_EXPIRES = `15h`;
 
 const LAST_COMMENTS_LIMIT = 4;
 const MOST_POPULAR_LIMIT = 4;

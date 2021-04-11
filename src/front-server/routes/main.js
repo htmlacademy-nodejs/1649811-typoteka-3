@@ -13,7 +13,7 @@ router.get(`/`, asyncWrapper(async (req, res) => {
     categories,
     {lastComments, mostPopular}
   ] = await Promise.all([
-    api.getPreviews(limit, offset),
+    api.getArticles(limit, offset),
     api.getCategories(),
     api.getMostPopular(),
   ]);

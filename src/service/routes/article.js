@@ -16,19 +16,18 @@ module.exports = (app, articleService, commentService) => {
   const router = new express.Router();
 
   router.get(`/`, asyncWrapper(async (req, res) => {
-    const {comments, userId, limit, offset} = req.query;
+    const {limit, offset, categoryId} = req.query;
 
-    const articles = (limit || offset)
-      ? await articleService.findPage({limit, offset, userId, comments})
-      : await articleService.findAll({userId, comments});
+    const result = (limit || offset)
+      ? await articleService.findPage({limit, offset, categoryId})
+      : await articleService.findAll();
 
 
-    if (!articles) {
-      return res.status(HttpCode.NOT_FOUND)
-        .send(`Not found articles`);
+    if (!result) {
+      return res.sendStatus(HttpCode.NOT_FOUND);
     }
 
-    return res.status(HttpCode.OK).json(articles);
+    return res.status(HttpCode.OK).json(result);
   }));
 
   router.get(`/comments`, authenticateJwt, adminRoute, asyncWrapper(async (req, res) => {
@@ -41,23 +40,10 @@ module.exports = (app, articleService, commentService) => {
     }
   }));
 
-  router.get(`/previews`, asyncWrapper(async (req, res) => {
-    const {limit, offset, categoryId} = req.query;
-    try {
-      const result = categoryId ?
-        await articleService.findPreviewsInCategory(limit, offset, categoryId) :
-        await articleService.findPreviews(limit, offset);
-
-      return res.status(HttpCode.OK).json(result);
-    } catch (err) {
-      return res.sendStatus(HttpCode.NOT_FOUND);
-    }
-  }));
-
   router.get(`/most-popular`, asyncWrapper(async (req, res) => {
     const [mostPopular, lastComments] = await Promise.all([
-      articleService.getMostPopular(),
-      commentService.getLastComments(),
+      articleService.findMostPopular(),
+      commentService.findLastComments(),
     ]);
     return res.status(HttpCode.OK).json({mostPopular, lastComments});
   }));

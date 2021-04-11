@@ -71,16 +71,14 @@ class CategoryService {
     return await this._sequelize.query(sql, {type: QueryTypes.SELECT});
   }
 
-  async getCountArticles(categoryId) {
-    return await this._ArticleCategory.count({
-      where: {categoryId},
-    });
-  }
-
   async drop(id) {
-    return await this._Category.destroy({
-      where: {id},
-    });
+    try {
+      return await this._Category.destroy({
+        where: {id},
+      });
+    } catch (err) {
+      return false;
+    }
   }
 
 }

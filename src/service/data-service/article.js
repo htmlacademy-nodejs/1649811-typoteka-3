@@ -1,14 +1,13 @@
 'use strict';
 
 const Alias = require(`../model/alias`);
-const {QueryTypes} = require(`sequelize`);
+const {QueryTypes, Op} = require(`sequelize`);
 const {MOST_POPULAR_LIMIT} = require(`../const`);
 
 class ArticleService {
   constructor(sequelize) {
     this._Article = sequelize.models.Article;
     this._Comment = sequelize.models.Comment;
-    this._Category = sequelize.models.Category;
     this._ArticleCategory = sequelize.models.ArticleCategory;
     this._sequelize = sequelize;
   }
@@ -21,164 +20,6 @@ class ArticleService {
     await article.addCategories(articleData.categories);
 
     return article;
-  }
-
-  async drop(id) {
-    const deletedRows = await this._Article.destroy({
-      where: {id},
-    });
-
-    return !!deletedRows;
-  }
-
-  async getMostPopular() {
-    const sql = `SELECT a.id, substr(a.announce, 0, 100) || '...' as announce, count(c.id) as "commentsCount"
-                 FROM articles a
-                          LEFT JOIN comments c on a.id = c."articleId"
-                 GROUP BY a.id
-                 ORDER BY "commentsCount" DESC
-                 LIMIT :limit`;
-
-    return await this._sequelize.query(sql, {
-      type: QueryTypes.SELECT,
-      replacements: {limit: MOST_POPULAR_LIMIT},
-    });
-
-  }
-
-  async findAll({userId, comments}) {
-
-    const include = [Alias.CATEGORIES];
-
-    if (comments) {
-      include.push({
-        model: this._Comment,
-        as: Alias.COMMENTS,
-        order: [
-          [`createdAt`, `DESC`],
-        ],
-      });
-    }
-
-    const where = (userId) ? {userId} : null;
-
-    return await this._Article.findAll({
-      include,
-      where,
-      order: [
-        [`createdAt`, `DESC`],
-      ],
-    });
-  }
-
-
-  async findPreviews(limit, offset) {
-    const sql = `SELECT a.id,
-                        a.title,
-                        a.announce,
-                        a.picture,
-                        a."createdAt",
-                        count(c)                           as "commentsCount",
-                        array(SELECT ct.id::text || '__' || ct.title
-                              FROM categories ct
-                                       LEFT JOIN article_categories ac on ct.id = ac."categoryId"
-                              WHERE ac."articleId" = a.id) as categories
-                 FROM articles a
-                          LEFT JOIN comments c on a.id = c."articleId"
-                 GROUP BY a.id, a."createdAt"
-                 ORDER BY a."createdAt" DESC
-                 LIMIT :limit OFFSET :offset`;
-
-    const articles = await this._sequelize.query(sql, {
-      type: QueryTypes.SELECT,
-      replacements: {limit, offset},
-    });
-
-    const count = await this._Article.count();
-
-    return {count, articles};
-  }
-
-  async findPreviewsInCategory(limit, offset, categoryId) {
-    const sql = `SELECT a.id,
-                        a.title,
-                        a.announce,
-                        a.picture,
-                        a."createdAt",
-                        count(c)                           as "commentsCount",
-                        array(SELECT ct.id::text || '__' || ct.title
-                              FROM categories ct
-                                       LEFT JOIN article_categories ac on ct.id = ac."categoryId"
-                              WHERE ac."articleId" = a.id) as categories
-                 FROM articles a
-                          LEFT JOIN comments c on a.id = c."articleId"
-                          LEFT JOIN article_categories act ON act."articleId" = a.id
-                 WHERE act."categoryId" = :categoryId
-                 GROUP BY a.id, a."createdAt"
-                 ORDER BY a."createdAt" DESC
-                 LIMIT :limit OFFSET :offset`;
-
-    const articles = await this._sequelize.query(sql, {
-      type: QueryTypes.SELECT,
-      raw: true,
-      replacements: {limit, offset, categoryId},
-    });
-
-    const totalCount = await this._sequelize.query(
-        `SELECT count(ac."articleId") as c
-         FROM article_categories ac
-         WHERE ac."categoryId" = :categoryId`,
-        {
-          raw: true,
-          plain: true,
-          type: QueryTypes.SELECT,
-          replacements: {categoryId},
-        },
-    );
-
-    return {count: totalCount.c, articles};
-  }
-
-  async findPage({limit, offset, userId, comments}) {
-    const include = [Alias.CATEGORIES];
-    if (comments) {
-      include.push({
-        model: this._Comment,
-        as: Alias.COMMENTS,
-      });
-    }
-
-    const where = (userId) ? {userId} : null;
-
-    const {count, rows} = await this._Article.findAndCountAll({
-      limit,
-      offset,
-      include,
-      where,
-      order: [
-        [`createdAt`, `DESC`],
-      ],
-      distinct: true,
-
-    });
-
-    return {count, articles: rows};
-  }
-
-  async findOne(id, needComments = false) {
-
-    const include = needComments ?
-      {
-        model: this._Comment,
-        as: Alias.COMMENTS,
-        include: [Alias.USER],
-        separate: true,
-        order: [[`createdAt`, `desc`]],
-      } :
-      null;
-
-
-    return await this._Article.findByPk(id, {include});
   }
 
   async update(id, article) {
@@ -196,6 +37,94 @@ class ArticleService {
     } catch (err) {
       return false;
     }
+  }
+
+  async drop(id) {
+    const deletedRows = await this._Article.destroy({
+      where: {id},
+    });
+
+    return !!deletedRows;
+  }
+
+  async findOne(id, needComments = false) {
+
+    const include = [Alias.CATEGORIES];
+
+    if (needComments) {
+      include.push({
+        model: this._Comment,
+        as: Alias.COMMENTS,
+        include: [Alias.USER],
+        separate: true,
+        order: [[`createdAt`, `desc`]],
+      });
+    }
+
+    return await this._Article.findByPk(id, {include});
+  }
+
+  async findAll() {
+    const articles = await this._Article.findAll({
+      include: [Alias.CATEGORIES],
+      order: [[`createdAt`, `DESC`]],
+    });
+    return {articles};
+  }
+
+  async findPage({limit, offset, categoryId = null}) {
+
+    const include = [Alias.CATEGORIES];
+
+    const attributes = [
+      `id`, `title`, `announce`, `picture`, `createdAt`,
+      [
+        this._sequelize.literal(
+            `(SELECT COUNT(*) FROM comments c where c."articleId" = "Article".id)`),
+        `commentsCount`,
+      ],
+    ];
+
+    let count;
+
+    if (categoryId) {
+      include.push({
+        model: this._ArticleCategory,
+        as: Alias.ARTICLE_CATEGORIES,
+        where: {"categoryId": {[Op.eq]: categoryId}},
+        right: true,
+        attributes: [],
+      });
+
+      count = await this._ArticleCategory.count({where: {categoryId}});
+    } else {
+      count = await this._Article.count();
+    }
+
+    const articles = await this._Article.findAll({
+      include,
+      attributes,
+      limit,
+      offset,
+      order: [[`createdAt`, `DESC`]],
+    });
+
+    return {count, articles};
+  }
+
+  async findMostPopular() {
+    const sql = `SELECT a.id, substr(a.announce, 0, 100) || '...' as announce, count(c.id) as "commentsCount"
+                 FROM articles a
+                          LEFT JOIN comments c on a.id = c."articleId"
+                 GROUP BY a.id
+                 ORDER BY "commentsCount" DESC
+                 LIMIT :limit`;
+
+    return await this._sequelize.query(sql, {
+      type: QueryTypes.SELECT,
+      replacements: {limit: MOST_POPULAR_LIMIT},
+    });
+
   }
 }
 

@@ -17,8 +17,8 @@ class API {
     });
   }
 
-  async getArticles({limit, offset, comments} = {}) {
-    return this._load(`/articles`, {params: {limit, offset, comments}});
+  async getArticles(limit = null, offset = null, categoryId = null) {
+    return this._load(`/articles`, {params: {limit, offset, categoryId}});
   }
 
   async getArticle(id, comments) {
@@ -31,20 +31,16 @@ class API {
     });
   }
 
-  async getPreviews(limit, offset, categoryId = null) {
-    return this._load(`/articles/previews`, {params: {limit, offset, categoryId}});
-  }
-
   async getMostPopular() {
     return this._load(`/articles/most-popular`);
   }
 
-  async getCategory(id) {
-    return this._load(`/categories/${id}`);
-  }
-
   async getCategories({all = null, articleId = null} = {}) {
     return this._load(`/categories`, {params: {all, articleId}});
+  }
+
+  async getCategory(id) {
+    return this._load(`/categories/${id}`);
   }
 
   async search(query) {

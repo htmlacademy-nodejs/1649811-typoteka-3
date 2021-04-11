@@ -57,13 +57,7 @@ module.exports = (app, service) => {
   router.delete(`/:id`, authenticateJwt, adminRoute, asyncWrapper(async (req, res) => {
     const {id} = req.params;
 
-    const articlesCount = await service.getCountArticles(id);
-    if (articlesCount > 0) {
-      return res.sendStatus(HttpCode.BAD_REQUEST);
-    }
-
     const deleted = await service.drop(id);
-
     if (!deleted) {
       return res.sendStatus(HttpCode.BAD_REQUEST);
     }

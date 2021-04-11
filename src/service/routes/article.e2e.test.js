@@ -24,7 +24,7 @@ const createAPI = async () => {
     admin: mockAdmin,
     categories: [...mockCategories],
     users: [...mockUsers],
-    articles: mockArticles.map((item) => ({...item})),
+    articles: mockArticles.map((item) => Object.assign({}, item)),
     comments: [...mockComments],
   });
 
@@ -54,31 +54,37 @@ describe(`API return a list of all articles`, () => {
   beforeAll(async () => {
     const app = await createAPI();
     response = await request(app).get(`/articles`);
+
+    // console.log(response.body);
+
   });
 
   test(`Status code 200`, () =>
     expect(response.statusCode).toBe(HttpCode.OK));
 
+  // test(`Count all 5`, () =>
+  // expect(response.body.count).toBe(5));
+
   test(`Returns a list of 5 articles`, () =>
-    expect(response.body.length).toBe(5));
+    expect(response.body.articles.length).toBe(5));
 
 });
 
-describe(`API return a list of all articles with comments`, () => {
+describe(`API return a list of 2 articles & count 5`, () => {
   let response;
   beforeAll(async () => {
     const app = await createAPI();
-    response = await request(app).get(`/articles?comments=true`);
+    response = await request(app).get(`/articles?limit=2`);
   });
 
   test(`Status code 200`, () =>
     expect(response.statusCode).toBe(HttpCode.OK));
 
-  test(`Returns a list of 5 articles`, () =>
-    expect(response.body.length).toBe(5));
+  test(`Count all 5`, () =>
+    expect(response.body.count).toBe(5));
 
-  test(`Each article has 3 comments`, () =>
-    response.body.forEach((item) => expect(item.comments.length).toEqual(3)));
+  test(`Returns a list of 2 articles`, () =>
+    expect(response.body.articles.length).toBe(2));
 
 });
 
@@ -121,8 +127,8 @@ describe(`API created an article if data is valid`, () => {
   test(`Returns offer created with title "Как по-научному оправдать свою лень?"`, () =>
     expect(response.body.title).toEqual(`Как по-научному оправдать свою лень?`));
 
-  test(`Articles count is changed`, () => request(app).get(`/articles`)
-    .expect((res) => expect(res.body).toHaveLength(6)));
+  test(`Articles count is changed`, () => request(app).get(`/articles?offset=0`)
+    .expect((res) => expect(res.body.count).toBe(6)));
 });
 
 describe(`API refuses to create an article if data is invalid`, () => {
@@ -257,7 +263,7 @@ describe(`API correctly deletes an article`, () => {
   test(`Returns deleted offer`, () => expect(response.body).toEqual(true));
 
   test(`Articles count is 4 now`, () => request(app).get(`/articles`)
-    .expect((res) => expect(res.body.length).toBe(4)));
+    .expect((res) => expect(res.body.articles.length).toBe(4)));
 });
 
 test(`API refuses to delete non-existent article`, async () => {

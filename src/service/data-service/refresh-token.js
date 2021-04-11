@@ -8,7 +8,8 @@ class RefreshTokenService {
 
   async create(refreshToken) {
     try {
-      return await this._RefreshToken.create({token: refreshToken});
+      await this._RefreshToken.create({token: refreshToken});
+      return true;
     } catch (err) {
       return false;
     }
