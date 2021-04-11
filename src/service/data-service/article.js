@@ -7,8 +7,10 @@ const {MOST_POPULAR_LIMIT} = require(`../const`);
 class ArticleService {
   constructor(sequelize) {
     this._Article = sequelize.models.Article;
+    this._Category = sequelize.models.Category;
     this._Comment = sequelize.models.Comment;
     this._ArticleCategory = sequelize.models.ArticleCategory;
+    this._User = sequelize.models.User;
     this._sequelize = sequelize;
   }
 
@@ -49,13 +51,26 @@ class ArticleService {
 
   async findOne(id, needComments = false) {
 
-    const include = [Alias.CATEGORIES];
+    const include = [{
+      model: this._Category,
+      as: Alias.CATEGORIES,
+      through: {attributes: []},
+    }];
 
     if (needComments) {
       include.push({
         model: this._Comment,
         as: Alias.COMMENTS,
-        include: [Alias.USER],
+        attributes: [
+          `id`, `text`, `createdAt`
+        ],
+        include: [{
+          model: this._User,
+          as: Alias.USER,
+          attributes: [
+            `firstname`, `lastname`, `avatar`, `email`,
+          ]
+        }],
         separate: true,
         order: [[`createdAt`, `desc`]],
       });
@@ -66,7 +81,11 @@ class ArticleService {
 
   async findAll() {
     const articles = await this._Article.findAll({
-      include: [Alias.CATEGORIES],
+      include: [{
+        model: this._Category,
+        as: Alias.CATEGORIES,
+        through: {attributes: []},
+      }],
       order: [[`createdAt`, `DESC`]],
     });
     return {articles};
@@ -74,7 +93,16 @@ class ArticleService {
 
   async findPage({limit, offset, categoryId = null}) {
 
-    const include = [Alias.CATEGORIES];
+    const include = [
+      {
+        model: this._Category,
+        as: Alias.CATEGORIES,
+        through: {
+          attributes: [],
+        },
+      },
+
+    ];
 
     const attributes = [
       `id`, `title`, `announce`, `picture`, `createdAt`,
