@@ -6,9 +6,12 @@
   "scripts": {
     "test": "npm run eslint && npm run test::rest",
     "eslint": "eslint --ext .js src/",
-    "start": "cross-env NODE_ENV=production node -r dotenv/config ./src/service/service.js",
-    "start::debug": "cross-env LOG_LEVEL=debug NODE_ENV=development nodemon -r dotenv/config ./src/service/service.js --server",
-    "start-front-server": "nodemon -r dotenv/config src/front-server/index.js",
+    "start": "concurrently --prefix \"{pid} {name}\" --names \"API,SSR\" --prefix-colors \"green,yellow\" \"npm run start-api\" \"npm run start-front-server\"",
+    "start::debug": "concurrently --prefix \"{pid} {name}\" --names \"API,SSR\" --prefix-colors \"green,yellow\" \"npm:start-api::debug\" \"npm:start-front-server::debug\"",
+    "start-api": "cross-env NODE_ENV=production node -r dotenv/config ./src/service/service.js --server",
+    "start-api::debug": "cross-env LOG_LEVEL=debug NODE_ENV=development nodemon -r dotenv/config ./src/service/service.js --server",
+    "start-front-server": "node -r dotenv/config src/front-server/index.js",
+    "start-front-server::debug": "nodemon -r dotenv/config src/front-server/index.js",
     "test::rest": "jest src/service/routes/*.test.js",
     "service": "node -r dotenv/config ./src/service/service.js"
   },
@@ -36,6 +39,7 @@
     "bcrypt": "5.0.1",
     "body-parser": "1.19.0",
     "chalk": "4.1.0",
+    "concurrently": "6.0.2",
     "connect-timeout": "1.9.0",
     "cookie-parser": "1.4.5",
     "cross-env": "7.0.3",
