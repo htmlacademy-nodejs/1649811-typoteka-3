@@ -49,7 +49,6 @@ app.use(`/my`, myRouter);
 app.use(`/articles`, articlesRouter);
 app.use(`/categories`, categoriesRouter);
 
-
 app.use((req, res) => {
   res.status(HttpCode.NOT_FOUND).render(`errors/404`);
 });

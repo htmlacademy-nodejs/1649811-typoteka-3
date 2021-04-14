@@ -6,8 +6,8 @@ const bodyParser = require(`body-parser`);
 const {asyncWrapper, moveUploadedImage, removeUploadedImage} = require(`../utils`);
 const {emptyUser, getRequestData, getRequestLoginData, upload} = require(`./user-helper`);
 const {COOKIE_ACCESS, COOKIE_REFRESH, userCookieOption} = require(`../const`);
-
 const csrfProtection = csrf({cookie: {sameSite: `strict`}});
+
 const api = require(`../api`).getApi();
 const router = new express.Router();
 

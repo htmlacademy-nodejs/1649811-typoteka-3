@@ -7,8 +7,8 @@ const {asyncWrapper, calculatePagination, getTotalPages} = require(`../utils`);
 
 const api = require(`../api`).getApi();
 const urlencodedParser = bodyParser.urlencoded({extended: false});
-
 const router = new express.Router();
+
 
 router.get(`/:id`, asyncWrapper(async (req, res) => {
   const {id} = req.params;
@@ -26,7 +26,6 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
 
     res.render(`article/by-category`, {categories, currentCategory, articles, page, totalPages});
   } catch (err) {
-    console.log(err);
     res.redirect(`/`);
   }
 }));
@@ -48,8 +47,6 @@ router.post(`/add`, adminRoute, urlencodedParser, asyncWrapper(async (req, res) 
     res.redirect(`/categories/${newCategory.id}`);
 
   } catch (err) {
-    console.log(err.message);
-
     const {errors} = err.response.data;
     const categories = await api.getCategories({all: true});
 
@@ -78,13 +75,8 @@ router.post(`/edit/:id`, adminRoute, urlencodedParser, asyncWrapper(async (req, 
 
 router.get(`/delete/:id`, adminRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
-
-  try {
-    const {accessToken} = res.locals;
-    await api.deleteCategory(id, accessToken);
-  } catch (err) {
-    console.log(err.message);
-  }
+  const {accessToken} = res.locals;
+  await api.deleteCategory(id, accessToken);
 
   res.redirect(`/categories`);
 }));

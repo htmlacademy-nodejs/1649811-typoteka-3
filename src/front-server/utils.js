@@ -2,7 +2,6 @@
 
 const fs = require(`fs`).promises;
 const path = require(`path`);
-
 const {ARTICLES_PER_PAGE, UPLOAD_DIR, PUBLIC_IMG_DIR} = require(`./const`);
 
 const checkObjProp = (obj, prop) => {

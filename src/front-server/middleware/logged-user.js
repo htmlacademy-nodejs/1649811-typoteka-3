@@ -27,7 +27,6 @@ module.exports = (req, res, next) => {
         return next();
 
       } catch (error) {
-        console.log(`jwt error:`, error.message);
         return res
           .clearCookie(COOKIE_ACCESS)
           .clearCookie(COOKIE_REFRESH)

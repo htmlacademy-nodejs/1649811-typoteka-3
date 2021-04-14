@@ -82,13 +82,10 @@ router.post(`/edit/:id`, adminRoute, upload.single(`picture`), asyncWrapper(asyn
     res.redirect(`/articles/${id}`);
 
   } catch (error) {
-    console.log(error.message);
+    const {errors} = error.response.data;
     const categories = await api.getCategories({all: true});
-
     articleData.id = id;
     articleData.createdAt = new Date().toISOString();
-
-    const {errors} = error.response.data;
 
     res.render(`admin/post-edit`, {article: articleData, categories, errors});
   }
@@ -101,7 +98,7 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
     categories,
   ] = await Promise.all([
     api.getArticle(id, true),
-    api.getCategories({articleId: id})
+    api.getCategories({articleId: id}),
   ]);
 
   res.render(`article/post`, {article, categories, comment: null});
@@ -110,14 +107,10 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
 router.get(`/delete/:id`, adminRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
   const article = await api.getArticle(id);
-  try {
-    const {accessToken} = res.locals;
-    await api.deleteArticle(id, accessToken);
-    if (article.picture) {
-      await removeUploadedImage(article.picture);
-    }
-  } catch (error) {
-    console.log(error.message);
+  const {accessToken} = res.locals;
+  await api.deleteArticle(id, accessToken);
+  if (article.picture) {
+    await removeUploadedImage(article.picture);
   }
 
   res.redirect(`/my`);
@@ -142,7 +135,6 @@ router.post(`/:id/comments`, privateRoute, bodyParser.urlencoded({extended: true
 
     res.render(`article/post`, {article, comment: data.text, errorMessages});
   }
-
 }));
 
 module.exports = router;

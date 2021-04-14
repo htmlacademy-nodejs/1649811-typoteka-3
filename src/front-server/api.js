@@ -5,7 +5,6 @@ const {API_PREFIX} = require(`./const`);
 const {API_PORT, API_HOST} = process.env;
 const TIMEOUT = 1000;
 
-
 const defaultURL = `${API_HOST}:${API_PORT}${API_PREFIX}`;
 
 

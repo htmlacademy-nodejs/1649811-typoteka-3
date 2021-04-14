@@ -2,10 +2,11 @@
 
 const express = require(`express`);
 const {asyncWrapper} = require(`../utils`);
-const api = require(`../api`).getApi();
 const adminRoute = require(`../middleware/admin-route`);
 
+const api = require(`../api`).getApi();
 const router = new express.Router();
+
 
 router.get(`/`, adminRoute, asyncWrapper(async (req, res) => {
   const {articles} = await api.getArticles();
@@ -14,25 +15,15 @@ router.get(`/`, adminRoute, asyncWrapper(async (req, res) => {
 }));
 
 router.get(`/comments`, adminRoute, asyncWrapper(async (req, res) => {
-  try {
-    const {accessToken} = res.locals;
-    const comments = await api.getComments(accessToken);
-    res.render(`admin/comments`, {comments});
-  } catch (err) {
-    console.log(err);
-  }
+  const {accessToken} = res.locals;
+  const comments = await api.getComments(accessToken);
+  res.render(`admin/comments`, {comments});
 }));
 
 router.get(`/comments/delete/:id`, adminRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
-
-  try {
-    const {accessToken} = res.locals;
-    await api.deleteComment(id, accessToken);
-
-  } catch (error) {
-    console.log(error);
-  }
+  const {accessToken} = res.locals;
+  await api.deleteComment(id, accessToken);
 
   res.redirect(`/my/comments`);
 }));
