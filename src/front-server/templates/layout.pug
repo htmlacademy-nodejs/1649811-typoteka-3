@@ -6,8 +6,8 @@ html(lang='ru')
     meta(name='Description' content='Личный блог Типотека')
     title Типотека
     link(rel='preload' href='/fonts/Inter-Regular.woff2' as='font' crossorigin='anonymous')
-    //link(rel='preload' href='/fonts/Inter-Medium.woff2' as='font' crossorigin='anonymous')
-    //link(rel='preload' href='/fonts/SFProDisplay-Regular.woff2' as='font' crossorigin='anonymous')
+    link(rel='preload' href='/fonts/Inter-Medium.woff2' as='font' crossorigin='anonymous')
+    link(rel='preload' href='/fonts/SFProDisplay-Regular.woff2' as='font' crossorigin='anonymous')
     link(rel='stylesheet' href='/css/style.min.css')
     link(rel='stylesheet' href='/css/my-style.css')
   body
@@ -20,7 +20,7 @@ html(lang='ru')
       mixin categoriesList(categories)
         each category in categories
           li.preview__breadcrumbs-item
-            a.preview__breadcrumbs-link(href=`/categories/${category.id}`) #{category.title}
+            a.preview__breadcrumbs-link(href=`/articles/category/${category.id}`) #{category.title}
 
       mixin pagination(page, totalPages, width, prefix)
         -
@@ -71,3 +71,4 @@ html(lang='ru')
       include partials/footer
 
     block scripts
+

@@ -15,7 +15,7 @@ block content
             ul.post__themes.themes
               each category in categories
                 li.themes__item
-                  a.themes__item-link(href=`/categories/${category.id}`)
+                  a.themes__item-link(href=`/articles/category/${category.id}`)
                     | #{category.title}
                     sup #{category.count}
 

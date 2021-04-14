@@ -10,7 +10,7 @@ const urlencodedParser = bodyParser.urlencoded({extended: false});
 const router = new express.Router();
 
 
-router.get(`/:id`, asyncWrapper(async (req, res) => {
+router.get(`/:id`, adminRoute, asyncWrapper(async (req, res) => {
   const {id} = req.params;
 
   try {
