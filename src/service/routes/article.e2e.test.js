@@ -54,16 +54,10 @@ describe(`API return a list of all articles`, () => {
   beforeAll(async () => {
     const app = await createAPI();
     response = await request(app).get(`/articles`);
-
-    // console.log(response.body);
-
   });
 
   test(`Status code 200`, () =>
     expect(response.statusCode).toBe(HttpCode.OK));
-
-  // test(`Count all 5`, () =>
-  // expect(response.body.count).toBe(5));
 
   test(`Returns a list of 5 articles`, () =>
     expect(response.body.articles.length).toBe(5));
@@ -360,7 +354,7 @@ describe(`API correctly deletes a comment`, () => {
 test(`API refuses to delete non-existent comment`, async () => {
   const app = await createAPI();
   return request(app)
-    .delete(`/articles/1/comments/NO-EXIST`)
+    .delete(`/articles/comments/NO-EXIST`)
     .expect(HttpCode.NOT_FOUND)
     .set(`Authorization`, `Bearer: ${accessToken}`);
 });
@@ -371,4 +365,25 @@ test(`API returns all comments`, async () => {
     .set(`Authorization`, `Bearer: ${accessToken}`);
 
   expect(response.statusCode).toBe(HttpCode.OK);
+});
+
+describe(`API return most popular`, () => {
+  let response; let mostPopular; let lastComments;
+
+  beforeAll(async () => {
+    const app = await createAPI();
+    response = await request(app).get(`/articles/most-popular`);
+    ({mostPopular, lastComments} = response.body);
+  });
+
+  test(`Status code 200`, () =>
+    expect(response.statusCode).toBe(HttpCode.OK));
+
+  test(`most popular`, () =>
+    expect(mostPopular.length).toBe(4)
+  );
+
+  test(`last comments`, () =>
+    expect(lastComments.length).toBe(4)
+  );
 });

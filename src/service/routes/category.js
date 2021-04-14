@@ -30,7 +30,6 @@ module.exports = (app, service) => {
 
   router.get(`/:id`, asyncWrapper(async (req, res) => {
     const {id} = req.params;
-
     const category = await service.findOne(id);
 
     return res.status(HttpCode.OK).json(category);
@@ -44,19 +43,13 @@ module.exports = (app, service) => {
 
   router.put(`/:id`, authenticateJwt, adminRoute, validator, asyncWrapper(async (req, res) => {
     const {id} = req.params;
-
     const updated = await service.update(id, req.body);
-
-    if (!updated) {
-      return res.sendStatus(HttpCode.BAD_REQUEST);
-    }
 
     return res.status(HttpCode.OK).json(updated);
   }));
 
   router.delete(`/:id`, authenticateJwt, adminRoute, asyncWrapper(async (req, res) => {
     const {id} = req.params;
-
     const deleted = await service.drop(id);
     if (!deleted) {
       return res.sendStatus(HttpCode.BAD_REQUEST);

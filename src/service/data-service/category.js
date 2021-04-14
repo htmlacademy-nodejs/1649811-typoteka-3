@@ -7,7 +7,6 @@ class CategoryService {
   constructor(sequelize) {
     this._sequelize = sequelize;
     this._Category = sequelize.models.Category;
-    this._ArticleCategory = sequelize.models.ArticleCategory;
   }
 
   async create(categoryData) {
@@ -15,15 +14,11 @@ class CategoryService {
   }
 
   async update(id, category) {
-    try {
-      await this._Category.update(category, {
-        where: {id},
-      });
-    } catch (err) {
-      return false;
-    }
+    const result = await this._Category.update(category, {
+      where: {id},
+    });
 
-    return true;
+    return result > 0;
   }
 
   async findOne(id) {

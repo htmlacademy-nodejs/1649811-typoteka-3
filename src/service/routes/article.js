@@ -17,27 +17,16 @@ module.exports = (app, articleService, commentService) => {
 
   router.get(`/`, asyncWrapper(async (req, res) => {
     const {limit, offset, categoryId} = req.query;
-
     const result = (limit || offset)
       ? await articleService.findPage({limit, offset, categoryId})
       : await articleService.findAll();
-
-
-    if (!result) {
-      return res.sendStatus(HttpCode.NOT_FOUND);
-    }
 
     return res.status(HttpCode.OK).json(result);
   }));
 
   router.get(`/comments`, authenticateJwt, adminRoute, asyncWrapper(async (req, res) => {
-    try {
-      const result = await commentService.getAll();
-      return res.status(HttpCode.OK).json(result);
-    } catch (err) {
-      console.log(err);
-      return res.sendStatus(HttpCode.NOT_FOUND);
-    }
+    const result = await commentService.getAll();
+    return res.status(HttpCode.OK).json(result);
   }));
 
   router.get(`/most-popular`, asyncWrapper(async (req, res) => {
@@ -50,20 +39,15 @@ module.exports = (app, articleService, commentService) => {
 
   router.get(`/:articleId`, articleExists(articleService), asyncWrapper(async (req, res) => {
     const {article} = res.locals;
+
     return res.status(HttpCode.OK).json(article);
   }));
 
   router.post(`/`, authenticateJwt, adminRoute, validator(articleSchema), asyncWrapper(async (req, res) => {
     let article;
-
-    try {
-      const {user} = res.locals;
-      const data = req.body;
-
-      article = await articleService.create(data, user.id);
-    } catch (err) {
-      return res.sendStatus(HttpCode.BAD_REQUEST);
-    }
+    const {user} = res.locals;
+    const data = req.body;
+    article = await articleService.create(data, user.id);
 
     return res.status(HttpCode.CREATED).json(article);
   }));
@@ -73,13 +57,7 @@ module.exports = (app, articleService, commentService) => {
       authenticateJwt, articleExists(articleService), adminRoute, validator(articleSchema),
       asyncWrapper(async (req, res) => {
         const {articleId} = req.params;
-
         const updated = await articleService.update(articleId, req.body);
-
-        if (!updated) {
-          return res.status(HttpCode.NOT_FOUND)
-          .send(`Not found article with ${articleId} id`);
-        }
 
         return res.status(HttpCode.OK).json(updated);
       }));
@@ -91,11 +69,6 @@ module.exports = (app, articleService, commentService) => {
         const {articleId} = req.params;
         const isDeleted = await articleService.drop(articleId);
 
-        if (!isDeleted) {
-          return res.status(HttpCode.NOT_FOUND)
-          .send(`Not found article with ${articleId} id`);
-        }
-
         return res.status(HttpCode.OK).json(isDeleted);
       }));
 
@@ -104,7 +77,6 @@ module.exports = (app, articleService, commentService) => {
       articleExists(articleService),
       asyncWrapper(async (req, res) => {
         const {article} = res.locals;
-
         const comments = await commentService.findAll(article.id);
 
         return res.status(HttpCode.OK).json(comments);

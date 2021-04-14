@@ -67,15 +67,25 @@ describe(`API returns category list`, () => {
 
 });
 
+describe(`API returns category list by article`, () => {
+  beforeAll(async () => {
+    response = await request(app).get(`/categories?articleId=1`);
+  });
+
+  test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+  test(`Return list of 5`, () => expect(response.body.length).toBe(5));
+
+  test(`Category names are "Деревья", "За жизнь", "Без рамки", "Разное", "IT"`, () =>
+    expect(response.body.map((item) => item.title))
+      .toEqual(expect.arrayContaining(mockCategories)),
+  );
+
+});
+
 test(`API return category with given id`, async () => {
   return request(app).get(`/categories/1`)
     .expect(HttpCode.OK);
-});
-
-test(`API return all article categories`, async () => {
-  response = await request(app).get(`/categories/by-article?articleId=1`);
-
-  expect(response.statusCode).toBe(200);
 });
 
 describe(`API returns category list with count articles`, () => {
@@ -101,14 +111,24 @@ describe(`API created an category if data is valid`, () => {
   beforeAll(async () => {
     response = await request(app).post(`/categories`)
       .send(newCategory).set(`Authorization`, `Bearer: ${accessToken}`);
-
-
   });
 
   test(`Status code 201`, () => expect(response.statusCode).toBe(HttpCode.CREATED));
 
   test(`Returns category created with title "Test category"`, () =>
     expect(response.body.title).toBe(`Test new category`));
+
+  describe(`API returns all categories`, () => {
+    beforeAll(async () => {
+      response = await request(app).get(`/categories?all=true`);
+    });
+
+    test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
+
+    test(`Return list of 6`, () => expect(response.body.length).toBe(6));
+
+
+  });
 });
 
 describe(`API update an category if data is valid`, () => {
@@ -125,6 +145,20 @@ describe(`API update an category if data is valid`, () => {
 
   test(`Returns response with data eq "true"`, () =>
     expect(response.body).toBe(true));
+});
+
+describe(`API refuse update an category if data is invalid`, () => {
+  const categoryData = {
+    title: `Test`,
+  };
+
+  beforeAll(async () => {
+    response = await request(app).put(`/categories/1`)
+      .send(categoryData).set(`Authorization`, `Bearer: ${accessToken}`);
+  });
+
+  test(`Status code 400`, () => expect(response.statusCode).toBe(HttpCode.BAD_REQUEST));
+
 });
 
 describe(`API correctly delete an category`, () => {

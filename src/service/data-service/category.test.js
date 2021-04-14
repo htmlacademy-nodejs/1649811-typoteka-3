@@ -35,4 +35,10 @@ describe(`DataService Category test`, () => {
       expect(category.count).toBe(3);
     }
   });
+
+  test(`test update with bad data`, async () => {
+    const isUpdated = await service.update(100, {title: `bad category`});
+    expect(isUpdated).toBe(false);
+  });
 });
+

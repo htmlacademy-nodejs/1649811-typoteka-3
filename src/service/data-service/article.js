@@ -35,7 +35,6 @@ class ArticleService {
       artModel.setCategories(article.categories);
 
       return true;
-
     } catch (err) {
       return false;
     }

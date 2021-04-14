@@ -18,7 +18,9 @@ module.exports = (app, userService, tokenService) => {
 
   route.post(`/user`, [validator(newUserSchema), alreadyExist(userService)], asyncWrapper(async (req, res) => {
     const isCreated = await userService.create(req.body);
-    return isCreated ? res.status(HttpCode.CREATED).json() : res.status(HttpCode.BAD_REQUEST).json();
+    return isCreated
+      ? res.sendStatus(HttpCode.CREATED)
+      : res.sendStatus(HttpCode.BAD_REQUEST);
   }));
 
   route.post(`/login`, [validator(userSchema), authenticate(userService)], asyncWrapper(async (req, res) => {
@@ -56,7 +58,7 @@ module.exports = (app, userService, tokenService) => {
       const {id, firstname, lastname, email, avatar, role} = userData;
 
       const {accessToken, refreshToken} = makeTokens(
-        {id, firstname, lastname, email, avatar, role},
+          {id, firstname, lastname, email, avatar, role},
       );
 
       await existToken.destroy();
