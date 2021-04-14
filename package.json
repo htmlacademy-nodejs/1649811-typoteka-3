@@ -57,6 +57,7 @@
     "pino": "6.9.0",
     "pug": "2.0.4",
     "sequelize": "6.4.0",
+    "socket.io": "4.0.1",
     "x-xss-protection": "2.0.0"
   }
 }

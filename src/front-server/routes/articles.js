@@ -5,8 +5,9 @@ const bodyParser = require(`body-parser`);
 const he = require(`he`);
 const privateRoute = require(`../middleware/private-route`);
 const adminRoute = require(`../middleware/admin-route`);
-const {asyncWrapper, removeUploadedImage, calculatePagination, getTotalPages} = require(`../utils`);
 const {emptyArticle, getRequestData, upload} = require(`./article-helper`);
+const {asyncWrapper, removeUploadedImage, calculatePagination, getTotalPages} = require(`../utils`);
+const {WebSocketEvent} = require(`../const`);
 
 const api = require(`../api`).getApi();
 const router = new express.Router();
@@ -119,7 +120,7 @@ router.get(`/:id`, asyncWrapper(async (req, res) => {
     api.getCategories({articleId: id}),
   ]);
 
-  res.render(`article/post`, {article, categories, comment: null});
+  res.render(`article/post`, {article, categories});
 }));
 
 router.get(`/delete/:id`, adminRoute, asyncWrapper(async (req, res) => {
@@ -143,15 +144,25 @@ router.post(`/:id/comments`, privateRoute, bodyParser.urlencoded({extended: true
   try {
     const {accessToken} = res.locals;
     await api.createComment(id, data, accessToken);
+
+    const {io} = req.app.locals;
+    const mostPopular = await api.getMostPopular();
+    io.emit(WebSocketEvent.MOST_POPULAR, mostPopular);
+
     res.redirect(`/articles/${id}`);
 
   } catch (err) {
     const {errors} = err.response.data;
-
-    const article = await api.getArticle(id, true);
+    const [
+      article,
+      categories,
+    ] = await Promise.all([
+      api.getArticle(id, true),
+      api.getCategories({articleId: id}),
+    ]);
     const errorMessages = Object.values(errors).join(` `);
 
-    res.render(`article/post`, {article, comment: data.text, errorMessages});
+    res.render(`article/post`, {article, categories, comment: data.text, errorMessages});
   }
 }));
 

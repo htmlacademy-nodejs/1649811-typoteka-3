@@ -35,3 +35,7 @@ block content
                 b.preview__comment-count #{article.commentsCount}
 
         +pagination(page, totalPages, 2, `?`)
+
+block scripts
+  script(src='/js/socket.io.min.js')
+  script(src='/js/ws.js')
