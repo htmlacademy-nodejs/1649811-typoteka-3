@@ -22,23 +22,18 @@ module.exports = (app, userService, tokenService) => {
   }));
 
   route.post(`/login`, [validator(userSchema), authenticate(userService)], asyncWrapper(async (req, res) => {
-    try {
-      const {user} = res.locals;
+    const {user} = res.locals;
 
-      delete user.password;
-      delete user.createdAt;
+    delete user.password;
+    delete user.createdAt;
 
-      const {accessToken, refreshToken} = makeTokens(user);
-      const token = await tokenService.create(refreshToken);
-      if (!token) {
-        return res.sendStatus(HttpCode.UNAUTHORIZED);
-      }
-
-      return res.status(HttpCode.OK).json({accessToken, refreshToken});
-    } catch (err) {
+    const {accessToken, refreshToken} = makeTokens(user);
+    const token = await tokenService.create(refreshToken);
+    if (!token) {
       return res.sendStatus(HttpCode.UNAUTHORIZED);
     }
 
+    return res.status(HttpCode.OK).json({accessToken, refreshToken});
   }));
 
   route.post(`/refresh`, asyncWrapper(async (req, res) => {
@@ -61,7 +56,7 @@ module.exports = (app, userService, tokenService) => {
       const {id, firstname, lastname, email, avatar, role} = userData;
 
       const {accessToken, refreshToken} = makeTokens(
-          {id, firstname, lastname, email, avatar, role},
+        {id, firstname, lastname, email, avatar, role},
       );
 
       await existToken.destroy();
