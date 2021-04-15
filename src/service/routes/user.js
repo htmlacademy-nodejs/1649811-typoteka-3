@@ -1,8 +1,8 @@
 'use strict';
 
 const {Router} = require(`express`);
-const newUserSchema = require(`../middleware/new-user-schema`);
-const userSchema = require(`../middleware/user-schema`);
+const newUserSchema = require(`../middleware/schema/new-user-schema`);
+const userSchema = require(`../middleware/schema/user-schema`);
 const validator = require(`../middleware/schema-validator`);
 const alreadyExist = require(`../middleware/already-register`);
 const authenticate = require(`../middleware/authenticate`);

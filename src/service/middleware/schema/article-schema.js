@@ -1,7 +1,7 @@
 'use strict';
 
 const Joi = require(`joi-plus`);
-const {ArticleMessage} = require(`../const-messages`);
+const {ArticleMessage} = require(`../../const-messages`);
 
 module.exports = Joi.object({
   title: Joi.string()

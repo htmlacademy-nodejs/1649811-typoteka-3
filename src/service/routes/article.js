@@ -3,8 +3,8 @@
 const express = require(`express`);
 
 const articleExists = require(`../middleware/article-exists`);
-const articleSchema = require(`../middleware/article-schema`);
-const commentSchema = require(`../middleware/comment-schema`);
+const articleSchema = require(`../middleware/schema/article-schema`);
+const commentSchema = require(`../middleware/schema/comment-schema`);
 const validator = require(`../middleware/schema-validator`);
 const authenticateJwt = require(`../middleware/authenticate-jwt`);
 const adminRoute = require(`../middleware/admin-route`);

@@ -3,7 +3,7 @@
 const express = require(`express`);
 const {HttpCode} = require(`../const`);
 const authenticateJwt = require(`../middleware/authenticate-jwt`);
-const categorySchema = require(`../middleware/category-schema`);
+const categorySchema = require(`../middleware/schema/category-schema`);
 const adminRoute = require(`../middleware/admin-route`);
 const {asyncWrapper} = require(`../utils`);
 
