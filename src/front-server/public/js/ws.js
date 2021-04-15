@@ -27,8 +27,22 @@ const showLastComments = (lastComments) => {
   ).join(``);
 }
 
+const clearEmpty = () => {
+  if (lastList.nextElementSibling) {
+    lastList.nextElementSibling.remove();
+  }
+  if (hotList.nextElementSibling) {
+    hotList.nextElementSibling.remove();
+  }
+}
+
 socket.addEventListener(`most-popular`, async (message) => {
+  if (!lastList || !hotList) {
+    return;
+  }
   const {lastComments, mostPopular} = message;
+
+  clearEmpty();
 
   showLastComments(lastComments);
   showMostPopular(mostPopular);

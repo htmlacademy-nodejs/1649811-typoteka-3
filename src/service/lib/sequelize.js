@@ -15,5 +15,7 @@ module.exports = new Sequelize(DATABASE_URI, {
     acquire: 30000,
     idle: 10000,
   },
+  charset: `utf8`,
+  collate: `utf8_general_ci`,
   logging: isDevMode ? console.log : false,
 });

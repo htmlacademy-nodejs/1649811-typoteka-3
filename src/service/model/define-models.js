@@ -54,10 +54,6 @@ const define = (sequelize) => {
     onUpdate: `CASCADE`,
     onDelete: `RESTRICT`,
   });
-  // Category.hasMany(ArticleCategory, {
-  //   as: Alias.CATEGORY_ARTICLES,
-  //   foreignKey: `categoryId`,
-  // });
 
   Article.hasMany(Comment, {
     as: Alias.COMMENTS,

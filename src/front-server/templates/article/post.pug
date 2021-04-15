@@ -20,7 +20,8 @@ block content
                     sup #{category.count}
 
           .post__picture
-            img(src=`/img/${article.picture}` alt=`${article.title}`)
+            - const imgSrc = article.picture ? `/img/${article.picture}` : ``;
+            img(src=imgSrc alt=`${article.title}`)
           .post__text
             p #{article.announce}
             p

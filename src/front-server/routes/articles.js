@@ -56,8 +56,11 @@ router.post(`/add`, adminRoute, upload.single(`picture`), asyncWrapper(async (re
     const article = await api.createArticle(articleData, accessToken);
     delete req.session.articlePicture;
 
-    res.redirect(`/articles/${article.id}`);
+    const {io} = req.app.locals;
+    const mostPopular = await api.getMostPopular();
+    io.emit(WebSocketEvent.MOST_POPULAR, mostPopular);
 
+    res.redirect(`/articles/${article.id}`);
   } catch (error) {
     const categories = await api.getCategories({all: true});
     articleData.createdAt = new Date().toISOString();

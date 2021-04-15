@@ -7,11 +7,11 @@ const {SALT_ROUNDS} = require(`../const`);
 
 const MAX_COMMENTS = 5;
 
-module.exports = async (sequelize, {admin, categories, users, articles, comments}, isRandom = false) => {
+module.exports = async (sequelize, {admin, categories, users, articles, comments}, isRandom = false, logging = true) => {
 
   const {Category, User, Article, Comment} = defineModels(sequelize);
 
-  await sequelize.sync({force: true});
+  await sequelize.sync({force: true, logging});
 
   const categoryModels = await Category.bulkCreate(
       categories.map((title) => ({title})),

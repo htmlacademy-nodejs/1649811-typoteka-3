@@ -16,6 +16,7 @@ module.exports = {
       --version:            выводит номер версии
       --help:               печатает этот текст
       --generate [count]    формирует файл mocks.json
+      --initdb              инициирует пустую базу данных
       --filldb [count]      заполняет базу тестовыми данными
     `;
     console.info(chalk.gray(message));
