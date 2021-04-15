@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require(`joi`);
+const Joi = require(`joi-plus`);
 const {ArticleMessage} = require(`../const-messages`);
 
 module.exports = Joi.object({
@@ -8,6 +8,7 @@ module.exports = Joi.object({
     .min(30)
     .max(250)
     .required()
+    .escape()
     .messages({
       'string.min': ArticleMessage.MIN_TITLE_LENGTH,
       'string.max': ArticleMessage.MAX_TITLE_LENGTH,
@@ -24,6 +25,7 @@ module.exports = Joi.object({
     .min(30)
     .max(250)
     .required()
+    .escape()
     .messages({
       'string.min': ArticleMessage.MIN_ANNOUNCE_LENGTH,
       'string.max': ArticleMessage.MAX_ANNOUNCE_LENGTH,
@@ -32,7 +34,9 @@ module.exports = Joi.object({
 
   fullText: Joi.string()
     .allow(``, null)
-    .max(1000).messages({
+    .max(1000)
+    .escape()
+    .messages({
       'string.max': ArticleMessage.MAX_TEXT_LENGTH,
     }),
 

@@ -56,10 +56,6 @@ router.post(`/add`, adminRoute, upload.single(`picture`), asyncWrapper(async (re
     const article = await api.createArticle(articleData, accessToken);
     delete req.session.articlePicture;
 
-    const {io} = req.app.locals;
-    const mostPopular = await api.getMostPopular();
-    io.emit(WebSocketEvent.MOST_POPULAR, mostPopular);
-
     res.redirect(`/articles/${article.id}`);
   } catch (error) {
     const categories = await api.getCategories({all: true});
@@ -149,11 +145,10 @@ router.post(`/:id/comments`, privateRoute, bodyParser.urlencoded({extended: true
     await api.createComment(id, data, accessToken);
 
     const {io} = req.app.locals;
-    const mostPopular = await api.getMostPopular();
-    io.emit(WebSocketEvent.MOST_POPULAR, mostPopular);
+    const result = await api.getMostPopular();
+    io.emit(WebSocketEvent.MOST_POPULAR, result);
 
     res.redirect(`/articles/${id}`);
-
   } catch (err) {
     const {errors} = err.response.data;
     const [

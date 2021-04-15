@@ -1,6 +1,6 @@
 'use strict';
 
-const Joi = require(`joi`);
+const Joi = require(`joi-plus`);
 const {MIN_PASSWORD_LENGTH, MAX_PASSWORD_LENGTH} = require(`../const`);
 const {RegisterMessage} = require(`../const-messages`);
 

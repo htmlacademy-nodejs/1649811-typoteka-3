@@ -7,6 +7,7 @@ const lastList = document.querySelector(`.last__list`);
 
 
 const showMostPopular = (mostPopular) => {
+
   hotList.innerHTML = mostPopular.map((item) => (
   `<li class="hot__list-item">
       <a class="hot__list-link" href="/artilces/${item.id}">
@@ -27,23 +28,13 @@ const showLastComments = (lastComments) => {
   ).join(``);
 }
 
-const clearEmpty = () => {
-  if (lastList.nextElementSibling) {
-    lastList.nextElementSibling.remove();
-  }
-  if (hotList.nextElementSibling) {
-    hotList.nextElementSibling.remove();
-  }
-}
 
 socket.addEventListener(`most-popular`, async (message) => {
   if (!lastList || !hotList) {
     return;
   }
-  const {lastComments, mostPopular} = message;
+  const {mostPopular, lastComments} = message;
 
-  clearEmpty();
-
-  showLastComments(lastComments);
   showMostPopular(mostPopular);
+  showLastComments(lastComments);
 });

@@ -68,8 +68,8 @@ app.use((err, req, res, _next) => {
 });
 
 io.on(`connection`, (socket) => {
-  socket.on(WebSocketEvent.MOST_POPULAR, (clientMessage) => {
-    socket.broadcast.emit(WebSocketEvent.MOST_POPULAR, clientMessage);
+  socket.on(WebSocketEvent.MOST_POPULAR, (message) => {
+    socket.broadcast.emit(WebSocketEvent.MOST_POPULAR, message);
   });
 });
 
