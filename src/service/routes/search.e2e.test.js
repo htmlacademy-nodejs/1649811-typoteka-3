@@ -36,7 +36,7 @@ describe(`API returns offer based on search query`, () => {
   beforeAll(async () => {
     response = await request(app)
       .get(`/search`)
-      .query({query: `Как перестать беспокоиться`});
+      .query({query: `перестать беспокоиться`});
   });
 
   test(`Status code 200`, () => expect(response.statusCode).toBe(HttpCode.OK));
