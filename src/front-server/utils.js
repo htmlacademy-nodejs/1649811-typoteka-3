@@ -2,7 +2,7 @@
 
 const fs = require(`fs`).promises;
 const path = require(`path`);
-const {ARTICLES_PER_PAGE, UPLOAD_DIR, PUBLIC_IMG_DIR} = require(`./const`);
+const {ARTICLES_PER_PAGE, UPLOAD_DIR, PUBLIC_IMG_DIR, WebSocketEvent} = require(`./const`);
 
 const checkObjProp = (obj, prop) => {
   return typeof obj === `object` && prop in obj;
@@ -48,6 +48,12 @@ const removeUploadedImage = async (image) => {
   await fs.unlink(path.join(PUBLIC_IMG_DIR, image));
 };
 
+const webSocketEmit = async (req, api) => {
+  const {io} = req.app.locals;
+  const result = await api.getMostPopular();
+  io.emit(WebSocketEvent.MOST_POPULAR, result);
+};
+
 module.exports = {
   checkObjProp,
   readFile,
@@ -56,4 +62,5 @@ module.exports = {
   asyncWrapper,
   moveUploadedImage,
   removeUploadedImage,
+  webSocketEmit
 };

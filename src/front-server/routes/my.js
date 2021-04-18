@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require(`express`);
-const {asyncWrapper} = require(`../utils`);
+const {asyncWrapper, webSocketEmit} = require(`../utils`);
 const adminRoute = require(`../middleware/admin-route`);
 
 const api = require(`../api`).getApi();
@@ -24,6 +24,7 @@ router.get(`/comments/delete/:id`, adminRoute, asyncWrapper(async (req, res) => 
   const {id} = req.params;
   const {accessToken} = res.locals;
   await api.deleteComment(id, accessToken);
+  await webSocketEmit(req, api);
 
   res.redirect(`/my/comments`);
 }));

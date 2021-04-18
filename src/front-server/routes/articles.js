@@ -6,8 +6,9 @@ const he = require(`he`);
 const privateRoute = require(`../middleware/private-route`);
 const adminRoute = require(`../middleware/admin-route`);
 const {emptyArticle, getRequestData, upload} = require(`./article-helper`);
-const {asyncWrapper, removeUploadedImage, calculatePagination, getTotalPages} = require(`../utils`);
-const {WebSocketEvent} = require(`../const`);
+const {
+  asyncWrapper, removeUploadedImage, calculatePagination, getTotalPages, webSocketEmit
+} = require(`../utils`);
 
 const api = require(`../api`).getApi();
 const router = new express.Router();
@@ -55,6 +56,7 @@ router.post(`/add`, adminRoute, upload.single(`picture`), asyncWrapper(async (re
 
     const article = await api.createArticle(articleData, accessToken);
     delete req.session.articlePicture;
+    await webSocketEmit(req, api);
 
     res.redirect(`/articles/${article.id}`);
   } catch (error) {
@@ -127,6 +129,7 @@ router.get(`/delete/:id`, adminRoute, asyncWrapper(async (req, res) => {
   const article = await api.getArticle(id);
   const {accessToken} = res.locals;
   await api.deleteArticle(id, accessToken);
+  await webSocketEmit(req, api);
   if (article.picture) {
     await removeUploadedImage(article.picture);
   }
@@ -143,10 +146,7 @@ router.post(`/:id/comments`, privateRoute, bodyParser.urlencoded({extended: true
   try {
     const {accessToken} = res.locals;
     await api.createComment(id, data, accessToken);
-
-    const {io} = req.app.locals;
-    const result = await api.getMostPopular();
-    io.emit(WebSocketEvent.MOST_POPULAR, result);
+    await webSocketEmit(req, api);
 
     res.redirect(`/articles/${id}`);
   } catch (err) {
