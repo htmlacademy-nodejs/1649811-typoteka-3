@@ -1,9 +1,10 @@
 extends ../layout
 
+
 block content
   main
     section.search-page
-      .search-page__wrapper
+      .search-page__wrapper(class=results.length ? null : 'search-page__wrapper--empty')
         h1 Поиск
         .search.search-page__form
           form(action='/search' method='get')
@@ -11,11 +12,15 @@ block content
               input(type='text' name=`query` placeholder='Что ищем?')
             button.search__button.button.button--transparent(type='submit') Найти
 
-        .search__result
+        if (results.length)
           each article in results
-            time.search__date(datetime=article.createdDate) #{dayjs(article.createdDate).format('DD.MM.YYYY, HH:mm')}
-            a.search__link(href=`/articles/${article.id}`)
-              | #{article.title}
+            .search__result
+              time.search__date(datetime=article.createdDate) #{dayjs(article.createdDate).format('DD.MM.YYYY, HH:mm')}
+              a.search__link(href=`/articles/${article.id}`)
+                | #{article.title}
+        else
+          p.search-page__empty Ничего не нашлось
+
 
 block scripts
   script(src='/js/search.js')

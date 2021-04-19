@@ -4,7 +4,9 @@
   "description": "Типотека",
   "main": "./src/service/service.js",
   "scripts": {
-    "test": "npm run eslint && npm run test::rest",
+    "test": "npm run eslint && npm run jest",
+    "test::rest": "jest src/service/routes/*.test.js",
+    "jest": "jest",
     "eslint": "eslint --ext .js src/",
     "start": "concurrently --prefix \"{pid} {name}\" --names \"API,SSR\" --prefix-colors \"green,yellow\" \"npm run start-api\" \"npm run start-front-server\"",
     "start::debug": "concurrently --prefix \"{pid} {name}\" --names \"API,SSR\" --prefix-colors \"green,yellow\" \"npm:start-api::debug\" \"npm:start-front-server::debug\"",
@@ -12,7 +14,6 @@
     "start-api::debug": "cross-env LOG_LEVEL=debug NODE_ENV=development nodemon -r dotenv/config ./src/service/service.js --server",
     "start-front-server": "node -r dotenv/config src/front-server/index.js",
     "start-front-server::debug": "nodemon -r dotenv/config src/front-server/index.js",
-    "test::rest": "jest src/service/routes/*.test.js",
     "service": "node -r dotenv/config ./src/service/service.js"
   },
   "repository": {
