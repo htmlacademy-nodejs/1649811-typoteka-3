@@ -7,6 +7,7 @@ const {SALT_ROUNDS} = require(`../const`);
 
 const MAX_COMMENTS = 5;
 
+
 module.exports = async (sequelize, {admin, categories, users, articles, comments}, isRandom = false) => {
 
   const {Category, User, Article, Comment} = defineModels(sequelize);

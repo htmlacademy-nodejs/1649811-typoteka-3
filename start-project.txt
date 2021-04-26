@@ -1,4 +1,0 @@
-npm run service -- --initdb
-или npm run service -- --filldb для загрузки тестовой базы
-
-npm start или npm run start::debug

@@ -3,7 +3,7 @@ const chalk = require(`chalk`);
 const fs = require(`fs`).promises;
 const {nanoid} = require(`nanoid`);
 const {getRandomInt, generateCreatedDate, shuffle, readFile} = require(`../utils`);
-const {ExitCode, MAX_ID_LENGTH} = require(`../const`);
+const {ExitCode} = require(`../const`);
 
 const FILE_OUTPUT = `${__dirname}/../../../mocks.json`;
 const FILE_TITLES = `${__dirname}/../../../data/titles.txt`;
@@ -16,6 +16,9 @@ const MAX_COUNT = 1000;
 const DATE_DIFF_MONTH = -3;
 const MAX_ANNOUNCE_COUNT = 5;
 const MAX_COMMENTS = 4;
+const MAX_ID_LENGTH = 6;
+
+const pictures = [`sea@1x.jpg`, `forest@1x.jpg`, `skyscraper@1x.jpg`];
 
 
 const generateComments = (count, comments) => {
@@ -29,7 +32,6 @@ const generateComments = (count, comments) => {
 };
 
 const generatePicture = () => {
-  const pictures = [`sea@1x.jpg`, `forest@1x.jpg`, `skyscraper@1x.jpg`];
   return shuffle(pictures).pop();
 };
 

@@ -17,9 +17,6 @@ build/
 # Сгенерированный файл
 mocks.json
 
-# Фото
-src/front-server/public/img
-
 # docker, env
 docker*
 .env

@@ -3,6 +3,9 @@
 const {ExitCode} = require(`../const`);
 const sequelize = require(`../lib/sequelize`);
 const initDb = require(`../lib/init-db`);
+const {
+  ADMIN_FIRSTNAME, ADMIN_LASTNAME, ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_AVATAR,
+} = process.env;
 
 
 module.exports = {
@@ -14,13 +17,7 @@ module.exports = {
 
       console.info(`Connection to database established`);
 
-      const admin = [
-        process.env.ADMIN_FIRSTNAME,
-        process.env.ADMIN_LASTNAME,
-        process.env.ADMIN_EMAIL,
-        process.env.ADMIN_PASSWORD,
-        process.env.ADMIN_AVATAR,
-      ];
+      const admin = [ADMIN_FIRSTNAME, ADMIN_LASTNAME, ADMIN_EMAIL, ADMIN_PASSWORD, ADMIN_AVATAR];
 
       await initDb(sequelize, {admin, categories: [], users: [], articles: [], comments: []});
 

@@ -39,6 +39,7 @@ module.exports = Joi.object({
 
   password: Joi.string()
     .required()
+    .escape()
     .min(MIN_PASSWORD_LENGTH)
     .max(MAX_PASSWORD_LENGTH)
     .messages({
@@ -50,6 +51,7 @@ module.exports = Joi.object({
 
   repeat: Joi.string()
     .required()
+    .escape()
     .valid(Joi.ref(`password`))
     .messages({
       'string.empty': `Повтор пароля ${RegisterMessage.EMPTY_VALUE}`,
