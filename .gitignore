@@ -18,8 +18,6 @@ build/
 mocks.json
 
 # Фото
-src/front-server/upload/img/*
-!src/front-server/upload/img/.gitkeep
 src/front-server/public/img
 
 # docker, env

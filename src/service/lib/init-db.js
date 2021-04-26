@@ -19,7 +19,7 @@ module.exports = async (sequelize, {admin, categories, users, articles, comments
 
   const salt = await bcrypt.genSalt(SALT_ROUNDS);
 
-  const [fName, lName, aEmail, aPass, avatar] = admin.split(` `);
+  const [fName, lName, aEmail, aPass, avatar] = admin;
   const adminPass = await bcrypt.hash(aPass, salt);
 
   await User.create({

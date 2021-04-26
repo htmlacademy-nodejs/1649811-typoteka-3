@@ -35,3 +35,13 @@ API_PORT=3000
 
 #### Сервер приложения
 FRONT_PORT=8080
+
+###
+#### Данные администратора
+ADMIN_FIRSTNAME=
+
+ADMIN_LASTNAME=
+
+ADMIN_EMAIL=
+
+ADMIN_PASSWORD=

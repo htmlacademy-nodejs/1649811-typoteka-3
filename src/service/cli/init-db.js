@@ -1,12 +1,8 @@
 'use strict';
 
-const path = require(`path`);
 const {ExitCode} = require(`../const`);
-const {readFile} = require(`../utils`);
 const sequelize = require(`../lib/sequelize`);
 const initDb = require(`../lib/init-db`);
-
-const FILE_ADMIN = path.resolve(__dirname, `../../../data/admin.txt`);
 
 
 module.exports = {
@@ -18,17 +14,18 @@ module.exports = {
 
       console.info(`Connection to database established`);
 
-      const [admin] = await readFile(FILE_ADMIN);
+      const admin = [
+        process.env.ADMIN_FIRSTNAME,
+        process.env.ADMIN_LASTNAME,
+        process.env.ADMIN_EMAIL,
+        process.env.ADMIN_PASSWORD,
+        process.env.ADMIN_AVATAR,
+      ];
 
-      await initDb(sequelize, {admin, categories: [], users: [], articles: [], comments: []}, false, false);
+      await initDb(sequelize, {admin, categories: [], users: [], articles: [], comments: []});
 
       console.info(`Database created`);
       await sequelize.close();
-
-      const [,, email, password] = admin.split(` `);
-      console.log(`Admin:`);
-      console.log(`email: ${email}`, `password: ${password}`);
-
     } catch (err) {
       console.error(err.message);
       process.exit(ExitCode.ERROR);

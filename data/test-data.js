@@ -57,7 +57,7 @@ const mockUser = {
   repeat: `ivanov`,
   avatar: `avatar-01.jpg`,
 };
-const mockAdmin = `Webmaster Webmaster admin@mail.com webmaster avatar-5.png`;
+const mockAdmin = [`Webmaster`, `Webmaster`, `admin@mail.com`, `webmaster`, `avatar-5.png`];
 
 module.exports = {
   mockCategories,

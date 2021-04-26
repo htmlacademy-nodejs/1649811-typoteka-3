@@ -11,7 +11,6 @@ const FILE_SENTENCES = path.resolve(__dirname, `../../../data/sentences.txt`);
 const FILE_CATEGORIES = path.resolve(__dirname, `../../../data/categories.txt`);
 const FILE_COMMENTS = path.resolve(__dirname, `../../../data/comments.txt`);
 const FILE_USERS = path.resolve(__dirname, `../../../data/users.txt`);
-const FILE_ADMIN = path.resolve(__dirname, `../../../data/admin.txt`);
 
 const ARTICLES_COUNT = 5;
 const MAX_ANNOUNCE_COUNT = 5;
@@ -25,7 +24,7 @@ const generateArticles = (count, titles, content) => {
     title: titles[i],
     createdAt: generateCreatedDate(DIFF_MONTH),
     announce: shuffle(content).slice(0, getRandomInt(2, MAX_ANNOUNCE_COUNT)).join(` `).slice(0, 250),
-    fullText: shuffle(content).slice(0, getRandomInt(1, content.length)).join(` `),
+    fullText: shuffle(content).slice(0, getRandomInt(1, content.length)).join(` `).slice(0, 1000),
     picture: pictures[getRandomInt(0, pictures.length - 1)],
   }),
   );
@@ -46,7 +45,13 @@ module.exports = {
       const categories = await readFile(FILE_CATEGORIES);
       const comments = await readFile(FILE_COMMENTS);
       const users = await readFile(FILE_USERS);
-      const [admin] = await readFile(FILE_ADMIN);
+      const admin = [
+        process.env.ADMIN_FIRSTNAME,
+        process.env.ADMIN_LASTNAME,
+        process.env.ADMIN_EMAIL,
+        process.env.ADMIN_PASSWORD,
+        process.env.ADMIN_AVATAR,
+      ];
 
       const count = Math.min(Number.parseInt(arg, 10) || ARTICLES_COUNT, titles.length);
       const articles = generateArticles(count, titles, content);
