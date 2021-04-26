@@ -22,6 +22,7 @@ module.exports = (app, articleService, commentService) => {
       : await articleService.findAll();
 
     return res.status(HttpCode.OK).json(result);
+
   }));
 
   router.get(`/comments`, authenticateJwt, adminRoute, asyncWrapper(async (req, res) => {

@@ -7,6 +7,7 @@ const {SALT_ROUNDS} = require(`../const`);
 
 const MAX_COMMENTS = 5;
 
+
 module.exports = async (sequelize, {admin, categories, users, articles, comments}, isRandom = false) => {
 
   const {Category, User, Article, Comment} = defineModels(sequelize);
@@ -19,7 +20,7 @@ module.exports = async (sequelize, {admin, categories, users, articles, comments
 
   const salt = await bcrypt.genSalt(SALT_ROUNDS);
 
-  const [fName, lName, aEmail, aPass, avatar] = admin.split(` `);
+  const [fName, lName, aEmail, aPass, avatar] = admin;
   const adminPass = await bcrypt.hash(aPass, salt);
 
   await User.create({
